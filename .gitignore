@@ -3,3 +3,9 @@
 ################################################################################
 
 /StorageClient/.vs/StorageClient/v16/Server/sqlite3
+/StorageClient/bin/Debug/netcoreapp3.0
+/StorageClient/obj/Debug/netcoreapp3.0/StorageClient.dll
+/StorageClient/obj/Debug/netcoreapp3.0/StorageClient.exe
+/StorageClient/obj/Debug/netcoreapp3.0/StorageClient.csproj.FileListAbsolute.txt
+/StorageClient/obj/Debug/netcoreapp3.0/StorageClient.pdb
+/StorageClient/.vs/StorageClient/v16

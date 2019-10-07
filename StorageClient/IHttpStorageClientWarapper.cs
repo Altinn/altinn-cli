@@ -30,4 +30,5 @@ namespace StorageClient
             /// <returns>respons datat</returns>
             Task<string> PostCommand(string baseAddress, string command, StringContent content);
         }
+    }
 }
