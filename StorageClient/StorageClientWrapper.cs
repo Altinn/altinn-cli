@@ -13,7 +13,7 @@ namespace Altinn.Clients.StorageClient
             String cmd = string.Empty;
             string baseAddress = System.Configuration.ConfigurationManager.AppSettings.Get("BaseAddress");
 
-            HttpStorageClintWrapper httpClinetWrapper = new HttpStorageClintWrapper();
+            HttpStorageClientWrapper httpClinetWrapper = new HttpStorageClientWrapper();
 
             //return httpClinetWrapper.GetCommand(baseAddress, cmd);
 
