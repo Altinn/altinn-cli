@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
@@ -16,7 +17,7 @@ namespace StorageClient
         /// <param name="baseAddress">Base Address for data source</param>
         /// <param name="command">The http command</param>
         /// <returns>respons data</returns>
-        public async Task<string> GetCommand(string baseAddress, string command)
+        public async Task<Stream> GetCommand(string baseAddress, string command)
         {
             Uri uri = new Uri(baseAddress + "/" + command);
 
@@ -44,7 +45,7 @@ namespace StorageClient
                 throw new System.Exception(errorMessage);
             }
 
-            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            Stream result = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
             return result;
         }

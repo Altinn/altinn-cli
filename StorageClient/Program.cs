@@ -6,6 +6,8 @@ namespace StorageClient
     {
         static void Main(string[] args)
         {
+            StorageClient storageClinet = new StorageClient();
+
             Console.WriteLine("Hello World!");
         }
     }
