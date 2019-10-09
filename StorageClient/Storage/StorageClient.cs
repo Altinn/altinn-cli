@@ -7,6 +7,7 @@ namespace StorageClient
 {
     public class StorageClient
     {
+        IStorageClientWrapper ClientWrapper;
 
         public MemoryStream GetDocument()
         {

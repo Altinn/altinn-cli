@@ -1,4 +1,5 @@
-﻿using AltinnCli;
+﻿using Altinn.Clients.StorageClient;
+using AltinnCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,16 +13,33 @@ namespace StorageClient
         public StorageEngine()
         {
         }
-        public void Run(string[] args)
+
+
+        protected override IServiceCollection ConfigureServices(string applicationType)
         {
-            BuildConfiguration();
+            IServiceCollection services = new ServiceCollection();
+
+            bool useLiveClinet = ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
+
+            if (useLiveClinet)
+            {
+                services.AddTransient<IStorageClientWrapper, StorageClientWrapper>();
+            }
+            else
+            {
+                services.AddTransient<IStorageClientWrapper, StorageClientFileWrapper>();
+            }
+            // IMPORTANT! Register our application entry point
+            services.AddTransient<ApplicationEngineBase>();
+            return services;
         }
 
-        public override void BuildConfiguration()
+        public string Name
         {
-            base.BuildConfiguration();
-            string baseAddresspath = ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
-            bool useLiveClient = ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
+            get
+            {
+                return "Storage";
+            }
         }
 
         public string GetHelp()
@@ -29,5 +47,4 @@ namespace StorageClient
             return "Storage help";
         }
     }
-
 }
