@@ -1,3 +1,4 @@
+using Altinn.Clients.StorageClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StorageClient;
 using System;
