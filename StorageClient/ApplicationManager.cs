@@ -16,50 +16,33 @@ namespace StorageClient
         public ApplicationManager()
         {
             BuildDependency();
+        }
 
         private string[] processArgs(string args)
         {
             return args.ToLower().Split(" ");
         }
 
-        public void Execute(string[] args)
+        public void Execute(string args)
         {
-            var appServices = ServiceProvider.GetServices<IApplicationEngine>();
+            string[] input = processArgs(args);
+            ServiceProvider.GetService<IApplicationEngine>().Execute(input);
         }
 
         public void BuildDependency()
         {
-            var builder = new HostBuilder().ConfigureServices()
             // Create service collection and configure our services
-            IServiceCollection services = ConfigureServices(args[0]);
-        // Generate a provider
+            IServiceCollection services = ConfigureServices();
+            // Generate a provider
             ServiceProvider = services.BuildServiceProvider();
-
-            // Kick off our actual code
-            serviceProvider.GetService<IApplicationEngine>().Run(args);
-
-            var appServices = serviceProvider.GetServices<IApplicationEngine>();
-
-        /// SELECT FROM
-
         }
 
-        private static IServiceCollection ConfigureServices(string applicationType)
+        private static IServiceCollection ConfigureServices()
         {
             IServiceCollection services = new ServiceCollection();
 
-            switch (applicationType)
-            {
-                case "storage":
-                    services.AddTransient<IService, StorageEngine>();
-                    break;
-                case "quit":
-                    services.AddTransient<IService, QuitService>();
-                    break;
-                default:
-                    services.AddTransient<IService, HelpService>();
-                    break;
-            }
+            services.AddTransient<IApplicationEngine, StorageEngine>();
+            services.AddTransient<IService, QuitService>();     
 
             // IMPORTANT! Register our application entry point
             services.AddTransient<ApplicationManager>();

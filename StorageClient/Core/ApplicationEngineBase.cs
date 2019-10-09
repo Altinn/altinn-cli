@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AltinnCli;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace StorageClient
         public ServiceProvider ServiceProvider;
         public string[] Args;
 
+        public abstract string Name { get; }
+
         public ApplicationEngineBase()
         {
         }
@@ -20,9 +23,9 @@ namespace StorageClient
         public void Run(string[] args)
         {
             BuildConfiguration();
-            BuildDependency(args[]);
+            // BuildDependency(args);
 
-            Exceute(args);
+            // Exceute(args);
         }
 
         public virtual void BuildConfiguration()
@@ -45,7 +48,6 @@ namespace StorageClient
 
         protected abstract IServiceCollection ConfigureServices(string applicationType);
 
-        protected abstract Execute(string[] args)
-
+        public abstract void Execute(string[] args);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Altinn.Clients.StorageClient;
+﻿
 using AltinnCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +8,7 @@ using System.Text;
 
 namespace StorageClient
 {
-    public class StorageEngine : ApplicationEngineBase, IService, IHelp
+    public class StorageEngine : ApplicationEngineBase, IApplicationEngine, IHelp
     {
         public StorageEngine()
         {
@@ -34,7 +34,7 @@ namespace StorageClient
             return services;
         }
 
-        public string Name
+        public override string Name
         {
             get
             {
@@ -45,6 +45,11 @@ namespace StorageClient
         public string GetHelp()
         {
             return "Storage help";
+        }
+
+        public override void Execute(string[] args)
+        {
+            Console.WriteLine("It's a me! Storage");
         }
     }
 }

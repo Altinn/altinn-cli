@@ -6,7 +6,7 @@ namespace AltinnCli
 {
     public interface IApplicationEngine
     {
-        void Run(string[] args);
+        void Execute(string[] args);
 
         string Name { get; }
     }
