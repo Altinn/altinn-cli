@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StorageClient
+namespace Altinn.Clients.StorageClient
 {
-    public class HttpStorageClintWrapper
+    public class HttpClientWrapper
     {
         /// <summary>
         /// Prepares requests and send it to FReg
@@ -17,7 +16,7 @@ namespace StorageClient
         /// <param name="baseAddress">Base Address for data source</param>
         /// <param name="command">The http command</param>
         /// <returns>respons data</returns>
-        public async Task<Stream> GetCommand(string baseAddress, string command)
+        public async Task<string> GetCommand(string baseAddress, string command)
         {
             Uri uri = new Uri(baseAddress + "/" + command);
 
@@ -45,7 +44,7 @@ namespace StorageClient
                 throw new System.Exception(errorMessage);
             }
 
-            Stream result = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return result;
         }
