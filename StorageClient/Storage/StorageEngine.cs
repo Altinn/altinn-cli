@@ -7,7 +7,7 @@ using System.Text;
 
 namespace StorageClient
 {
-    public class StorageEngine : ApplicationEngineBase, IApplicationEngine
+    public class StorageEngine : ApplicationEngineBase, IService, IHelp
     {
         public StorageEngine()
         {
@@ -21,7 +21,12 @@ namespace StorageClient
         {
             base.BuildConfiguration();
             string baseAddresspath = ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
-            bool useLiveClinet = ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
+            bool useLiveClient = ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
+        }
+
+        public string GetHelp()
+        {
+            return "Storage help";
         }
     }
 

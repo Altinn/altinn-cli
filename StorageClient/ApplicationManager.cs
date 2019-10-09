@@ -1,6 +1,7 @@
 ﻿using AltinnCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,27 +11,26 @@ namespace StorageClient
 {
     public class ApplicationManager
     {
-
-        private string _args { get; set; }
-
         public ApplicationManager(string args)
         {
-            BuildDependency(args);
+            BuildDependency(processArgs(args));
+        }
 
-        private string[] processArgs()
+        private string[] processArgs(string args)
         {
-            return _args.Split(" ");
+            return args.ToLower().Split(" ");
         }
 
         public void BuildDependency(string[] args)
         {
+            var builder = new HostBuilder().ConfigureServices()
             // Create service collection and configure our services
             var services = ConfigureServices(args[0]);
             // Generate a provider
             var serviceProvider = services.BuildServiceProvider();
 
             // Kick off our actual code
-            serviceProvider.GetService<IApplicationEngine>().Run(args);
+            serviceProvider.GetService<IService>().Run(args);
         }
 
         private static IServiceCollection ConfigureServices(string applicationType)
@@ -39,10 +39,14 @@ namespace StorageClient
 
             switch (applicationType)
             {
-                case "Storage":
-                    services.AddTransient<IApplicationEngine, StorageEngine>();
+                case "storage":
+                    services.AddTransient<IService, StorageEngine>();
+                    break;
+                case "quit":
+                    services.AddTransient<IService, QuitService>();
                     break;
                 default:
+                    services.AddTransient<IService, HelpService>();
                     break;
             }
 

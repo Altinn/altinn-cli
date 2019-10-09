@@ -13,29 +13,15 @@ namespace StorageClient
         static void Main()
         {
 
-            Console.WriteLine(prompt);
-            string args = Console.ReadLine();
+            ApplicationManager app = new ApplicationManager();
+            string args;            
 
-            BuildConfiguration();
-
-            bool quit = false;
-
-            while(!quit)
+            while(true)
             {
-                ApplicationManager app = new ApplicationManager(args);
+                Console.Write(prompt);
+                args = Console.ReadLine();
+                app.Execute(args);
             }
-        }
-
-        private static void BuildConfiguration()
-        {
-            var builder = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appsettings.json");
-
-
-            IConfigurationRoot configuration = builder.Build();
-            string baseAddresspath = configuration.GetSection("APIBaseAddress").Get<string>();
-            bool useLiveClinet = configuration.GetSection("UseLiveClient").Get<bool>();
         }
 
         private static string prompt = "Altinn CLI > ";
