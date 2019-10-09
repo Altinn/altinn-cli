@@ -11,21 +11,33 @@ namespace StorageClient
     public class ApplicationManager
     {
 
-        public ApplicationManager(string[] args)
+        private ServiceProvider ServiceProvider;
+
+        public ApplicationManager()
         {
-            BuildDependency(args);
+            BuildDependency();
 
         }
 
-        public void BuildDependency(string[] args)
+        public void Execute(string[] args)
+        {
+            var appServices = ServiceProvider.GetServices<IApplicationEngine>();
+        }
+
+        public void BuildDependency()
         {
             // Create service collection and configure our services
-            var services = ConfigureServices(args[0]);
-            // Generate a provider
-            var serviceProvider = services.BuildServiceProvider();
+            IServiceCollection services = ConfigureServices(args[0]);
+        // Generate a provider
+            ServiceProvider = services.BuildServiceProvider();
 
             // Kick off our actual code
             serviceProvider.GetService<IApplicationEngine>().Run(args);
+
+            var appServices = serviceProvider.GetServices<IApplicationEngine>();
+
+        /// SELECT FROM
+
         }
 
         private static IServiceCollection ConfigureServices(string applicationType)
@@ -35,6 +47,7 @@ namespace StorageClient
             switch (applicationType)
             {
                 case "Storage":
+                // Define link in registration
                     services.AddTransient<IApplicationEngine, StorageEngine>();
                     break;
                 default:

@@ -7,6 +7,7 @@ namespace Altinn.Clients.StorageClient
 {
     public class StorageClient
     {
+        IStorageClientWrapper ClientWrapper;
 
         public MemoryStream GetDocument()
         {
