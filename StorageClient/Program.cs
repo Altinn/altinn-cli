@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using StorageClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
