@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using StorageClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -11,23 +12,9 @@ namespace Altinn.Clients.StorageClient
     {
         static void Main(string[] args)
         {
-            StorageClient storageClinet = new StorageClient();
+            ApplicationManager  manager = new ApplicationManager(args);
 
-            BuildConfiguration();
-
-            Console.WriteLine("Hello World!");
-        }
-
-        private static void BuildConfiguration()
-        {
-            var builder = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appsettings.json");
-
-
-            IConfigurationRoot configuration = builder.Build();
-            string baseAddresspath = configuration.GetSection("APIBaseAddress").Get<string>();
-            bool useLiveClinet = configuration.GetSection("UseLiveClient").Get<bool>();
+            Console.WriteLine("Application completed");
         }
     }
 }

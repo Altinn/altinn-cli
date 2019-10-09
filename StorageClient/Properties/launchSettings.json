@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AltinnCli": {
+      "commandName": "Project",
+      "commandLineArgs": "Storage"
+    }
+  }
+}
