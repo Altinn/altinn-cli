@@ -17,26 +17,6 @@ namespace StorageClient
             string baseAddresspath = ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
             bool useLiveClinet = ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
         }
-
-        public override void BuildDependency()
-        {
-            // Create service collection and configure our services
-            var services = ConfigureServices();
-            // Generate a provider
-            var serviceProvider = services.BuildServiceProvider();
-
-            // Kick off our actual code
-            serviceProvider.GetService<ConsoleApplication>().Run();
-        }
-
-        private static IServiceCollection ConfigureServices()
-        {
-            IServiceCollection services = new ServiceCollection();
-            services.AddTransient<ITestService, TestService>();
-            // IMPORTANT! Register our application entry point
-            services.AddTransient<ConsoleApplication>();
-            return services;
-        }
     }
 
 }

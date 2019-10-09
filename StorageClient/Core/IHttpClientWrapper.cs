@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Altinn.Clients.StorageClient
+namespace StorageClient
 {
     public interface IHttpClientWrapper
     {

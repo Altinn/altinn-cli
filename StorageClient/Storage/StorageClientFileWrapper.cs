@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Altinn.Clients.StorageClient
+namespace StorageClient
 {
     public class StorageClientFileWrapper : IStorageClientWrapper
     {

@@ -23,5 +23,10 @@ namespace StorageClient
             IConfigurationRoot ApplicationConfiguration = builder.Build();
 
         }
+
+        public virtual void BuildDependency()
+        {
+
+        }
     }
 }

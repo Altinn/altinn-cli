@@ -7,10 +7,16 @@ namespace StorageClient
     public class ApplicationManager
     {
 
-        public ApplicationManager(string[] args)
-        {
+        private string _args { get; set; }
 
+        public ApplicationManager(string args)
+        {
+            _args = args;
         }
 
+        private string[] processArgs()
+        {
+            return _args.Split(" ");
+        }
     }
 }
