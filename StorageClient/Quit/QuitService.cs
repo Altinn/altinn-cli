@@ -10,5 +10,14 @@ namespace StorageClient
         {
             Environment.Exit(0);
         }
+
+
+        public string Name
+        {
+            get
+            {
+                return "Quit";
+            }
+        }
     }
 }

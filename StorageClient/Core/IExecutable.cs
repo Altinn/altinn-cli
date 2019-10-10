@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Core
 {
-    public interface IService
+    public interface IExecutable
     {
-        void Run(string[] args);
-
         string Name { get; }
+
+        void Execute(string[] args);
     }
 }

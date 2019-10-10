@@ -1,9 +1,12 @@
 ﻿using AltinnCli;
+using Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace StorageClient
@@ -13,40 +16,22 @@ namespace StorageClient
 
         private ServiceProvider ServiceProvider;
 
-        public ApplicationManager()
+        public ApplicationManager(ServiceProvider serviceProvider)
         {
-            BuildDependency();
+            ServiceProvider = serviceProvider;
+        }
+
+
+        public void Execute(string args)
+        {
+            string[] input = processArgs(args);
+
+            ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).Single().Run(input);
         }
 
         private string[] processArgs(string args)
         {
             return args.ToLower().Split(" ");
-        }
-
-        public void Execute(string args)
-        {
-            string[] input = processArgs(args);
-            ServiceProvider.GetService<IApplicationEngine>().Execute(input);
-        }
-
-        public void BuildDependency()
-        {
-            // Create service collection and configure our services
-            IServiceCollection services = ConfigureServices();
-            // Generate a provider
-            ServiceProvider = services.BuildServiceProvider();
-        }
-
-        private static IServiceCollection ConfigureServices()
-        {
-            IServiceCollection services = new ServiceCollection();
-
-            services.AddTransient<IApplicationEngine, StorageEngine>();
-            services.AddTransient<IService, QuitService>();     
-
-            // IMPORTANT! Register our application entry point
-            services.AddTransient<ApplicationManager>();
-            return services;
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace StorageClient
 {
-    public class StorageEngine : ApplicationEngineBase, IApplicationEngine, IHelp
+    public class StorageEngine : ApplicationEngineBase, IService, IHelp
     {
         public StorageEngine()
         {
