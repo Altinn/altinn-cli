@@ -10,33 +10,16 @@ namespace StorageClient
 {
     public abstract class ApplicationEngineBase
     {
-        public IConfigurationRoot ApplicationConfiguration;
+
         public ServiceProvider ServiceProvider;
         public string[] Args;
 
-        public abstract string Name { get; }
+
 
         public ApplicationEngineBase()
         {
         }
 
-        public void Run(string[] args)
-        {
-            BuildConfiguration();
-            // BuildDependency(args);
-
-            // Exceute(args);
-        }
-
-        public virtual void BuildConfiguration()
-        {
-            var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json");
-
-            ApplicationConfiguration = builder.Build();
-
-        }
 
         public void BuildDependency(string[] args)
         {
@@ -48,6 +31,5 @@ namespace StorageClient
 
         protected abstract IServiceCollection ConfigureServices(string applicationType);
 
-        public abstract void Execute(string[] args);
     }
 }

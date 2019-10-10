@@ -14,11 +14,13 @@ namespace StorageClient
     public class ApplicationManager
     {
 
-        private ServiceProvider ServiceProvider;
+        public static IConfigurationRoot ApplicationConfiguration;
+        public static ServiceProvider ServiceProvider;
 
-        public ApplicationManager(ServiceProvider serviceProvider)
+        public ApplicationManager(ServiceProvider serviceProvider, IConfigurationRoot applicationConfiguration)
         {
             ServiceProvider = serviceProvider;
+            ApplicationConfiguration = applicationConfiguration;
         }
 
 

@@ -19,9 +19,9 @@ namespace StorageClient
         {
             IServiceCollection services = new ServiceCollection();
 
-            bool useLiveClinet = ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
+            bool useLiveClient = ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
 
-            if (useLiveClinet)
+            if (useLiveClient)
             {
                 services.AddTransient<IStorageClientWrapper, StorageClientWrapper>();
             }
@@ -34,7 +34,7 @@ namespace StorageClient
             return services;
         }
 
-        public override string Name
+        public string Name
         {
             get
             {
@@ -47,7 +47,7 @@ namespace StorageClient
             return "Storage help";
         }
 
-        public override void Execute(string[] args)
+        public virtual void Run(string[] args)
         {
             Console.WriteLine("It's a me! Storage");
         }
