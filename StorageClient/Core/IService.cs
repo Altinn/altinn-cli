@@ -8,6 +8,6 @@ namespace StorageClient
     {
         void Run(string[] args);
 
-        string Name { get; }
+        string Provider { get; }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace StorageClient
@@ -10,7 +11,7 @@ namespace StorageClient
     {
         private IServiceProvider ServiceProvider;
 
-        public HelpService(IServiceProvider serviceProvider)
+        public HelpService()
         {
             ServiceProvider = ApplicationManager.ServiceProvider;
         }
@@ -18,16 +19,26 @@ namespace StorageClient
 
         public void Run(string[] args)
         {
-            GetHelp();
+            if (args.Length > 1)
+            {
+                Console.WriteLine(ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Provider, args[1], StringComparison.OrdinalIgnoreCase)).Single().GetHelp());
+            }
+            else
+            {
+                foreach (IHelp item in ServiceProvider.GetServices<IHelp>())
+                {
+                    Console.WriteLine(item.GetHelp());
+                }
+            }
         }
 
         public string GetHelp()
         {
-            return "Help";
+            return "Altinn CLI - A command line interface for managing your Altinn Applications\n\nCOMMANDS:\n\n";
         }
 
 
-        public string Name
+        public string Provider
         {
             get
             {

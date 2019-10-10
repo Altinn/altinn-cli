@@ -28,7 +28,7 @@ namespace StorageClient
         {
             string[] input = processArgs(args);
 
-            ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).Single().Run(input);
+            ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Provider, input[0], StringComparison.OrdinalIgnoreCase)).Single().Run(input);
         }
 
         private string[] processArgs(string args)

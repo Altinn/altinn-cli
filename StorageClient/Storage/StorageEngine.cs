@@ -34,7 +34,7 @@ namespace StorageClient
             return services;
         }
 
-        public string Name
+        public string Provider
         {
             get
             {
@@ -44,7 +44,7 @@ namespace StorageClient
 
         public string GetHelp()
         {
-            return "Storage help";
+            return "Storage\nusage: storage <operation> -<option>\n\noperations:\ngetAttachment";
         }
 
         public virtual void Run(string[] args)
