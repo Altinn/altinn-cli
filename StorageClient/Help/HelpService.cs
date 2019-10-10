@@ -27,7 +27,7 @@ namespace StorageClient
         }
 
 
-        public string Name
+        public string Provider
         {
             get
             {

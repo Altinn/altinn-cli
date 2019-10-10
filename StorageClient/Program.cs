@@ -49,10 +49,10 @@ namespace StorageClient
 
             // register all Services that can be accessed from commandline, tey all implements the IHelp interface
             // that contains a name property that is used to select the properiate class according to cli command type, args[0]
-            //Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
-            //{
-            //    services.AddTransient(typeof(IHelp), t);
-            //});
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
+            {
+                services.AddTransient(typeof(IHelp), t);
+            });
 
 
             return services;

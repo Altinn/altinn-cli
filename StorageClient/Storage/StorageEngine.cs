@@ -34,7 +34,7 @@ namespace StorageClient
             return services;
         }
 
-        public string Name
+        public string Provider
         {
             get
             {
