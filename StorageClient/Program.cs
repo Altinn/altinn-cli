@@ -25,10 +25,7 @@ namespace StorageClient
             IConfigurationRoot configuration = BuildConfiguration();
 
             ApplicationManager app = new ApplicationManager(serviceProvider, configuration);
-            string args;
-
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.White;
+            string args;            
 
             while(true)
             {
