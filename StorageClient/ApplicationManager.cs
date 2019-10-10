@@ -15,9 +15,9 @@ namespace StorageClient
     {
 
         public static IConfigurationRoot ApplicationConfiguration;
-        public static ServiceProvider ServiceProvider;
+        public static IServiceProvider ServiceProvider;
 
-        public ApplicationManager(ServiceProvider serviceProvider, IConfigurationRoot applicationConfiguration)
+        public ApplicationManager(IServiceProvider serviceProvider, IConfigurationRoot applicationConfiguration)
         {
             ServiceProvider = serviceProvider;
             ApplicationConfiguration = applicationConfiguration;

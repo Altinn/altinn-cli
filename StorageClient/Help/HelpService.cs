@@ -8,11 +8,11 @@ namespace StorageClient
 {
     class HelpService : IService, IHelp
     {
-        private ServiceProvider ServiceProvider;
+        private IServiceProvider ServiceProvider;
 
-        public HelpService(ServiceProvider serviceProvider)
+        public HelpService(IServiceProvider serviceProvider)
         {
-            ServiceProvider = serviceProvider;
+            ServiceProvider = ApplicationManager.ServiceProvider;
         }
 
 
