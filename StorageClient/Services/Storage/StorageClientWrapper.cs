@@ -1,10 +1,11 @@
-﻿using System;
+﻿using AltinnCLI.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StorageClient
+namespace AltinnCLI.Services.Storage
 {
     public class StorageClientWrapper : IStorageClientWrapper
     {

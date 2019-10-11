@@ -1,15 +1,12 @@
-﻿
-using AltinnCli;
-using AltinnCLI.Core;
+﻿using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Services.Storage
 {
     public class StorageEngine : ApplicationEngineBase, IService, IHelp
     {

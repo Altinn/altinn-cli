@@ -1,6 +1,7 @@
 using StorageClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using AltinnCLI.Services.Storage;
 
 namespace StorageClientTest
 {

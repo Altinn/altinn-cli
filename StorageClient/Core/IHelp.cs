@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Core
 {
     public interface IHelp
     {

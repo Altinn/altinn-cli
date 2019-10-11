@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AltinnCli
+namespace AltinnCLI.Core
 {
     public interface IApplicationEngine
     {

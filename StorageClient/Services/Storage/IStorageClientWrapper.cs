@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Services.Storage
 {
     public interface IStorageClientWrapper
     {

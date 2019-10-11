@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AltinnCLI.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Services
 {
     class QuitService : IService
     {

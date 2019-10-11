@@ -1,5 +1,5 @@
 ﻿using AltinnCLI.Core;
-using Extensions;
+using AltinnCLI.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StorageClient;

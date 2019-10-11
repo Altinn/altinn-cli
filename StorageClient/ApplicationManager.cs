@@ -1,5 +1,4 @@
-﻿using AltinnCli;
-using Extensions;
+﻿using AltinnCLI.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Core
 {
     public class ApplicationManager
     {

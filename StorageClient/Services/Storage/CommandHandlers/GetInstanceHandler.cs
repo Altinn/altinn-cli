@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AltinnCLI.Storage
+namespace AltinnCLI.Services.Storage
 {
-    public class GetDocumentHandler : ICommandHandler, IHelp
+    public class GetInstanceHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
         public string Name
-        { 
+        {
             get
             {
-                return "GetCommand";
+                return "GetInstance";
             }
         }
 

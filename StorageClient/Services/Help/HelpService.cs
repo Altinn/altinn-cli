@@ -1,11 +1,11 @@
-﻿using AltinnCli;
+﻿using AltinnCLI.Core;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace StorageClient
+namespace AltinnCLI.Services
 {
     class HelpService : IService, IHelp
     {
