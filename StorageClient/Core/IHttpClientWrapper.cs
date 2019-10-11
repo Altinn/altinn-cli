@@ -11,7 +11,7 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Contains the preparations and http request agains FReg
         /// </summary>
-        public interface IFRegHttpClientWrapper
+        public interface IHttpClientWrapper
         {
             /// <summary>
             /// Prepares and requests FReg
