@@ -30,7 +30,8 @@ namespace StorageClient
                 services.AddTransient<IStorageClientWrapper, StorageClientFileWrapper>();
             }
             // IMPORTANT! Register our application entry point
-            services.AddTransient<ApplicationEngineBase>();
+            //Type t = this.GetType();
+            //services.AddTransient(t, t);
             return services;
         }
 
@@ -49,6 +50,9 @@ namespace StorageClient
 
         public virtual void Run(string[] args)
         {
+
+            BuildDependency(args);
+
             Console.WriteLine("It's a me! Storage");
         }
     }
