@@ -6,7 +6,7 @@ namespace AltinnCLI.Core
 {
     public interface IService
     {
-        void Run(string[] args);
+        void Run(ICommandHandler commandHandler);
 
         string Name { get; }
     }

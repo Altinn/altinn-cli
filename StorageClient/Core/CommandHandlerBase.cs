@@ -22,5 +22,7 @@ namespace AltinnCLI.Core
         {
             return true;
         }
+
+        public List<KeyValuePair<string, string>> CommandParameters { get; set; }
     }
 }

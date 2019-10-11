@@ -6,8 +6,10 @@ namespace AltinnCLI.Core
 {
     public interface ICommandHandler
     {
-        bool Run(string[] args); 
+        bool Run(); 
 
         string Name { get; }
+
+        List<KeyValuePair<string,string>> CommandParameters { get; set; }
     }
 }

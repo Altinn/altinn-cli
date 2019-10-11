@@ -9,8 +9,6 @@ namespace AltinnCLI.Core
 {
     public abstract class ApplicationEngineBase
     {
-
-        public ServiceProvider ServiceProvider;
         public string[] Args;
 
 
@@ -18,17 +16,5 @@ namespace AltinnCLI.Core
         public ApplicationEngineBase()
         {
         }
-
-
-        public void BuildDependency(string[] args)
-        {
-            // Create service collection and configure our services
-            IServiceCollection services = ConfigureServices();
-            // Generate a Name
-            ServiceProvider = services.BuildServiceProvider();
-        }
-
-        protected abstract IServiceCollection ConfigureServices();
-
     }
 }

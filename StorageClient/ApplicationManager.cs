@@ -25,12 +25,14 @@ namespace AltinnCLI.Core
 
         public void Execute(string args)
         {
-            string[] input = processArgs(args);
+            string[] input = args.ToLower().Split(" ");
+
+            ICommandHandler commandHandler = processArgs(input);
 
             IService service = ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
             if (service != null)
             {
-                service.Run(input);
+                service.Run(commandHandler);
             }
             else
             {
@@ -38,9 +40,41 @@ namespace AltinnCLI.Core
             }
         }
 
-        private string[] processArgs(string args)
+        private ICommandHandler processArgs(string[] input)
         {
-            return args.ToLower().Split(" ");
+            ICommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>().Where(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            if (commandHandler != null)
+            {
+                commandHandler.CommandParameters = ParseArguments(input);
+                return commandHandler;
+            }
+            else
+            {
+                ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
+            }
+
+            return null;
+        }
+
+        protected List<KeyValuePair<string, string>> ParseArguments(string[] args)
+        {
+            List<KeyValuePair<string, string>> commandKeysAndValues = new List<KeyValuePair<string, string>>();
+
+            foreach (string param in args)
+            {
+                string[] cmdPar = param.Split("=");
+
+                if (cmdPar.Length == 2)
+                {
+                    commandKeysAndValues.Add(new KeyValuePair<string, string>(cmdPar[0], cmdPar[1]));
+                }
+                else
+                {
+
+                }
+            }
+
+            return commandKeysAndValues;
         }
     }
 }
