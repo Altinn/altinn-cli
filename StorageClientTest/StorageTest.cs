@@ -6,7 +6,7 @@ using AltinnCLI.Services.Storage;
 namespace StorageClientTest
 {
     [TestClass]
-    public class StorageClientTest
+    public class StorageTest
     {
         [TestMethod]
         public void StorageClientWrapper_GetBaseAddress()

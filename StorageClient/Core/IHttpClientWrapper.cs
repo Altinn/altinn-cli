@@ -19,7 +19,7 @@ namespace AltinnCLI.Core
             /// <param name="baseAddress">Base Address for data source</param>
             /// <param name="command">The http command</param>
             /// <returns>respons datat</returns>
-            Task<string> GetCommand(string baseAddress, string command);
+            Task<HttpResponseMessage> GetCommand(string baseAddress, string command);
 
             /// <summary>
             /// Prepares and requests FReg
@@ -28,7 +28,7 @@ namespace AltinnCLI.Core
             /// <param name="command">The http command</param>
             /// <param name="content">The content of the post message</param>
             /// <returns>respons datat</returns>
-            Task<string> PostCommand(string baseAddress, string command, StringContent content);
+            Task<HttpResponseMessage> PostCommand(string baseAddress, string command, StringContent content);
         }
     }
 }
