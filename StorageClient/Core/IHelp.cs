@@ -6,7 +6,7 @@ namespace StorageClient
 {
     public interface IHelp
     {
-        string Provider { get; }
+        string Name { get; }
 
         string GetHelp();
     }

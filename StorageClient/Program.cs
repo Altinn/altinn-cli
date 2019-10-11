@@ -1,4 +1,5 @@
-﻿using Extensions;
+﻿using AltinnCLI.Core;
+using Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StorageClient;
@@ -19,7 +20,7 @@ namespace StorageClient
         {
             IServiceCollection services = GetServices();
 
-            // Generate a provider
+            // Generate a Name
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             IConfigurationRoot configuration = BuildConfiguration();
@@ -51,6 +52,11 @@ namespace StorageClient
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
             {
                 services.AddTransient(typeof(IHelp), t);
+            });
+
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommandHandler>().ForEach((t) =>
+            {
+                services.AddTransient(typeof(ICommandHandler), t);
             });
 
             return services;

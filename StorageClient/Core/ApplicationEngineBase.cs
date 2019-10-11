@@ -24,12 +24,12 @@ namespace StorageClient
         public void BuildDependency(string[] args)
         {
             // Create service collection and configure our services
-            IServiceCollection services = ConfigureServices(args[0]);
-            // Generate a provider
+            IServiceCollection services = ConfigureServices();
+            // Generate a Name
             ServiceProvider = services.BuildServiceProvider();
         }
 
-        protected abstract IServiceCollection ConfigureServices(string applicationType);
+        protected abstract IServiceCollection ConfigureServices();
 
     }
 }

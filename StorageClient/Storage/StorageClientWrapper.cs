@@ -8,6 +8,12 @@ namespace StorageClient
 {
     public class StorageClientWrapper : IStorageClientWrapper
     {
+        public StorageClientWrapper()
+        {
+        }
+
+        public string BaseAddress { get; set; }
+
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             String cmd = string.Empty;

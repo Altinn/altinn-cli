@@ -1,9 +1,12 @@
 ﻿
 using AltinnCli;
+using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace StorageClient
@@ -15,7 +18,49 @@ namespace StorageClient
         }
 
 
-        protected override IServiceCollection ConfigureServices(string applicationType)
+        public virtual void Run(string[] args)
+        {
+
+            BuildDependency(args);
+            ParseArguments(args);
+            ProcessCommand(args);
+            Console.WriteLine("It's a me! Storage");
+        }
+
+        public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
+        {
+            string baseAddress = System.Configuration.ConfigurationManager.AppSettings.Get("BaseAddress");
+
+            IStorageClientWrapper wrapper = ServiceProvider.GetServices<IStorageClientWrapper>().FirstOrDefault();
+
+            Stream documentStream = null;
+            if (wrapper != null)
+            {
+                wrapper.BaseAddress = System.Configuration.ConfigurationManager.AppSettings.Get("BaseAddress");
+                documentStream = wrapper.GetDocument(instanceOwnerId, instanceGuid, dataId);
+            }
+            else
+            {
+
+            }
+
+            return documentStream;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return "Storage";
+            }
+        }
+
+        public string GetHelp()
+        {
+            return "Storage\nusage: storage <operation> -<option>\n\noperations:\ngetAttachment";
+        }
+
+        protected override IServiceCollection ConfigureServices()
         {
             IServiceCollection services = new ServiceCollection();
 
@@ -29,31 +74,31 @@ namespace StorageClient
             {
                 services.AddTransient<IStorageClientWrapper, StorageClientFileWrapper>();
             }
-            // IMPORTANT! Register our application entry point
-            //Type t = this.GetType();
-            //services.AddTransient(t, t);
             return services;
         }
 
-        public string Provider
+        private void ProcessCommand(string[] args)
         {
-            get
+            ICommandHandler service = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>().Where(s => string.Equals(s.Name, args[1], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            if (service != null)
             {
-                return "Storage";
+                service.Run(args);
+            }
+            else
+            {
+                ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
             }
         }
 
-        public string GetHelp()
+        private KeyValuePair<string, string> ParseArguments(string[] args)
         {
-            return "Storage\nusage: storage <operation> -<option>\n\noperations:\ngetAttachment";
-        }
+            KeyValuePair<string, string> commandKeysAndValues = new KeyValuePair<string, string>();
 
-        public virtual void Run(string[] args)
-        {
+            foreach(string parm in args)
+            {
+            }
 
-            BuildDependency(args);
-
-            Console.WriteLine("It's a me! Storage");
+            return commandKeysAndValues;
         }
     }
 }

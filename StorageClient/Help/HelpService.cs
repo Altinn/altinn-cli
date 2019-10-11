@@ -21,7 +21,7 @@ namespace StorageClient
         {
             if (args.Length > 1)
             {
-                Console.WriteLine(ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Provider, args[1], StringComparison.OrdinalIgnoreCase)).Single().GetHelp());
+                Console.WriteLine(ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, args[1], StringComparison.OrdinalIgnoreCase)).Single().GetHelp());
             }
             else
             {
@@ -38,7 +38,7 @@ namespace StorageClient
         }
 
 
-        public string Provider
+        public string Name
         {
             get
             {
