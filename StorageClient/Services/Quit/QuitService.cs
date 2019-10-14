@@ -7,7 +7,7 @@ namespace AltinnCLI.Services
 {
     class QuitService : IService
     {
-        void IService.Run(string[] args)
+        void IService.Run(ICommandHandler commandHandler)
         {
             Environment.Exit(0);
         }

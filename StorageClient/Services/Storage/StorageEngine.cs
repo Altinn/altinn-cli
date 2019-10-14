@@ -19,16 +19,34 @@ namespace AltinnCLI.Services.Storage
 
         public virtual void Run(ICommandHandler commandHandler)
         {
-            commandHandler.Run();
-            Console.WriteLine("It's a me! Storage");
+            if (commandHandler != null)
+            {
+                commandHandler.Run();
+                Console.WriteLine("It's a me! Storage");
+            }
         }
 
-  
         public string Name
         {
             get
             {
                 return "Storage";
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return "Commands for interacting with the Storage";
+            }
+        }
+
+        public string Usage
+        {
+            get
+            {
+                return "storage <operation> -<option>";
             }
         }
 
