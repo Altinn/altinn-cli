@@ -2,6 +2,7 @@
 using AltinnCLI.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace StorageClient
 
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommandHandler>().ForEach((t) =>
             {
-                services.AddTransient(typeof(ICommandHandler), t);
+                services.AddLogging(configure => configure.AddConsole()).AddTransient(typeof(ICommandHandler), t);
             });
 
             return services;
