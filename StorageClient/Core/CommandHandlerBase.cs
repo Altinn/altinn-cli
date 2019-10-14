@@ -6,9 +6,9 @@ namespace AltinnCLI.Core
 {
     public class CommandHandlerBase
     {
-        public List<KeyValuePair<string,string>> ParseOptions(string[] args)
+        public Dictionary<string,string> ParseOptions(string[] args)
         {
-            List<KeyValuePair<string, string>> options = new List<KeyValuePair<string, string>>();
+            Dictionary<string, string> options = new Dictionary<string, string>();
 
             return options;
         }
@@ -23,6 +23,16 @@ namespace AltinnCLI.Core
             return true;
         }
 
-        public List<KeyValuePair<string, string>> CommandParameters { get; set; }
+        public Dictionary<string, string> CommandParameters { get; set; }
+
+        protected bool HasParameterWithValue(string key)
+        {
+            if (CommandParameters.ContainsKey(key) && CommandParameters.GetValueOrDefault(key) != string.Empty)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

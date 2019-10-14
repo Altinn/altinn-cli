@@ -7,13 +7,49 @@ using System.Text;
 
 namespace AltinnCLI.Services.Storage
 {
+    /// <summary>
+    /// Parameters, 
+    /// </summary>
     public class GetDocumentHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
+        private IStorageClientWrapper ClientWrapper = null;
+        
+        public GetDocumentHandler()
+        {
+            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
+            {
+                ClientWrapper = new StorageClientWrapper();
+            }
+
+        }
+
+        /// <summary>
+        /// Required parameters: 
+        /// int OwnerId 
+        /// Guid InstanceId
+        /// Guid DataId
+        /// </summary>
         public string Name
         { 
             get
             {
                 return "GetDocument";
+            }
+        }
+
+        public string ServiceProvider
+        {
+            get
+            {
+                return "Storage";
+            }
+        }
+
+        public bool IsValid 
+        {
+            get
+            {
+                return Validate();
             }
         }
 
@@ -24,11 +60,19 @@ namespace AltinnCLI.Services.Storage
 
         public bool Run()
         {
-            string baseAddress = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
-            bool useLiveClient = ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>();
+            ClientWrapper.GetDocument(int.Parse(CommandParameters.GetValueOrDefault("OwnerId")),
+                                      Guid.Parse(CommandParameters.GetValueOrDefault("InstanceId")),
+                                      Guid.Parse(CommandParameters.GetValueOrDefault("DataId")));
 
             //documentStream = wrapper.GetDocument(instanceOwnerId, instanceGuid, dataId);
             return true;
+        }
+
+
+
+        protected bool Validate()
+        {
+            return (HasParameterWithValue("OwnerId") & HasParameterWithValue("InstanceId") & HasParameterWithValue("DataId"));
         }
     }
 }

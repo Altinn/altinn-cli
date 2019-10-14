@@ -42,7 +42,10 @@ namespace AltinnCLI.Core
 
         private ICommandHandler processArgs(string[] input)
         {
-            ICommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>().Where(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            ICommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>()
+                .Where(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(s.ServiceProvider, input[0],StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
             if (commandHandler != null)
             {
                 commandHandler.CommandParameters = ParseArguments(input);
@@ -56,9 +59,9 @@ namespace AltinnCLI.Core
             return null;
         }
 
-        protected List<KeyValuePair<string, string>> ParseArguments(string[] args)
+        protected Dictionary<string, string> ParseArguments(string[] args)
         {
-            List<KeyValuePair<string, string>> commandKeysAndValues = new List<KeyValuePair<string, string>>();
+            Dictionary<string, string> commandKeysAndValues = new Dictionary<string, string>();
 
             foreach (string param in args)
             {
@@ -66,11 +69,11 @@ namespace AltinnCLI.Core
 
                 if (cmdPar.Length == 2)
                 {
-                    commandKeysAndValues.Add(new KeyValuePair<string, string>(cmdPar[0], cmdPar[1]));
+                    commandKeysAndValues.Add(cmdPar[0], cmdPar[1]);
                 }
                 else
                 {
-
+                    commandKeysAndValues.Add(cmdPar[0], string.Empty);
                 }
             }
 

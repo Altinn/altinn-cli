@@ -16,6 +16,14 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        public string ServiceProvider
+        {
+            get
+            {
+                return "Storage";
+            }
+        }
+
         public string GetHelp()
         {
             throw new NotImplementedException();

@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace AltinnCLI.Services.Storage
 {
-    public class StorageEngine : ApplicationEngineBase, IService, IHelp
+    public class StorageEngine : IService, IHelp
     {
         private ICommandHandler commandHandler;
 

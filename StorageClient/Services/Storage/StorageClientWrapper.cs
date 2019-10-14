@@ -1,4 +1,5 @@
 ﻿using AltinnCLI.Core;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,9 +12,10 @@ namespace AltinnCLI.Services.Storage
     {
         public StorageClientWrapper()
         {
+            BaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
         }
 
-        public string BaseAddress { get; set; }
+        private string BaseAddress { get; set; }
 
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {

@@ -10,6 +10,10 @@ namespace AltinnCLI.Core
 
         string Name { get; }
 
-        List<KeyValuePair<string,string>> CommandParameters { get; set; }
+        string ServiceProvider { get; }
+
+        Dictionary<string,string> CommandParameters { get; set; }
+
+        bool IsValid { get; }
     }
 }
