@@ -12,7 +12,6 @@ namespace StorageClientTest
         public void StorageClientWrapper_GetBaseAddress()
         {
             StorageClientWrapper wrapper = new StorageClientWrapper();
-            wrapper.BaseAddress = "BaseAddress";
             Guid instanceGuid = Guid.NewGuid();
             Guid dataGuid = Guid.NewGuid();
 

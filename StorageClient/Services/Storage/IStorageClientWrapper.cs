@@ -8,5 +8,6 @@ namespace AltinnCLI.Services.Storage
     public interface IStorageClientWrapper
     {
         Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId);
+        Object GetInstance(int instanceOwnerOd, Guid instanceGuid);
     }
 }

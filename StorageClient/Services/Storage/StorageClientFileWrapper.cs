@@ -13,5 +13,10 @@ namespace AltinnCLI.Services.Storage
         {
             throw new NotImplementedException();
         }
+
+        public object GetInstance(int instanceOwnerOd, Guid instanceGuid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

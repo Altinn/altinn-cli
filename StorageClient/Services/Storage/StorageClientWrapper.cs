@@ -20,13 +20,21 @@ namespace AltinnCLI.Services.Storage
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             String cmd = string.Empty;
-            string baseAddress = System.Configuration.ConfigurationManager.AppSettings.Get("BaseAddress");
 
             HttpClientWrapper httpClinetWrapper = new HttpClientWrapper();
 
-            //return httpClinetWrapper.GetCommand(baseAddress, cmd);
+            //return httpClinetWrapper.GetCommand(BaseAddress, cmd);
 
             return new MemoryStream();
+        }
+
+        public Object GetInstance(int instanceOwnerId, Guid instanceGuid)
+        {
+            string cmd = string.Empty;
+            cmd = string.Format("/{0}/{1}", instanceOwnerId, instanceGuid);
+
+            HttpClientWrapper client = new HttpClientWrapper();
+            return client.GetCommand(BaseAddress, cmd);
         }
     }
 }

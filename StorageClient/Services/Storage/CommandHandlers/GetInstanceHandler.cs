@@ -1,4 +1,5 @@
 ﻿using AltinnCLI.Core;
+using Microsoft.Extensions.Configuration;
 using StorageClient;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,17 @@ namespace AltinnCLI.Services.Storage
 {
     public class GetInstanceHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
+        private IStorageClientWrapper ClientWrapper = null;
+
+        public GetInstanceHandler()
+        {
+            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
+            {
+                ClientWrapper = new StorageClientWrapper();
+            }
+        }
+
+
         public string Name
         {
             get
@@ -40,6 +52,15 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        public bool IsValid
+        {
+
+            get
+            {
+                return Validate();
+            }
+        }
+
         public string GetHelp()
         {
             return Name;
@@ -47,7 +68,19 @@ namespace AltinnCLI.Services.Storage
 
         public bool Run()
         {
-            throw new NotImplementedException();
+            if (IsValid)
+            {
+                ClientWrapper.GetInstance(int.Parse(CommandParameters.GetValueOrDefault("OwnerId")),
+                                         Guid.Parse(CommandParameters.GetValueOrDefault("InstanceId")));
+            }
+
+            //documentStream = wrapper.GetDocument(instanceOwnerId, instanceGuid, dataId);
+            return true;
+        }
+
+        private bool Validate()
+        {
+            return (HasParameterWithValue("OwnerId") & HasParameterWithValue("InstanceId"));
         }
     }
 }
