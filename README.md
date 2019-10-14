@@ -1,2 +1,9 @@
-# altinn-cli
-Command-line interface for the new Altinn Platform APIs
+# Altinn CLI
+
+Altinn command-line interface.
+
+- [ ] Use Maskinporten for authentication
+- [ ] Retrieve app instances
+- [ ] Retrieve app data
+- [ ] Update status
+- [ ] Upload receipt as file
