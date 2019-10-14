@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 
 namespace AltinnCLI.Services.Storage
@@ -14,7 +15,7 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
-        public object GetInstance(int instanceOwnerOd, Guid instanceGuid)
+        public HttpResponseMessage GetInstances(int instanceOwnerOd, Guid instanceGuid)
         {
             throw new NotImplementedException();
         }

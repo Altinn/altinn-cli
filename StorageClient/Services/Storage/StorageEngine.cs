@@ -22,7 +22,6 @@ namespace AltinnCLI.Services.Storage
             if (commandHandler != null)
             {
                 commandHandler.Run();
-                Console.WriteLine("It's a me! Storage");
             }
         }
 

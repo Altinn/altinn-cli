@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,13 +29,13 @@ namespace AltinnCLI.Services.Storage
             return new MemoryStream();
         }
 
-        public Object GetInstance(int instanceOwnerId, Guid instanceGuid)
+        public HttpResponseMessage GetInstances(int instanceOwnerId, Guid instanceGuid)
         {
             string cmd = string.Empty;
-            cmd = string.Format("/{0}/{1}", instanceOwnerId, instanceGuid);
+            cmd = string.Format("instances");
 
             HttpClientWrapper client = new HttpClientWrapper();
-            return client.GetCommand(BaseAddress, cmd);
+            return client.GetCommand(BaseAddress, cmd).Result;
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 
 namespace AltinnCLI.Services.Storage
@@ -74,17 +75,28 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-                ClientWrapper.GetInstance(int.Parse(CommandParameters.GetValueOrDefault("OwnerId")),
-                                         Guid.Parse(CommandParameters.GetValueOrDefault("InstanceId")));
+                HttpResponseMessage response = ClientWrapper.GetInstances(int.Parse(CommandParameters.GetValueOrDefault("ownerid")),
+                                         Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")));
+
+                var content = response.Content.ReadAsStringAsync();
+
+                string result = content.Result;
+
+                _logger.LogInformation(result);
+            }
+            else
+            {
+                _logger.LogError("Missing parameters. Required parameters for GetInstance is: OwnerId, InstanceId");
             }
 
+            
             //documentStream = wrapper.GetDocument(instanceOwnerId, instanceGuid, dataId);
             return true;
         }
 
         private bool Validate()
         {
-            return (HasParameterWithValue("OwnerId") & HasParameterWithValue("InstanceId"));
+            return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid"));
         }
     }
 }

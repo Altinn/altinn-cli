@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 
 namespace AltinnCLI.Services.Storage
@@ -8,6 +9,7 @@ namespace AltinnCLI.Services.Storage
     public interface IStorageClientWrapper
     {
         Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId);
-        Object GetInstance(int instanceOwnerOd, Guid instanceGuid);
+
+        HttpResponseMessage GetInstances(int instanceOwnerOd, Guid instanceGuid);
     }
 }
