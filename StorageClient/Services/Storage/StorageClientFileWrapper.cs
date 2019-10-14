@@ -15,7 +15,7 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
-        public HttpResponseMessage GetInstances(int instanceOwnerOd, Guid instanceGuid)
+        public Stream GetInstances(int instanceOwnerOd, Guid instanceGuid)
         {
             throw new NotImplementedException();
         }

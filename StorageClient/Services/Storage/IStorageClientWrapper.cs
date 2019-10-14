@@ -10,6 +10,6 @@ namespace AltinnCLI.Services.Storage
     {
         Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId);
 
-        HttpResponseMessage GetInstances(int instanceOwnerOd, Guid instanceGuid);
+        Stream GetInstances(int instanceOwnerOd, Guid instanceGuid);
     }
 }

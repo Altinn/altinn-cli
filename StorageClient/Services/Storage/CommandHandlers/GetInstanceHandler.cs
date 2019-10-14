@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 
@@ -75,14 +76,34 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-                HttpResponseMessage response = ClientWrapper.GetInstances(int.Parse(CommandParameters.GetValueOrDefault("ownerid")),
+                Stream response = ClientWrapper.GetInstances(int.Parse(CommandParameters.GetValueOrDefault("ownerid")),
                                          Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")));
 
-                var content = response.Content.ReadAsStringAsync();
 
-                string result = content.Result;
+                if (HasParameterWithValue("savefile"))
+                {
+                    if (response != null)
+                    {
+                        string filefolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
 
-                _logger.LogInformation(result);
+                        // chekc if file folder exists, if not create it
+                        if (!Directory.Exists(filefolder))
+                        {
+                            Directory.CreateDirectory(filefolder);
+
+                        }
+                        FileStream file = new FileStream(filefolder + "/" + CommandParameters.GetValueOrDefault("ownerid").ToString()+".json", FileMode.CreateNew);
+                        response.Position = 0;
+                        response.CopyTo(file);
+                        file.Flush();
+                        file.Close();
+                    }
+                }
+                else
+                {
+                    StreamReader result = new StreamReader(response);
+                    _logger.LogInformation(result.ReadToEnd());
+                }    
             }
             else
             {
@@ -98,5 +119,6 @@ namespace AltinnCLI.Services.Storage
         {
             return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid"));
         }
+
     }
 }
