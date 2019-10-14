@@ -1,4 +1,6 @@
 ﻿using AltinnCLI.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,20 @@ namespace AltinnCLI.Services.Storage
 {
     public class GetInstanceHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
+        private IStorageClientWrapper ClientWrapper = null;
+        private readonly ILogger _logger;
+
+        public GetInstanceHandler(ILogger<GetInstanceHandler> logger)
+        {
+            _logger = logger;
+
+            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
+            {
+                ClientWrapper = new StorageClientWrapper();
+            }
+
+        }
+
         public string Name
         {
             get
@@ -40,6 +56,14 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        public bool IsValid
+        {
+            get
+            {
+                return Validate();
+            }
+        }
+
         public string GetHelp()
         {
             return Name;
@@ -48,6 +72,11 @@ namespace AltinnCLI.Services.Storage
         public bool Run()
         {
             throw new NotImplementedException();
+        }
+
+        private bool Validate()
+        {
+            return false;
         }
     }
 }

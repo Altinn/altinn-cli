@@ -1,5 +1,6 @@
 ﻿using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,12 @@ namespace AltinnCLI.Services.Storage
     public class GetDocumentHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
-        
-        public GetDocumentHandler()
+        private readonly ILogger _logger;
+
+        public GetDocumentHandler(ILogger<GetDocumentHandler> logger)
         {
+            _logger = logger;
+
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
                 ClientWrapper = new StorageClientWrapper();
@@ -76,11 +80,16 @@ namespace AltinnCLI.Services.Storage
 
         public bool Run()
         {
-            ClientWrapper.GetDocument(int.Parse(CommandParameters.GetValueOrDefault("OwnerId")),
-                                      Guid.Parse(CommandParameters.GetValueOrDefault("InstanceId")),
-                                      Guid.Parse(CommandParameters.GetValueOrDefault("DataId")));
-
-            //documentStream = wrapper.GetDocument(instanceOwnerId, instanceGuid, dataId);
+            if (IsValid)
+            {
+                ClientWrapper.GetDocument(int.Parse(CommandParameters.GetValueOrDefault("OwnerId")),
+                                          Guid.Parse(CommandParameters.GetValueOrDefault("InstanceId")),
+                                          Guid.Parse(CommandParameters.GetValueOrDefault("DataId")));
+            }
+            else
+            {
+                _logger.LogInformation("Missing parameters");
+            }
             return true;
         }
 
