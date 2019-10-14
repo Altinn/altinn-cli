@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,14 +20,16 @@ namespace AltinnCLI.Services.Storage
 
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
-            String cmd = string.Empty;
-            string baseAddress = System.Configuration.ConfigurationManager.AppSettings.Get("BaseAddress");
+            
+            string cmd = string.Format("{0}/{1}/data/{2}", instanceOwnerId, instanceGuid, dataId);
 
             HttpClientWrapper httpClinetWrapper = new HttpClientWrapper();
 
-            //return httpClinetWrapper.GetCommand(baseAddress, cmd);
+            Task<HttpResponseMessage> response =  httpClinetWrapper.GetCommand(BaseAddress, cmd);
 
-            return new MemoryStream();
+            Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
+
+            return stream;
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace AltinnCLI.Services.Storage
@@ -82,9 +83,27 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-                ClientWrapper.GetDocument(int.Parse(CommandParameters.GetValueOrDefault("OwnerId")),
-                                          Guid.Parse(CommandParameters.GetValueOrDefault("InstanceId")),
-                                          Guid.Parse(CommandParameters.GetValueOrDefault("DataId")));
+                Stream stream = ClientWrapper.GetDocument(int.Parse(CommandParameters.GetValueOrDefault("ownerid")),
+                                                          Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")),
+                                                          Guid.Parse(CommandParameters.GetValueOrDefault("dataid")));
+
+                if (stream != null)
+                {
+                    string filefolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
+
+                    // chekc if file folder exists, if not create it
+                    if (!Directory.Exists(filefolder))
+                    {
+                        Directory.CreateDirectory(filefolder);
+
+                    }
+                    FileStream file = new FileStream(CommandParameters.GetValueOrDefault("dataid").ToString(), FileMode.CreateNew);
+                    stream.Position = 0;
+                    stream.CopyTo(file);
+                    file.Flush();
+                    file.Close();
+                }
+
             }
             else
             {
@@ -97,7 +116,7 @@ namespace AltinnCLI.Services.Storage
 
         protected bool Validate()
         {
-            return (HasParameterWithValue("OwnerId") & HasParameterWithValue("InstanceId") & HasParameterWithValue("DataId"));
+            return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid") & HasParameterWithValue("dataid"));
         }
     }
 }
