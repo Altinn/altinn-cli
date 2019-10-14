@@ -31,5 +31,14 @@ namespace AltinnCLI.Services.Storage
 
             return stream;
         }
+
+        public HttpResponseMessage GetInstances(int instanceOwnerId, Guid instanceGuid)
+        {
+            string cmd = string.Empty;
+            cmd = string.Format("instances");
+
+            HttpClientWrapper client = new HttpClientWrapper();
+            return client.GetCommand(BaseAddress, cmd).Result;
+        }
     }
 }

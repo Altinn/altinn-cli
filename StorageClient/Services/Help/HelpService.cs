@@ -19,8 +19,16 @@ namespace AltinnCLI.Services
 
         public void Run(ICommandHandler commandHandler = null)
         {
-            // commandHandler.Run();
-            Console.WriteLine(GetHelp());
+            
+            if (commandHandler != null)
+            {
+
+                IHelp item = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, commandHandler.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                item.GetHelp();
+                return;
+            }
+
+           Console.WriteLine(GetHelp());
 
             foreach (IHelp item in ServiceProvider.GetServices<IHelp>())
             {
