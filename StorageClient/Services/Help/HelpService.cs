@@ -17,18 +17,21 @@ namespace AltinnCLI.Services
         }
 
 
-        public void Run(string[] args)
+        public void Run(ICommandHandler commandHandler = null)
         {
-            if (args.Length > 1)
+            // commandHandler.Run();
+            Console.WriteLine(GetHelp());
+
+            foreach (IHelp item in ServiceProvider.GetServices<IHelp>())
             {
-                Console.WriteLine(ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, args[1], StringComparison.OrdinalIgnoreCase)).Single().GetHelp());
-            }
-            else
-            {
-                foreach (IHelp item in ServiceProvider.GetServices<IHelp>())
-                {
-                    Console.WriteLine(item.GetHelp());
-                }
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(item.Name);
+                Console.ResetColor();
+
+                Console.WriteLine("\nDESCRIPTION\t{0}", item.Description);
+
+                Console.WriteLine("\nUSAGE\t{0}\n\n", item.Usage);
+
             }
         }
 
@@ -37,6 +40,10 @@ namespace AltinnCLI.Services
             return "Altinn CLI - A command line interface for managing your Altinn Applications\n\nCOMMANDS:\n\n";
         }
 
+        public bool Run()
+        {
+            throw new NotImplementedException();
+        }
 
         public string Name
         {
@@ -45,5 +52,22 @@ namespace AltinnCLI.Services
                 return "Help";
             }
         }
+
+        public string Description
+        {
+            get
+            {
+                return "Help";
+            }
+        }
+
+        public string Usage
+        {
+            get
+            {
+                return "Usage";
+            }
+        }
+
     }
 }

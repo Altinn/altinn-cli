@@ -27,12 +27,20 @@ namespace AltinnCLI.Core
         {
             string[] input = args.ToLower().Split(" ");
 
-            ICommandHandler commandHandler = processArgs(input);
-
             IService service = ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
             if (service != null)
             {
-                service.Run(commandHandler);
+                if (input.Length > 1)
+                {
+                    ICommandHandler commandHandler = processArgs(input);
+                    service.Run(commandHandler);
+                }
+                else
+                {
+                    service.Run();
+                }
+            
             }
             else
             {

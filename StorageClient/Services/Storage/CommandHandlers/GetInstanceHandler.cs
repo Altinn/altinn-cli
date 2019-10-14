@@ -16,6 +16,22 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        public string Description
+        {
+            get
+            {
+                return "Returns the metedata for an instance of an Application";
+            }
+        }
+
+        public string Usage
+        {
+            get
+            {
+                return "AltinnCLI > storage GetInstance -instanceId=<instance-guid>";
+            }
+        }
+
         public string ServiceProvider
         {
             get
@@ -26,10 +42,10 @@ namespace AltinnCLI.Services.Storage
 
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return Name;
         }
 
-        public bool Run(string[] args)
+        public bool Run()
         {
             throw new NotImplementedException();
         }

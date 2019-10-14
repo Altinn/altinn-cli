@@ -8,6 +8,10 @@ namespace AltinnCLI.Core
     {
         string Name { get; }
 
+        string Description { get; }
+
+        string Usage { get; }
+
         string GetHelp();
     }
 }

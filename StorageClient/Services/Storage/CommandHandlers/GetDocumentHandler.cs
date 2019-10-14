@@ -37,6 +37,22 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        public string Description
+        {
+            get
+            {
+                return "Returns a specific document from Storage";
+            }
+        }
+
+        public string Usage
+        {
+            get
+            {
+                return "Storage GetDocument -documentId=<document-guid>";
+            }
+        }
+
         public string ServiceProvider
         {
             get
@@ -55,7 +71,7 @@ namespace AltinnCLI.Services.Storage
 
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return Name;
         }
 
         public bool Run()
