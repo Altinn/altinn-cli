@@ -1,5 +1,6 @@
 ﻿using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,6 +53,9 @@ namespace AltinnCLI.Services.Storage
             Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);
 
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
+            string responsMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+            InstanceResponseMessage instanceMessage = JsonConvert.DeserializeObject<InstanceResponseMessage>(responsMessage);
 
             return stream;
         }
