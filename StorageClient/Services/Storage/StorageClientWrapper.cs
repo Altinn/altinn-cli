@@ -51,7 +51,11 @@ namespace AltinnCLI.Services.Storage
             cmd = string.Format("instances");
 
             HttpClientWrapper client = new HttpClientWrapper();
-            return client.GetCommand(BaseAddress, cmd).Result;
+            Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);
+
+            Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
+
+            return stream;
         }
     }
 }
