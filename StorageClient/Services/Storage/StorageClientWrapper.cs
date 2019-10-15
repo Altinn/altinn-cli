@@ -20,8 +20,7 @@ namespace AltinnCLI.Services.Storage
 
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
-            
-            string cmd = string.Format("instances/{0}/{1}/data/{2}", instanceOwnerId, instanceGuid, dataId);
+            string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
 
             HttpClientWrapper httpClinetWrapper = new HttpClientWrapper();
 
@@ -47,8 +46,7 @@ namespace AltinnCLI.Services.Storage
 
         public Stream GetInstances(int instanceOwnerId, Guid instanceGuid)
         {
-            string cmd = string.Empty;
-            cmd = string.Format("instances");
+            string cmd = "instances";
 
             HttpClientWrapper client = new HttpClientWrapper();
             Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);

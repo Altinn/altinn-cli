@@ -44,7 +44,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                string errorMessage = string.Format("Error getting data from ALtinn on command: {0}. Error: HTTP {1}. Reason: {2}", uri, response.StatusCode, response.ReasonPhrase);
+                string errorMessage = $"Error getting data from ALtinn on command: {uri}. Error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
                 throw new System.Exception(errorMessage);
             }
 
@@ -78,7 +78,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                string errorMessage = string.Format("Error respons from ALtinn. error: HTTP {0}. Reason: {1}", response.StatusCode, response.ReasonPhrase);
+                string errorMessage = $"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
                 throw new System.Exception(errorMessage);
             }
 
