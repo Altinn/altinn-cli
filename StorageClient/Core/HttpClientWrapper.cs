@@ -20,6 +20,11 @@ namespace AltinnCLI.Core
         {
             Uri uri = new Uri(baseAddress + "/" + command);
 
+            return await GetWithUrl(uri);
+        }
+
+        public async Task<HttpResponseMessage> GetWithUrl(Uri uri)
+        {
             HttpResponseMessage response;
 
             try

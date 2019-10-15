@@ -83,25 +83,31 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-                Stream stream = ClientWrapper.GetDocument(int.Parse(CommandParameters.GetValueOrDefault("ownerid")),
-                                                          Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")),
-                                                          Guid.Parse(CommandParameters.GetValueOrDefault("dataid")));
+                int ownerId = int.Parse(CommandParameters.GetValueOrDefault("ownerid"));
+                Guid instanceId = Guid.Parse(CommandParameters.GetValueOrDefault("instanceid"));
+                Guid dataId = Guid.Parse(CommandParameters.GetValueOrDefault("dataid"));
+
+                Stream stream = ClientWrapper.GetDocument(ownerId, instanceId, dataId);
 
                 if (stream != null)
                 {
-                    string filefolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
+                    string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
+                    string fileFolder = $@"{baseFolder}\{ownerId}\{instanceId}";
 
                     // chekc if file folder exists, if not create it
-                    if (!Directory.Exists(filefolder))
+                    if (!Directory.Exists(fileFolder))
                     {
-                        Directory.CreateDirectory(filefolder);
+                        Directory.CreateDirectory(fileFolder);
 
                     }
-                    FileStream file = new FileStream(CommandParameters.GetValueOrDefault("dataid").ToString(), FileMode.CreateNew);
+
+                    string filePath = $@"{fileFolder}\{dataId}";
+                    FileStream file = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+
                     stream.Position = 0;
-                    stream.CopyTo(file);
-                    file.Flush();
+                    ((MemoryStream)stream).WriteTo(file);
                     file.Close();
+                    stream.Close();
                 }
 
             }

@@ -21,6 +21,9 @@ namespace AltinnCLI.Core
             /// <returns>respons datat</returns>
             Task<HttpResponseMessage> GetCommand(string baseAddress, string command);
 
+
+            Task<HttpResponseMessage> GetWithUrl(string command);
+
             /// <summary>
             /// Prepares and requests FReg
             /// </summary>
