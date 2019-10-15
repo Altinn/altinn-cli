@@ -44,9 +44,19 @@ namespace AltinnCLI.Services.Storage
             return stream;
         }
 
-        public Altinn.Platform.Storage.Models.Instance[] GetInstanceMetaData(int instanceOwnerId, Guid instanceGuid)
+        public InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId=null, Guid? instanceGuid = null)
         {
             string cmd = "instances";
+
+            if (instanceOwnerId != null)
+            {
+                cmd += $@"\{instanceOwnerId}";
+
+                if (instanceGuid != null)
+                {
+                    cmd += $@"\{instanceGuid}";
+                }
+            }
 
             HttpClientWrapper client = new HttpClientWrapper();
             Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);
@@ -55,7 +65,7 @@ namespace AltinnCLI.Services.Storage
 
             InstanceResponseMessage instanceMessage = JsonConvert.DeserializeObject<InstanceResponseMessage>(responsMessage);
 
-            return instanceMessage.Instances;
+            return instanceMessage;
         }
 
         public Stream GetInstances(int instanceOwnerId, Guid instanceGuid)
