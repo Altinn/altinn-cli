@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace AltinnCLI.Core
@@ -33,6 +35,27 @@ namespace AltinnCLI.Core
             }
 
             return false;
+        }
+
+        protected static void SaveToFile(int ownerId, Guid instanceId, Guid dataId, Stream stream)
+        {
+            string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
+            string fileFolder = $@"{baseFolder}\{ownerId}\{instanceId}";
+
+            // chekc if file folder exists, if not create it
+            if (!Directory.Exists(fileFolder))
+            {
+                Directory.CreateDirectory(fileFolder);
+
+            }
+
+            string filePath = $@"{fileFolder}\{dataId}";
+            FileStream file = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+
+            stream.Position = 0;
+            ((MemoryStream)stream).WriteTo(file);
+            file.Close();
+            stream.Close();
         }
     }
 }

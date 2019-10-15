@@ -91,23 +91,7 @@ namespace AltinnCLI.Services.Storage
 
                 if (stream != null)
                 {
-                    string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
-                    string fileFolder = $@"{baseFolder}\{ownerId}\{instanceId}";
-
-                    // chekc if file folder exists, if not create it
-                    if (!Directory.Exists(fileFolder))
-                    {
-                        Directory.CreateDirectory(fileFolder);
-
-                    }
-
-                    string filePath = $@"{fileFolder}\{dataId}";
-                    FileStream file = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
-
-                    stream.Position = 0;
-                    ((MemoryStream)stream).WriteTo(file);
-                    file.Close();
-                    stream.Close();
+                    SaveToFile(ownerId, instanceId, dataId, stream);
                 }
 
             }
@@ -117,8 +101,6 @@ namespace AltinnCLI.Services.Storage
             }
             return true;
         }
-
-
 
         protected bool Validate()
         {
