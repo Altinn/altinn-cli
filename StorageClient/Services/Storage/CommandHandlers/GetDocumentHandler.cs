@@ -1,4 +1,5 @@
-﻿using AltinnCLI.Core;
+﻿using Altinn.Platform.Storage.Models;
+using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using StorageClient;
@@ -81,18 +82,26 @@ namespace AltinnCLI.Services.Storage
 
         public bool Run()
         {
+            int? ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
+            Guid? instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+            Guid? dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+
             if (IsValid)
             {
-                int ownerId = int.Parse(CommandParameters.GetValueOrDefault("ownerid"));
-                Guid instanceId = Guid.Parse(CommandParameters.GetValueOrDefault("instanceid"));
-                Guid dataId = Guid.Parse(CommandParameters.GetValueOrDefault("dataid"));
-
-                Stream stream = ClientWrapper.GetDocument(ownerId, instanceId, dataId);
-
-                if (stream != null)
+                if ((ownerId != null) && (instanceId != null) && (dataId != null))
                 {
-                    SaveToFile(ownerId, instanceId, dataId, stream);
+                    Stream stream = ClientWrapper.GetDocument((int)ownerId, (Guid)instanceId, (Guid)dataId);
+
+                    if (stream != null)
+                    {
+                        SaveToFile((int)ownerId, (Guid)instanceId, (Guid)dataId, stream);
+                    }
                 }
+                else
+                {
+                    GetDocumentFromInstances(ownerId, instanceId);
+                }
+
 
             }
             else
@@ -102,9 +111,38 @@ namespace AltinnCLI.Services.Storage
             return true;
         }
 
+        private void GetDocumentFromInstances(int? ownerId, Guid? instanceId)
+        {
+            InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(ownerId, instanceId);
+            _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
+
+            Instance[] instances = responsMessage.Instances;
+            FetchAndSaveDocuments(instances);
+
+        }
+
+        private void FetchAndSaveDocuments(Instance[] instances)
+        {
+            foreach (Instance instance in instances)
+            {
+                foreach (DataElement data in instance.Data)
+                { 
+                    string url = data.StorageUrl;
+                    Stream responsData = ClientWrapper.GetDocument(url);
+
+                    if (responsData != null)
+                    {
+                        string instanceGuidId = instance.Id.Split('/')[1];
+                        SaveToFile(int.Parse(instance.InstanceOwnerId), Guid.Parse(instanceGuidId), Guid.Parse(data.Id), responsData);
+                    }
+                }
+            }
+        }
+
         protected bool Validate()
         {
-            return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid") & HasParameterWithValue("dataid"));
+            return true;
+//            return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid") & HasParameterWithValue("dataid"));
         }
     }
 }

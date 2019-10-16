@@ -32,12 +32,14 @@ namespace AltinnCLI.Services.Storage
             return stream;
         }
 
-        public Stream GetDocument(Uri uri)
+        public Stream GetDocument(string command)
         {
 
-            HttpClientWrapper httpClinetWrapper = new HttpClientWrapper();
+            command += $@"instances\{command}";
 
-            Task<HttpResponseMessage> response = httpClinetWrapper.GetWithUrl(uri);
+            HttpClientWrapper httpClientWrapper = new HttpClientWrapper();
+
+            Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(BaseAddress, command);
 
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
 
@@ -50,7 +52,7 @@ namespace AltinnCLI.Services.Storage
 
             if (instanceOwnerId != null)
             {
-                cmd += $@"\{instanceOwnerId}";
+                cmd += $@"?InstanceOwnerId={instanceOwnerId}";
 
                 if (instanceGuid != null)
                 {
