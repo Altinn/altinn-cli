@@ -68,7 +68,7 @@ namespace StorageClient
                 {
                     configure.ClearProviders();
                     configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
-                }).AddSingleton(typeof(ICommandHandler),t);
+                }).AddTransient(typeof(ICommandHandler),t);
             });
 
             return services;
