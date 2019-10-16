@@ -37,7 +37,7 @@ namespace AltinnCLI.Core
             return false;
         }
 
-        protected static void SaveToFile(int ownerId, Guid instanceId, Guid dataId, Stream stream)
+        protected static void SaveToFile(int ownerId, Guid instanceId, string fileName, Stream stream)
         {
             string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
             string fileFolder = $@"{baseFolder}\{ownerId}\{instanceId}";
@@ -49,7 +49,7 @@ namespace AltinnCLI.Core
 
             }
 
-            string filePath = $@"{fileFolder}\{dataId}";
+            string filePath = $@"{fileFolder}\{fileName}";
             FileStream file = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
 
             stream.Position = 0;

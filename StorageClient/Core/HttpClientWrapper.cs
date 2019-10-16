@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -10,6 +11,12 @@ namespace AltinnCLI.Core
 {
     public class HttpClientWrapper
     {
+        private readonly ILogger _logger;
+
+        public HttpClientWrapper()
+        {
+        }
+
         /// <summary>
         /// Prepares requests and send it to FReg
         /// </summary>
@@ -45,7 +52,7 @@ namespace AltinnCLI.Core
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 string errorMessage = $"Error getting data from ALtinn on command: {uri}. Error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
-                throw new System.Exception(errorMessage);
+ //               _logger.LogError(errorMessage);
             }
 
             return response;
