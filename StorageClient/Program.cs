@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 using StorageClient;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace StorageClient
 
         static void Main()
         {
+
             ConfigureLogging();
             IServiceCollection services = GetServices();
 
@@ -62,7 +64,11 @@ namespace StorageClient
             {
  //               services.AddLogging(configure => configure.AddConsole()).AddTransient(typeof(ICommandHandler), t);
 
-                services.AddLogging(configure => ConfigureLogging()).AddTransient(typeof(ICommandHandler),t);
+                services.AddLogging(configure =>
+                {
+                    configure.ClearProviders();
+                    configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
+                }).AddSingleton(typeof(ICommandHandler),t);
             });
 
             return services;
