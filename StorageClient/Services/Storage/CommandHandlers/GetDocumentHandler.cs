@@ -94,7 +94,7 @@ namespace AltinnCLI.Services.Storage
 
                     if (stream != null)
                     {
-                        SaveToFile((int)ownerId, (Guid)instanceId, (Guid)dataId, stream);
+                        SaveToFile((int)ownerId, (Guid)instanceId, ((Guid)dataId).ToString(), stream);
                     }
                 }
                 else
@@ -133,7 +133,9 @@ namespace AltinnCLI.Services.Storage
                     if (responsData != null)
                     {
                         string instanceGuidId = instance.Id.Split('/')[1];
-                        SaveToFile(int.Parse(instance.InstanceOwnerId), Guid.Parse(instanceGuidId), Guid.Parse(data.Id), responsData);
+                        string fileName = (string.IsNullOrEmpty(data.FileName)) ? data.Id : data.FileName;
+
+                        SaveToFile(int.Parse(instance.InstanceOwnerId), Guid.Parse(instanceGuidId), fileName, responsData);
                     }
                 }
             }

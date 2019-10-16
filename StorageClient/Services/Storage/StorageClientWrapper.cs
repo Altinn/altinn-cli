@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,11 +40,17 @@ namespace AltinnCLI.Services.Storage
 
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper();
 
-            Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(BaseAddress, command);
+            HttpResponseMessage response = (HttpResponseMessage)httpClientWrapper.GetCommand(BaseAddress, command).Result;
 
-            Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
-
-            return stream;
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                Stream stream = response.Content.ReadAsStreamAsync().Result;
+                return stream;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId=null, Guid? instanceGuid = null)
@@ -52,7 +59,7 @@ namespace AltinnCLI.Services.Storage
 
             if (instanceOwnerId != null)
             {
-                cmd += $@"?InstanceOwnerId={instanceOwnerId}";
+                cmd += $@"?instanceOwnerId={instanceOwnerId}";
 
                 if (instanceGuid != null)
                 {

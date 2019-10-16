@@ -3,6 +3,8 @@ using AltinnCLI.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using StorageClient;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace StorageClient
 
         static void Main()
         {
+            ConfigureLogging();
             IServiceCollection services = GetServices();
 
             // Generate a Name
@@ -57,12 +60,25 @@ namespace StorageClient
 
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommandHandler>().ForEach((t) =>
             {
-                services.AddLogging(configure => configure.AddConsole()).AddTransient(typeof(ICommandHandler), t);
+ //               services.AddLogging(configure => configure.AddConsole()).AddTransient(typeof(ICommandHandler), t);
+
+                services.AddLogging(configure => ConfigureLogging()).AddTransient(typeof(ICommandHandler),t);
             });
 
             return services;
         }
 
+
+        private static void ConfigureLogging()
+        {
+
+            Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Debug()
+               .WriteTo.File("log.txt")
+               .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+               .CreateLogger();
+
+        }
 
         public static IConfigurationRoot BuildConfiguration()
         {
