@@ -11,5 +11,7 @@ namespace AltinnCLI.Services.Storage
         Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId);
 
         Stream GetInstances(int instanceOwnerOd, Guid instanceGuid);
+
+        string CreateApplication(string appId, string instanceOwnerId, StringContent content);
     }
 }
