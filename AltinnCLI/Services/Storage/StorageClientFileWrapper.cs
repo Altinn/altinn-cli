@@ -31,6 +31,11 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
+        public InstanceResponseMessage GetInstanceMetaData(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
         public Stream GetInstances(int instanceOwnerOd, Guid instanceGuid)
         {
             throw new NotImplementedException();

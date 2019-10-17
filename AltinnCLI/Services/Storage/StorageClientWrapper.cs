@@ -88,6 +88,19 @@ namespace AltinnCLI.Services.Storage
             return instanceMessage;
         }
 
+        public InstanceResponseMessage GetInstanceMetaData(Uri uri)
+        {
+
+            HttpClientWrapper client = new HttpClientWrapper();
+            Task<HttpResponseMessage> response = client.GetWithUrl(uri);
+
+            string responsMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+            InstanceResponseMessage instanceMessage = JsonConvert.DeserializeObject<InstanceResponseMessage>(responsMessage);
+
+            return instanceMessage;
+        }
+
         public Stream GetInstances(int instanceOwnerId, Guid instanceGuid)
         {
             string cmd = "instances";

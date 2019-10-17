@@ -18,5 +18,7 @@ namespace AltinnCLI.Services.Storage
         string CreateApplication(string appId, string instanceOwnerId, StringContent content);
 
         InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null);
+
+        InstanceResponseMessage GetInstanceMetaData(Uri uri);
     }
 }

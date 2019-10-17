@@ -115,11 +115,11 @@ namespace AltinnCLI.Services.Storage
             _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
             Instance[] instances = responsMessage.Instances;
-            FetchAndSaveDocuments(instances);
+            FetchAndSaveDocuments(instances, responsMessage.Next);
 
         }
 
-        private void FetchAndSaveDocuments(Instance[] instances)
+        private void FetchAndSaveDocuments(Instance[] instances, Uri nextLink)
         {
             foreach (Instance instance in instances)
             {
@@ -136,6 +136,15 @@ namespace AltinnCLI.Services.Storage
                         SaveToFile(int.Parse(instance.InstanceOwnerId), Guid.Parse(instanceGuidId), fileName, responsData);
                     }
                 }
+            }
+
+
+            if (nextLink != null)
+            {
+                InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(nextLink);
+                _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
+
+                FetchAndSaveDocuments(responsMessage.Instances, responsMessage.Next);
             }
         }
 
