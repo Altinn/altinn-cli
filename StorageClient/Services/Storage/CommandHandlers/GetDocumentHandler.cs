@@ -16,11 +16,9 @@ namespace AltinnCLI.Services.Storage
     public class GetDocumentHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
-        private readonly ILogger _logger;
 
-        public GetDocumentHandler(ILogger<GetDocumentHandler> logger)
+        public GetDocumentHandler(ILogger<GetDocumentHandler> logger) : base(logger)
         {
-            _logger = logger;
 
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
@@ -127,7 +125,7 @@ namespace AltinnCLI.Services.Storage
             {
                 foreach (DataElement data in instance.Data)
                 { 
-                    string url = data.StorageUrl;
+                    string url = data.DataLinks.Platform;
                     Stream responsData = ClientWrapper.GetDocument(url);
 
                     if (responsData != null)

@@ -13,12 +13,9 @@ namespace AltinnCLI.Services.Application
     class CreateCommandHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
         private IStorageClientWrapper _clientWrapper = null;
-        private readonly ILogger _logger;
 
-        public CreateCommandHandler(ILogger<CreateCommandHandler> logger)
+        public CreateCommandHandler(ILogger<CreateCommandHandler> logger) : base(logger)
         {
-            _logger = logger;
-
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
                 _clientWrapper = new StorageClientWrapper();

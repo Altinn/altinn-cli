@@ -48,11 +48,10 @@ namespace AltinnCLI.Services.Storage
         public Stream GetDocument(string command)
         {
 
-            command += $@"instances\{command}";
-
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper();
+            Uri uri = new Uri(command);
 
-            HttpResponseMessage response = (HttpResponseMessage)httpClientWrapper.GetCommand(BaseAddress, command).Result;
+            HttpResponseMessage response = (HttpResponseMessage)httpClientWrapper.GetWithUrl(uri).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
             {

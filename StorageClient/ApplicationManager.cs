@@ -51,8 +51,8 @@ namespace AltinnCLI.Core
         private ICommandHandler processArgs(string[] input)
         {
             ICommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>()
-                .Where(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) && 
-                string.Equals(s.ServiceProvider, input[0],StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                .FirstOrDefault(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) && 
+                string.Equals(s.ServiceProvider, input[0],StringComparison.OrdinalIgnoreCase));
 
             if (commandHandler != null)
             {

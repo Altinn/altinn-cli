@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,8 +7,15 @@ using System.Text;
 
 namespace AltinnCLI.Core
 {
-    public class CommandHandlerBase
+    public abstract class CommandHandlerBase
     {
+        protected static ILogger _logger;
+
+        public CommandHandlerBase(ILogger<CommandHandlerBase> logger)
+        {
+            _logger = logger;
+        }
+
         public Dictionary<string,string> ParseOptions(string[] args)
         {
             Dictionary<string, string> options = new Dictionary<string, string>();
@@ -56,6 +64,8 @@ namespace AltinnCLI.Core
             ((MemoryStream)stream).WriteTo(file);
             file.Close();
             stream.Close();
+
+            _logger.LogInformation($"Data for OwnerId:{ownerId} InstanceId:{instanceId} saved to file:{fileName}");
         }
     }
 }
