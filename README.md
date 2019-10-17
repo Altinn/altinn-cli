@@ -2,8 +2,9 @@
 
 Altinn command-line interface.
 
-- [ ] Use Maskinporten for authentication
+- [ ] Use Maskinporten for authentication++
 - [ ] Retrieve app instances
 - [ ] Retrieve app data
-- [ ] Update status
-- [ ] Upload receipt as file
+- [ ] Update instance/data status
+- [ ] Upload receipt as file (SKD)
+- [ ] Instantiate app with or without data (SSB)
