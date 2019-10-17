@@ -20,6 +20,18 @@ namespace AltinnCLI.Services.Storage
 
         private string BaseAddress { get; set; }
 
+        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
+        {
+            string cmd = $@"instances?appId={appId}&instanceOwnerId={instanceOwnerId}";
+
+            HttpClientWrapper httpClientWrapper = new HttpClientWrapper();
+
+            Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(BaseAddress, cmd, content);
+
+            return response.Result.Content.ReadAsStringAsync().Result;
+
+        }
+
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
@@ -88,5 +100,7 @@ namespace AltinnCLI.Services.Storage
 
             return stream;
         }
+
+
     }
 }

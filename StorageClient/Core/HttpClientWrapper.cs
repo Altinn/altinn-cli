@@ -70,7 +70,7 @@ namespace AltinnCLI.Core
             Uri uri = new Uri(baseAddress + "/" + command);
 
             HttpResponseMessage response;
-
+            
             try
             {
                 using (HttpClient client = new HttpClient())

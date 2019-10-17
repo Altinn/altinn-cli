@@ -11,6 +11,11 @@ namespace AltinnCLI.Services.Storage
     {
         public string BaseAddress { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
+        {
+            throw new NotImplementedException();
+        }
+
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             throw new NotImplementedException();
