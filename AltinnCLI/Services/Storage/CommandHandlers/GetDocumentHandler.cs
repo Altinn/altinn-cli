@@ -83,6 +83,7 @@ namespace AltinnCLI.Services.Storage
             int? ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
             Guid? instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
             Guid? dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+            string updateInstances = CommandParameters.GetValueOrDefault("updateinstances") != null ? CommandParameters.GetValueOrDefault("instanceid") : string.Empty;
 
             if (IsValid)
             {
@@ -97,7 +98,7 @@ namespace AltinnCLI.Services.Storage
                 }
                 else
                 {
-                    GetDocumentFromInstances(ownerId, instanceId);
+                    GetDocumentFromInstances(ownerId, instanceId, updateInstances);
                 }
 
 
@@ -109,17 +110,17 @@ namespace AltinnCLI.Services.Storage
             return true;
         }
 
-        private void GetDocumentFromInstances(int? ownerId, Guid? instanceId)
+        private void GetDocumentFromInstances(int? ownerId, Guid? instanceId, string updateInstances)
         {
             InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(ownerId, instanceId);
             _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
             Instance[] instances = responsMessage.Instances;
-            FetchAndSaveDocuments(instances, responsMessage.Next);
+            FetchAndSaveDocuments(instances, responsMessage.Next, updateInstances);
 
         }
 
-        private void FetchAndSaveDocuments(Instance[] instances, Uri nextLink)
+        private void FetchAndSaveDocuments(Instance[] instances, Uri nextLink, string updateInstances)
         {
             foreach (Instance instance in instances)
             {
@@ -131,7 +132,7 @@ namespace AltinnCLI.Services.Storage
                     if (responsData != null)
                     {
                         string instanceGuidId = instance.Id.Split('/')[1];
-                        string fileName = (string.IsNullOrEmpty(data.FileName)) ? data.Id : data.FileName;
+                        string fileName = $"{data.ElementType.ToString()}_{((string.IsNullOrEmpty(data.FileName)) ? data.Id : data.FileName)}";
 
                         SaveToFile(int.Parse(instance.InstanceOwnerId), Guid.Parse(instanceGuidId), fileName, responsData);
                     }
@@ -144,7 +145,7 @@ namespace AltinnCLI.Services.Storage
                 InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(nextLink);
                 _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
-                FetchAndSaveDocuments(responsMessage.Instances, responsMessage.Next);
+                FetchAndSaveDocuments(responsMessage.Instances, responsMessage.Next, updateInstances);
             }
         }
 
