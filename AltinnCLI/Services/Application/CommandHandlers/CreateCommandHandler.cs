@@ -73,29 +73,94 @@ namespace AltinnCLI.Services.Application
             {
                 string appid = CommandParameters["appid"];
                 string instanceowner = CommandParameters["instanceowner"];
+                string datamodel = CommandParameters["instanceowner"];
 
-                StreamReader streamReader = new StreamReader(CommandParameters["content"]);
+                string folder = CommandParameters["folder"];
 
-                string filecontent = streamReader.ReadToEnd();
-                StringContent content = new StringContent(filecontent);
+                MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
+                if (Directory.Exists(folder))
+                {
+                    foreach (string filename in readFiles(folder))
+                    {
+                        string contentType = "application/octet-stream";
 
-                //content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/form-data");
-                //content.Headers.Add("boundary", "abcdefg");
+                        if (filename.Contains(".xml"))
+                        {
+                            contentType = "application/xml";
+                        }
+                        if (filename.Contains(".json"))
+                        {
+                            contentType = "application/json";
+                        }
 
-                string response = _clientWrapper.CreateApplication(appid, instanceowner, content);
+                        FileStream file = new FileStream(filename, FileMode.Open);
+                        StringContent content = new StringContent(file.ToString());
+                        multipartFormData.Add(content, contentType);
+                    }
 
-                _logger.LogInformation("App instanciated : ", response);
+                    string response = _clientWrapper.CreateApplication(appid, instanceowner, multipartFormData);
+                    _logger.LogInformation("App instanciated : ", response);
+                }
+                else
+                {
+                    _logger.LogError("Could not open folder");
+                }
+
+                
+
+                
             }
-            else
-            {
-                _logger.LogInformation("Missing parameters");
-            }
+
             return true;
         }
 
+        private String[] readFiles(string path)
+        {
+            if (Directory.Exists(path))
+            { 
+                return Directory.GetFiles(path);
+            }
+            else
+            {
+                return null;
+            }
+        }
         protected bool Validate()
         {
-            return (HasParameterWithValue("appid") & HasParameterWithValue("instanceowner") & HasParameterWithValue("content"));
+            bool valid = true;
+            if (!HasParameterWithValue("appid"))
+            {
+                valid = false;
+                _logger.LogError("Invalid or missing value for parameter appId");
+            }
+
+            if (!HasParameterWithValue("instanceowner"))
+            {
+                valid = false;
+                _logger.LogError("Invalid or missing value for parameter instanceOwnerId");
+            }
+
+            if (!HasParameterWithValue("folder"))
+            {
+                valid = false;
+                _logger.LogError("Invalid or missing value for folder");
+            }
+
+            if (!HasParameterWithValue("dataModel"))
+            {
+                if (HasParameterWithValue("folder"))
+                {
+                    _logger.LogError("No data model specified and no Default.xml file found in {0} ", CommandParameters["folder"]);
+                }
+                else
+                {
+                    _logger.LogError("No data model or data directory specified");
+                }
+                
+                
+            }
+
+            return valid;
         }
     }
 }

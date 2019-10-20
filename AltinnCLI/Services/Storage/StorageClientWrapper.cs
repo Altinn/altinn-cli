@@ -20,7 +20,7 @@ namespace AltinnCLI.Services.Storage
 
         private string BaseAddress { get; set; }
 
-        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
+        public string CreateApplication(string appId, string instanceOwnerId, HttpContent content)
         {
             string cmd = $@"instances?appId={appId}&instanceOwnerId={instanceOwnerId}";
 
@@ -30,6 +30,11 @@ namespace AltinnCLI.Services.Storage
 
             return response.Result.Content.ReadAsStringAsync().Result;
 
+        }
+
+        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
+        {
+            throw new NotImplementedException();
         }
 
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)

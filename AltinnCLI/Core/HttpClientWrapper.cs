@@ -91,5 +91,32 @@ namespace AltinnCLI.Core
 
             return response;
         }
+
+        public async Task<HttpResponseMessage> PostCommand(string baseAddress, string command, HttpContent content)
+        {
+            Uri uri = new Uri(baseAddress + "/" + command);
+
+            HttpResponseMessage response;
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    response = await client.PostAsync(uri, content).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new System.Exception("Unable to connect to Altinn:", ex);
+            }
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                string errorMessage = $"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
+                throw new System.Exception(errorMessage);
+            }
+
+            return response;
+        }
     }
 }
