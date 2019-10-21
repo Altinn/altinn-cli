@@ -21,7 +21,7 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
-        public Stream GetDocument(string command)
+        public Stream GetDocument(string command, string contentType = null)
         {
             throw new NotImplementedException();
         }

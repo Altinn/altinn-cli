@@ -53,7 +53,9 @@ namespace AltinnCLI.Services.Storage
         {
             get
             {
-                return "Storage GetDocument -documentId=<document-guid>";
+                return  $"Storage GetDocument  -Fetch all documents from storage \n" +
+                        $"Storage GetDocument ownerid=<id>  -Fetch all documents from owner \n" +
+                        $"Storage GetDocument ownerid=<id> - documentId=<document-guid> -Fetch specific document \n";
             }
         }
 
@@ -127,7 +129,7 @@ namespace AltinnCLI.Services.Storage
                 foreach (DataElement data in instance.Data)
                 { 
                     string url = data.DataLinks.Platform;
-                    Stream responsData = ClientWrapper.GetDocument(url);
+                    Stream responsData = ClientWrapper.GetDocument(url, data.ContentType);
 
                     if (responsData != null)
                     {

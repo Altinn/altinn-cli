@@ -45,18 +45,26 @@ namespace AltinnCLI.Services.Storage
             return stream;
         }
 
-        public Stream GetDocument(string command)
+        public Stream GetDocument(string command, string contentType = null)
         {
 
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper();
             Uri uri = new Uri(command);
 
-            HttpResponseMessage response = (HttpResponseMessage)httpClientWrapper.GetWithUrl(uri).Result;
+            HttpResponseMessage response = (HttpResponseMessage)httpClientWrapper.GetWithUrl(uri, contentType).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                Stream stream = response.Content.ReadAsStreamAsync().Result;
-                return stream;
+                if (contentType.Contains("application/json", StringComparison.OrdinalIgnoreCase) || contentType == null)
+                {
+                    return response.Content.ReadAsStreamAsync().Result;
+                }
+                else if (contentType.Contains("application/pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    return response.Content.ReadAsStreamAsync().Result;
+                }
+
+                return null;
             }
             else
             {

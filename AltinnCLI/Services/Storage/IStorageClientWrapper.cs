@@ -1,4 +1,5 @@
-﻿using AltinnCLI.Core;
+﻿using Altinn.Platform.Storage.Models;
+using AltinnCLI.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,7 @@ namespace AltinnCLI.Services.Storage
     {
         Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId);
 
-        Stream GetDocument(string command);
+        Stream GetDocument(string command, string contentType = null);
 
         Stream GetInstances(int instanceOwnerOd, Guid instanceGuid);
 

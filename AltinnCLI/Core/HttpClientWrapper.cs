@@ -30,7 +30,7 @@ namespace AltinnCLI.Core
             return await GetWithUrl(uri);
         }
 
-        public async Task<HttpResponseMessage> GetWithUrl(Uri uri)
+        public async Task<HttpResponseMessage> GetWithUrl(Uri uri, string contentType = null)
         {
             HttpResponseMessage response;
 
@@ -40,7 +40,16 @@ namespace AltinnCLI.Core
                 {
                     HttpRequestMessage message = new HttpRequestMessage();
                     message.Headers.Add("Accept", "application/json");
-                    message.Headers.Add("ContentType", "application/json");
+
+                    if (string.IsNullOrEmpty(contentType))
+                    {
+                        message.Headers.Add("ContentType", "application/json");
+                    }
+                    else
+                    {
+                        message.Headers.Add("ContentType", contentType);
+                    }
+
                     response = await client.GetAsync(uri).ConfigureAwait(false);
                 }
             }
