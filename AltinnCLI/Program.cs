@@ -16,6 +16,9 @@ using System.Reflection;
 
 namespace StorageClient
 {
+    /// <summary>
+    ///  The CLI startup that prepares the application configuration, serviceprovider for handling cli-commands 
+    /// </summary
     class Program
     {
         private static string prompt = "Altinn CLI > ";
@@ -42,7 +45,11 @@ namespace StorageClient
             }
         }
 
-
+        /// <summary>
+        /// Finds all IService, ICommandHandler and  IHelp implemented klasses in running assembly and according to type
+        /// registers them to be avilable through the Applications ServiceProvider. 
+        /// </summary>
+        /// <returns>List of registred services</returns>
         private static IServiceCollection GetServices()
         {
             IServiceCollection services = new ServiceCollection();
@@ -60,6 +67,7 @@ namespace StorageClient
                 services.AddTransient(typeof(IHelp), t);
             });
 
+            // register all services that implements the ICommandHandler interface, and in addtion add reference to the application logger
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommandHandler>().ForEach((t) =>
             {
                 services.AddLogging(configure =>
@@ -72,7 +80,9 @@ namespace StorageClient
             return services;
         }
 
-
+        /// <summary>
+        /// Configure the logger
+        /// </summary>
         private static void ConfigureLogging()
         {
 
@@ -84,6 +94,10 @@ namespace StorageClient
 
         }
 
+        /// <summary>
+        /// Configure the application by loading the application settings file
+        /// </summary>
+        /// <returns>Top of the configuration hierarchy</returns>
         public static IConfigurationRoot BuildConfiguration()
         {
             var builder = new ConfigurationBuilder()
