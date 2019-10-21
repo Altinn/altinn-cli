@@ -12,6 +12,10 @@ namespace AltinnCLI.Services
             Environment.Exit(0);
         }
 
+        public void Run(Dictionary<string, string> input)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Name
         {

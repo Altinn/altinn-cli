@@ -53,6 +53,24 @@ namespace AltinnCLI.Services
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Assume that the input parameter order is  help GetDocument 
+        /// </summary>
+        /// <param name="input"></param>
+        public void Run(Dictionary<string, string> input)
+        {
+            IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(service.Name);
+            Console.ResetColor();
+
+            Console.WriteLine("\nDESCRIPTION\t{0}", service.Description);
+
+            Console.WriteLine("\nUSAGE\t{0}\n\n", service.Usage);
+
+        }
+
         public string Name
         {
             get

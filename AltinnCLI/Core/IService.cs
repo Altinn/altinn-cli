@@ -8,6 +8,8 @@ namespace AltinnCLI.Core
     {
         void Run(ICommandHandler commandHandler = null);
 
+        void Run(Dictionary<string, string> input);
+
         string Name { get; }
     }
 }

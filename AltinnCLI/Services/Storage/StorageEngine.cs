@@ -54,5 +54,9 @@ namespace AltinnCLI.Services.Storage
             return "Storage\nusage: storage <operation> -<option>\n\noperations:\ngetAttachment";
         }
 
+        public void Run(Dictionary<string, string> input)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

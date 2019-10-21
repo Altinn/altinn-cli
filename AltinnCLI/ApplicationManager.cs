@@ -25,26 +25,36 @@ namespace AltinnCLI.Core
 
         public void Execute(string args)
         {
-            string[] input = args.ToLower().Split(" ");
-
-            IService service = ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-            if (service != null)
+            if (!string.IsNullOrEmpty(args))
             {
-                if (input.Length > 1)
+                string[] input = args.ToLower().Split(" ");
+
+                IService service = ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+                if (service != null)
                 {
-                    ICommandHandler commandHandler = processArgs(input);
-                    service.Run(commandHandler);
+                    if (input.Length > 1)
+                    {
+                        ICommandHandler commandHandler = processArgs(input);
+                        if (commandHandler != null)
+                        {
+                            service.Run(commandHandler);
+                        }
+                        else
+                        {
+                            service.Run(ParseArguments(input));
+                        }
+                    }
+                    else
+                    {
+                        service.Run();
+                    }
+
                 }
                 else
                 {
-                    service.Run();
+                    ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
                 }
-            
-            }
-            else
-            {
-                ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
             }
         }
 

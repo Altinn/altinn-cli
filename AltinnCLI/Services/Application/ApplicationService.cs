@@ -50,5 +50,10 @@ namespace AltinnCLI.Services.Application
                 commandHandler.Run();
             }
         }
+
+        public void Run(Dictionary<string, string> input)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
