@@ -45,6 +45,30 @@ namespace AltinnCLI.Core
             return false;
         }
 
+        protected bool HasParameter(string key)
+        {
+            if (CommandParameters.ContainsKey(key))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected bool HasOptionalParameterWithIncorrectValue(string key)
+        {
+            if (CommandParameters.ContainsKey(key) && CommandParameters.GetValueOrDefault(key) != string.Empty)
+            {
+                if (!(CommandParameters.GetValueOrDefault(key) != string.Empty))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
         protected static void SaveToFile(int ownerId, Guid instanceId, string fileName, Stream stream)
         {
             string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());

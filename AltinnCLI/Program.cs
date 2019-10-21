@@ -62,8 +62,6 @@ namespace StorageClient
 
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommandHandler>().ForEach((t) =>
             {
- //               services.AddLogging(configure => configure.AddConsole()).AddTransient(typeof(ICommandHandler), t);
-
                 services.AddLogging(configure =>
                 {
                     configure.ClearProviders();

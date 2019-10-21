@@ -10,8 +10,6 @@ namespace AltinnCLI.Services.Storage
 {
     public class StorageEngine : IService, IHelp
     {
-        private ICommandHandler commandHandler;
-
         public StorageEngine()
         {
         }
