@@ -7,15 +7,30 @@ using System.Text;
 
 namespace AltinnCLI.Core
 {
+    /// <summary>
+    /// Base class for Commandhandlers
+    /// </summary>
     public abstract class CommandHandlerBase
     {
+        /// <summary>
+        /// Application logger 
+        /// </summary>
         protected static ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
+        /// </summary>
+        /// <param name="logger">Application logger to be used for logging</param>
         public CommandHandlerBase(ILogger<CommandHandlerBase> logger)
         {
             _logger = logger;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public Dictionary<string,string> ParseOptions(string[] args)
         {
             Dictionary<string, string> options = new Dictionary<string, string>();
@@ -33,8 +48,16 @@ namespace AltinnCLI.Core
             return true;
         }
 
+        /// <summary>
+        /// Gets or set the dictionary with the command line arguments
+        /// </summary>
         public Dictionary<string, string> CommandParameters { get; set; }
 
+        /// <summary>
+        /// Verifies if the command parameters contain a specific key and that it has a value
+        /// </summary>
+        /// <param name="key">the key to verify for existens and value</param>
+        /// <returns></returns>
         protected bool HasParameterWithValue(string key)
         {
             if (CommandParameters.ContainsKey(key) && CommandParameters.GetValueOrDefault(key) != string.Empty)
@@ -45,6 +68,11 @@ namespace AltinnCLI.Core
             return false;
         }
 
+        /// <summary>
+        /// Verifies if there exists a specific command parameter
+        /// </summary>
+        /// <param name="key">name of the parameter to find</param>
+        /// <returns></returns>
         protected bool HasParameter(string key)
         {
             if (CommandParameters.ContainsKey(key))
@@ -55,20 +83,13 @@ namespace AltinnCLI.Core
             return false;
         }
 
-        protected bool HasOptionalParameterWithIncorrectValue(string key)
-        {
-            if (CommandParameters.ContainsKey(key) && CommandParameters.GetValueOrDefault(key) != string.Empty)
-            {
-                if (!(CommandParameters.GetValueOrDefault(key) != string.Empty))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-
+        /// <summary>
+        ///  saves a file to disk
+        /// </summary>
+        /// <param name="ownerId">owner id which is used as "top" directory</param>
+        /// <param name="instanceId">is used as subdirectory</param>
+        /// <param name="fileName">filname to be used on the saved file</param>
+        /// <param name="stream">the fiel content</param>
         protected static void SaveToFile(int ownerId, Guid instanceId, string fileName, Stream stream)
         {
             string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
