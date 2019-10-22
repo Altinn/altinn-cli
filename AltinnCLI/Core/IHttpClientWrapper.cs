@@ -14,7 +14,7 @@ namespace AltinnCLI.Core
         public interface IHttpClientWrapper
         {
             /// <summary>
-            /// Prepares and requests FReg
+            /// Prepares and requests to baseAddress
             /// </summary>
             /// <param name="baseAddress">Base Address for data source</param>
             /// <param name="command">The http command</param>
@@ -22,16 +22,32 @@ namespace AltinnCLI.Core
             Task<HttpResponseMessage> GetCommand(string baseAddress, string command);
 
 
-            Task<HttpResponseMessage> GetWithUrl(string command);
+            /// <summary>
+            /// Performs a request based on the Uri received as input. The content type is set if 
+            /// supported in the content type parameter
+            /// </summary>
+            /// <param name="uri">Uri with URL that is the request url to be used</param>
+            /// <param name="contentType">Default paramter that shall be set if not null</param>
+            /// <returns>respons data</returns>
+            Task<HttpResponseMessage> GetWithUrl(Uri uri, string contentType = null);
 
             /// <summary>
-            /// Prepares and requests FReg
+            /// Prepares requests and sends it
             /// </summary>
             /// <param name="baseAddress">Base Address for data source</param>
             /// <param name="command">The http command</param>
             /// <param name="content">The content of the post message</param>
-            /// <returns>respons datat</returns>
+            /// <returns>respons data</returns>
             Task<HttpResponseMessage> PostCommand(string baseAddress, string command, StringContent content);
-        }
+
+            /// <summary>
+            /// Prepares requests and sends it
+            /// </summary>
+            /// <param name="baseAddress">Base Address for data source</param>
+            /// <param name="command">The http command</param>
+            /// <param name="content">The content of the post message</param>
+            /// <returns>respons data</returns>
+            Task<HttpResponseMessage> PostCommand(string baseAddress, string command, HttpContent content);
+        } 
     }
 }

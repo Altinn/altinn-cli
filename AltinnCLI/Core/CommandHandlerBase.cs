@@ -86,14 +86,13 @@ namespace AltinnCLI.Core
         /// <summary>
         ///  saves a file to disk
         /// </summary>
-        /// <param name="ownerId">owner id which is used as "top" directory</param>
-        /// <param name="instanceId">is used as subdirectory</param>
+        /// <param name="filePath">the path excluded a base path for where the file shall be saved</param>
         /// <param name="fileName">filname to be used on the saved file</param>
         /// <param name="stream">the fiel content</param>
-        protected static void SaveToFile(int ownerId, Guid instanceId, string fileName, Stream stream)
+        protected void SaveToFile(string filePath, string fileName, Stream stream)
         {
             string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
-            string fileFolder = $@"{baseFolder}\{ownerId}\{instanceId}";
+            string fileFolder = $@"{baseFolder}\{filePath}";
 
             // chekc if file folder exists, if not create it
             if (!Directory.Exists(fileFolder))
@@ -102,15 +101,12 @@ namespace AltinnCLI.Core
 
             }
 
-            string filePath = $@"{fileFolder}\{fileName}";
-            FileStream file = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using (FileStream outputFile = new FileStream(Path.Combine(fileFolder, fileName), FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                stream.CopyTo(outputFile);
+            }
 
-            stream.Position = 0;
-            ((MemoryStream)stream).WriteTo(file);
-            file.Close();
-            stream.Close();
-
-            _logger.LogInformation($"Data for OwnerId:{ownerId} InstanceId:{instanceId} saved to file:{fileName}");
+            _logger.LogInformation($"Ffile:{fileName} saved at {fileFolder}");
         }
     }
 }
