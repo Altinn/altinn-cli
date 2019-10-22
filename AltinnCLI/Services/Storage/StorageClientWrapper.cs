@@ -26,15 +26,16 @@ namespace AltinnCLI.Services.Storage
         /// </summary>
         private string BaseAddress { get; set; }
 
-        public string CreateApplication(string appId, string instanceOwnerId, HttpContent content)
+        public string CreateApplication(string org, string app, string instanceOwnerId, HttpContent content)
         {
-            string cmd = $@"instances?appId={appId}&instanceOwnerId={instanceOwnerId}";
-
+            string AppBaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
+            string cmd = $@"{org}/{app}/instances";
+            
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper();
 
-            Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(BaseAddress, cmd, content);
+            Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
 
-            return response.Result.Content.ReadAsStringAsync().Result;
+            return response.Result.Content.ReadAsStreamAsync().Result.ToString();
 
         }
 

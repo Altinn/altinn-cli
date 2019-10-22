@@ -104,7 +104,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogError($"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                Console.WriteLine($"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
@@ -122,6 +122,8 @@ namespace AltinnCLI.Core
             Uri uri = new Uri(baseAddress + "/" + command);
 
             HttpResponseMessage response;
+
+            HttpRequestMessage message = new HttpRequestMessage();
 
             try
             {

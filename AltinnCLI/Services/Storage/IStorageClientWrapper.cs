@@ -18,7 +18,7 @@ namespace AltinnCLI.Services.Storage
 
         string CreateApplication(string appId, string instanceOwnerId, StringContent content);
 
-        string CreateApplication(string appId, string instanceOwnerId, HttpContent content);
+        string CreateApplication(string app, string org, string instanceOwnerId, HttpContent content);
 
         InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null);
 
