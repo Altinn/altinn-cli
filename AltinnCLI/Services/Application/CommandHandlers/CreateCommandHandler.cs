@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace AltinnCLI.Services.Application
@@ -71,44 +72,46 @@ namespace AltinnCLI.Services.Application
         {
             if (IsValid)
             {
-                string appid = CommandParameters["appid"];
+                string app = CommandParameters["app"];
+                string org = CommandParameters["org"];
                 string instanceowner = CommandParameters["instanceowner"];
-                string datamodel = CommandParameters["instanceowner"];
 
                 string folder = CommandParameters["folder"];
 
                 MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
                 if (Directory.Exists(folder))
                 {
-                    foreach (string filename in readFiles(folder))
+                    foreach (string filePath in readFiles(folder))
                     {
                         string contentType = "application/octet-stream";
 
-                        if (filename.Contains(".xml"))
+                        if (filePath.Contains(".xml"))
                         {
                             contentType = "application/xml";
                         }
-                        if (filename.Contains(".json"))
+                        if (filePath.Contains(".json"))
                         {
-                            contentType = "application/json";
+                            contentType = "application/json; charset=utf-8";
                         }
 
-                        FileStream file = new FileStream(filename, FileMode.Open);
-                        StringContent content = new StringContent(file.ToString());
-                        multipartFormData.Add(content, contentType);
+                        if (contentType != "application/octet-stream")
+                        {
+                            FileStream file = new FileStream(filePath, FileMode.Open);
+
+                            StringContent content = new StringContent(file.ToString());
+                            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+                            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name="+Path.GetFileNameWithoutExtension(filePath));
+                            multipartFormData.Add(content, Path.GetFileName(filePath));
+                        }
                     }
 
-                    string response = _clientWrapper.CreateApplication(appid, instanceowner, multipartFormData);
+                    string response = _clientWrapper.CreateApplication(org, app, instanceowner, multipartFormData);
                     _logger.LogInformation("App instanciated : ", response);
                 }
                 else
                 {
                     _logger.LogError("Could not open folder");
                 }
-
-                
-
-                
             }
 
             return true;
@@ -128,10 +131,16 @@ namespace AltinnCLI.Services.Application
         protected bool Validate()
         {
             bool valid = true;
-            if (!HasParameterWithValue("appid"))
+            if (!HasParameterWithValue("app"))
             {
                 valid = false;
-                _logger.LogError("Invalid or missing value for parameter appId");
+                _logger.LogError("Invalid or missing value for parameter app");
+            }
+
+            if (!HasParameterWithValue("org"))
+            {
+                valid = false;
+                _logger.LogError("Invalid or missing value for parameter org");
             }
 
             if (!HasParameterWithValue("instanceowner"))

@@ -16,7 +16,7 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
-        public string CreateApplication(string appId, string instanceOwnerId, HttpContent content)
+        public string CreateApplication(string app, string org, string instanceOwnerId, HttpContent content)
         {
             throw new NotImplementedException();
         }
