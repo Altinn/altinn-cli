@@ -60,21 +60,14 @@ namespace AltinnCLI.Services.Storage
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                if (contentType.Contains("application/json", StringComparison.OrdinalIgnoreCase) || contentType == null)
-                {
-                    return response.Content.ReadAsStreamAsync().Result;
-                }
-                else if (contentType.Contains("application/pdf", StringComparison.OrdinalIgnoreCase))
-                {
-                    return response.Content.ReadAsStreamAsync().Result;
-                }
+                return (string.IsNullOrEmpty(contentType) ?
+                    response.Content.ReadAsStreamAsync().Result :
+                    (string.Equals(contentType, response.Content.Headers.ContentType.ToString(), StringComparison.OrdinalIgnoreCase)) ?
+                    response.Content.ReadAsStreamAsync().Result :
+                    null);
+            }
 
-                return null;
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId=null, Guid? instanceGuid = null)
