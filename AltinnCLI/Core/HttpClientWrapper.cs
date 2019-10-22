@@ -9,7 +9,10 @@ using System.Threading.Tasks;
 
 namespace AltinnCLI.Core
 {
-    public class HttpClientWrapper
+    /// <summary>
+    /// Contains the preparations and http requests
+    /// </summary>
+    public class HttpClientWrapper : IHttpClientWrapper
     {
         private readonly ILogger _logger;
 
@@ -18,7 +21,7 @@ namespace AltinnCLI.Core
         }
 
         /// <summary>
-        /// Prepares requests and send it to FReg
+        /// Adds base address to tht request URL and call method to perform the request
         /// </summary>
         /// <param name="baseAddress">Base Address for data source</param>
         /// <param name="command">The http command</param>
@@ -30,6 +33,13 @@ namespace AltinnCLI.Core
             return await GetWithUrl(uri);
         }
 
+        /// <summary>
+        /// Performs a request based on the Uri received as input. The content type is set if 
+        /// supported in the content type parameter
+        /// </summary>
+        /// <param name="uri">Uri with URL that is the request url to be used</param>
+        /// <param name="contentType">Default paramter that shall be set if not null</param>
+        /// <returns>respons data</returns>
         public async Task<HttpResponseMessage> GetWithUrl(Uri uri, string contentType = null)
         {
             HttpResponseMessage response;
@@ -40,7 +50,6 @@ namespace AltinnCLI.Core
                 {
                     HttpRequestMessage message = new HttpRequestMessage();
                     message.Headers.Add("Accept", "application/json");
-
                     if (string.IsNullOrEmpty(contentType))
                     {
                         message.Headers.Add("ContentType", "application/json");
@@ -50,7 +59,9 @@ namespace AltinnCLI.Core
                         message.Headers.Add("ContentType", contentType);
                     }
 
-                    response = await client.GetAsync(uri).ConfigureAwait(false);
+                    message.RequestUri = uri;
+
+                    response = await client.SendAsync(message).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -60,15 +71,14 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                string errorMessage = $"Error getting data from ALtinn on command: {uri}. Error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
- //               _logger.LogError(errorMessage);
+               _logger.LogError($"Error getting data from ALtinn on command: {uri}. Error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
         }
 
         /// <summary>
-        /// Prepares requests and send it to FReg
+        /// Prepares requests and sends it
         /// </summary>
         /// <param name="baseAddress">Base Address for data source</param>
         /// <param name="command">The http command</param>
@@ -94,13 +104,19 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                string errorMessage = $"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
-                throw new System.Exception(errorMessage);
+                _logger.LogError($"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
         }
 
+        /// <summary>
+        /// Prepares requests and sends it
+        /// </summary>
+        /// <param name="baseAddress">Base Address for data source</param>
+        /// <param name="command">The http command</param>
+        /// <param name="content">The content of the post message</param>
+        /// <returns>respons data</returns>
         public async Task<HttpResponseMessage> PostCommand(string baseAddress, string command, HttpContent content)
         {
             Uri uri = new Uri(baseAddress + "/" + command);
@@ -121,8 +137,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                string errorMessage = $"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}";
-                throw new System.Exception(errorMessage);
+                _logger.LogError($"Error respons from ALtinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
