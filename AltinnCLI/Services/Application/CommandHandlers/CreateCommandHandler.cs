@@ -79,6 +79,7 @@ namespace AltinnCLI.Services.Application
                 string folder = CommandParameters["folder"];
 
                 MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
+
                 if (Directory.Exists(folder))
                 {
                     foreach (string filePath in readFiles(folder))
@@ -98,7 +99,7 @@ namespace AltinnCLI.Services.Application
                         {
                             FileStream file = new FileStream(filePath, FileMode.Open);
 
-                            StringContent content = new StringContent(file.ToString());
+                            StreamContent content = new StreamContent(file);
                             content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
                             content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name="+Path.GetFileNameWithoutExtension(filePath));
                             multipartFormData.Add(content, Path.GetFileName(filePath));
@@ -106,7 +107,7 @@ namespace AltinnCLI.Services.Application
                     }
 
                     string response = _clientWrapper.CreateApplication(org, app, instanceowner, multipartFormData);
-                    _logger.LogInformation("App instanciated : ", response);
+                    // _logger.LogInformation("App instanciated : ", response);
                 }
                 else
                 {

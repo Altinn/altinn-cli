@@ -7,11 +7,8 @@ namespace AltinnCLI.Services.Application
 {
     class ApplicationService : IService, IHelp
     {
-        private IServiceProvider ServiceProvider;
-
         public ApplicationService()
         {
-            ServiceProvider = ApplicationManager.ServiceProvider;
         }
 
         public string Name

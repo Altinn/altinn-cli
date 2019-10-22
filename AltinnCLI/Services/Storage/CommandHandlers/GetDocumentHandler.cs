@@ -2,16 +2,14 @@
 using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using StorageClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace AltinnCLI.Services.Storage
 {
     /// <summary>
-    /// Commandhandler that is used to fetch documents from ALtinn Blob storage.  
+    /// Commandhandler that is used to fetch documents from Altinn Blob storage.  
     /// </summary>
     public class GetDocumentHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
