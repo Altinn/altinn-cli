@@ -107,8 +107,12 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
                 string instanceId = CommandParameters.GetValueOrDefault("instanceid");
                 string fullFileName = CommandParameters.GetValueOrDefault("file");
 
+                string elementType = "default";
+
                 FileStream stream = new FileStream(fullFileName, FileMode.Open);
-                stream.
+
+                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(ownerId, instanceId, elementType, stream, fullFileName);
+
 
             }
 

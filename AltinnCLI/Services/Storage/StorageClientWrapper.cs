@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -137,6 +138,27 @@ namespace AltinnCLI.Services.Storage
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
 
             return stream;
+        }
+
+
+        /// <summary>
+        /// /instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}
+        /// </summary>
+        /// <param name="instanceOwnerId">owner id</param>
+        /// <param name="instanceGuid">id of the instance</param>
+        /// <param name="elementType">type of document to upload</param>
+        public InstanceResponseMessage UploadDataElement(string instanceOwnerId, string instanceGuid, string elementType, Stream data, string fileName)
+        {
+            string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}";
+            string contentType = "application/xml";
+
+            HttpClientWrapper client = new HttpClientWrapper();
+            StreamContent content = new StreamContent(data);
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name=" + Path.GetFileNameWithoutExtension(fileName));
+            Task<HttpResponseMessage> response = client.PostCommand(BaseAddress, cmd, content);
+
+            return null;
         }
 
 
