@@ -106,7 +106,7 @@ namespace AltinnCLI.Core
                 stream.CopyTo(outputFile);
             }
 
-            _logger.LogInformation($"Ffile:{fileName} saved at {fileFolder}");
+            _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace AltinnCLI.Services.Storage
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                ClientWrapper = new StorageClientWrapper();
+                ClientWrapper = new StorageClientWrapper(_logger);
             }
 
         }

@@ -4,11 +4,22 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using AltinnCLI.Core;
+using Microsoft.Extensions.Logging;
 
 namespace AltinnCLI.Services.Storage
 {
     public class StorageClientFileWrapper : IStorageClientWrapper
     {
+        /// <summary>
+        /// Application logger 
+        /// </summary>
+        protected static ILogger _logger;
+
+        public StorageClientFileWrapper(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public string BaseAddress { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
@@ -37,6 +48,11 @@ namespace AltinnCLI.Services.Storage
         }
 
         public InstanceResponseMessage GetInstanceMetaData(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        public InstanceResponseMessage GetInstanceMetaData(string appId, Dictionary<string, string> urlParams = null)
         {
             throw new NotImplementedException();
         }
