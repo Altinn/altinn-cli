@@ -26,6 +26,10 @@ namespace AltinnCLI.Services.Storage
             {
                 ClientWrapper = new StorageClientWrapper();
             }
+            else
+            {
+                ClientWrapper = new StorageClientFileWrapper();
+            }
 
         }
 
@@ -60,7 +64,7 @@ namespace AltinnCLI.Services.Storage
             {
                 return  $"Storage GetDocument  -Fetch all documents from storage \n" +
                         $"Storage GetDocument ownerid=<id>  -Fetch all documents from owner \n" +
-                        $"Storage GetDocument ownerid=<id> - documentId=<document-guid> -Fetch specific document \n";
+                        $"Storage GetDocument ownerid=<id> instanceId=<instance-guid> documentId=<document-guid> -Fetch specific document \n";
             }
         }
 
@@ -196,7 +200,7 @@ namespace AltinnCLI.Services.Storage
             {
                 if (!HasParameterWithValue("ownerid"))
                 {
-                    Console.WriteLine("Missing parameter value for OwnerId");
+                    _logger.LogError("Missing parameter value for OwnerId");
                     return false;
                 }
 
@@ -204,7 +208,7 @@ namespace AltinnCLI.Services.Storage
                 {
                     if (!HasParameterWithValue("instanceid"))
                     {
-                        Console.WriteLine("Missing paramterer value for InstanceId");
+                        _logger.LogError("Missing paramterer value for InstanceId");
                         return false;
                     }
 
@@ -212,7 +216,7 @@ namespace AltinnCLI.Services.Storage
                     {
                         if (!HasParameterWithValue("dataId"))
                         {
-                            Console.WriteLine("Missing paramterer value for dataId");
+                            _logger.LogError("Missing paramterer value for dataId");
                             return false;
                         }
 

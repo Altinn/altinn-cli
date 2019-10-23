@@ -45,5 +45,10 @@ namespace AltinnCLI.Services.Storage
         {
             throw new NotImplementedException();
         }
+
+        public InstanceResponseMessage UploadDataElement(string instanceOwnerId, string instanceGuid, string elementType, Stream data, string fileName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

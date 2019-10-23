@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +14,17 @@ namespace AltinnCLI.Services.Storage
 {
     public class StorageClientWrapper : IStorageClientWrapper
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StorageClientWrapper" /> class.
+        /// </summary>
         public StorageClientWrapper()
         {
             BaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
         }
 
+        /// <summary>
+        /// Gets or sets the base address
+        /// </summary>
         private string BaseAddress { get; set; }
 
         public string CreateApplication(string org, string app, string instanceOwnerId, HttpContent content)
@@ -38,6 +45,13 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Get a document from Storage for owner,instance and specific document id
+        /// </summary>
+        /// <param name="instanceOwnerId">owner id</param>
+        /// <param name="instanceGuid">id of the instance</param>
+        /// <param name="dataId">id of the data element/file</param>
+        /// <returns></returns>
         public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
@@ -51,6 +65,12 @@ namespace AltinnCLI.Services.Storage
             return stream;
         }
 
+        /// <summary>
+        /// Fetches a document from Storage based on the URL for the document found in instance data
+        /// </summary>
+        /// <param name="command">Get URL</param>
+        /// <param name="contentType">content type which must match content type in repons if defined</param>
+        /// <returns></returns>
         public Stream GetDocument(string command, string contentType = null)
         {
 
@@ -118,6 +138,27 @@ namespace AltinnCLI.Services.Storage
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
 
             return stream;
+        }
+
+
+        /// <summary>
+        /// /instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}
+        /// </summary>
+        /// <param name="instanceOwnerId">owner id</param>
+        /// <param name="instanceGuid">id of the instance</param>
+        /// <param name="elementType">type of document to upload</param>
+        public InstanceResponseMessage UploadDataElement(string instanceOwnerId, string instanceGuid, string elementType, Stream data, string fileName)
+        {
+            string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}";
+            string contentType = "application/xml";
+
+            HttpClientWrapper client = new HttpClientWrapper();
+            StreamContent content = new StreamContent(data);
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name=" + Path.GetFileNameWithoutExtension(fileName));
+            Task<HttpResponseMessage> response = client.PostCommand(BaseAddress, cmd, content);
+
+            return null;
         }
 
 

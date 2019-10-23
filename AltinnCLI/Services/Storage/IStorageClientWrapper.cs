@@ -23,5 +23,7 @@ namespace AltinnCLI.Services.Storage
         InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null);
 
         InstanceResponseMessage GetInstanceMetaData(Uri uri);
+
+        InstanceResponseMessage UploadDataElement(string instanceOwnerId, string instanceGuid, string elementType, Stream data, string fileName);
     }
 }
