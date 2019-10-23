@@ -48,6 +48,15 @@ namespace AltinnCLI.Core
             /// <param name="content">The content of the post message</param>
             /// <returns>respons data</returns>
             Task<HttpResponseMessage> PostCommand(string baseAddress, string command, HttpContent content);
+
+            /// <summary>
+            /// Prepares a PUT requests and sends it
+            /// </summary>
+            /// <param name="baseAddress">Base Address for data source</param>
+            /// <param name="command">The http command</param>
+            /// <param name="content">The content of the PUT message</param>
+            /// <returns>respons data</returns>
+            Task<HttpResponseMessage> PutCommand(string baseAddress, string command, HttpContent content);
         } 
     }
 }
