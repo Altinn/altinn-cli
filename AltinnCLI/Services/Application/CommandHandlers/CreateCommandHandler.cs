@@ -2,6 +2,7 @@
 using AltinnCLI.Services.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -85,6 +86,7 @@ namespace AltinnCLI.Services.Application
                     foreach (string filePath in readFiles(folder))
                     {
                         string contentType = "application/octet-stream";
+                        string contentName = "default";
 
                         if (filePath.Contains(".xml"))
                         {
@@ -93,16 +95,15 @@ namespace AltinnCLI.Services.Application
                         if (filePath.Contains(".json"))
                         {
                             contentType = "application/json; charset=utf-8";
+                            contentName = "instance";
                         }
 
                         if (contentType != "application/octet-stream")
                         {
-                            FileStream file = new FileStream(filePath, FileMode.Open);
-
-                            StreamContent content = new StreamContent(file);
+                            StringContent content = new StringContent(File.ReadAllText(filePath));
                             content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
-                            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name="+Path.GetFileNameWithoutExtension(filePath));
-                            multipartFormData.Add(content, Path.GetFileName(filePath));
+                            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse($"form-data; name={contentName}");
+                            multipartFormData.Add(content, Path.GetFileNameWithoutExtension(filePath));
                         }
                     }
 
