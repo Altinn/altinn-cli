@@ -24,11 +24,11 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
 
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                ClientWrapper = new StorageClientWrapper();
+                ClientWrapper = new StorageClientWrapper(_logger);
             }
             else
             {
-                ClientWrapper = new StorageClientFileWrapper();
+                ClientWrapper = new StorageClientFileWrapper(_logger);
             }
 
         }

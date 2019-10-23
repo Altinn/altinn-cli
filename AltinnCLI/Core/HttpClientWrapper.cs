@@ -16,8 +16,9 @@ namespace AltinnCLI.Core
     {
         private readonly ILogger _logger;
 
-        public HttpClientWrapper()
+        public HttpClientWrapper(ILogger logger)
         {
+            _logger = logger;
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-               _logger.LogError($"Error getting data from ALtinn on command: {uri}. Error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+               _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;

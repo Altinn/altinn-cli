@@ -15,6 +15,14 @@ namespace AltinnCLI.Services.Storage
     {
         private IStorageClientWrapper ClientWrapper = null;
 
+        private int? ownerId = null;
+        private Guid? instanceId;
+        private Guid? dataId;
+        private string updateInstances = string.Empty;
+        private string appId = string.Empty;
+        private bool? processIsComplete = false;
+        private string lastChangedDate = string.Empty;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
         /// </summary>
@@ -24,11 +32,11 @@ namespace AltinnCLI.Services.Storage
 
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                ClientWrapper = new StorageClientWrapper();
+                ClientWrapper = new StorageClientWrapper(_logger);
             }
             else
             {
-                ClientWrapper = new StorageClientFileWrapper();
+                ClientWrapper = new StorageClientFileWrapper(_logger);
             }
 
         }
@@ -107,10 +115,13 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-                int? ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
-                Guid? instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
-                Guid? dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
-                string updateInstances = CommandParameters.GetValueOrDefault("updateinstances") != null ? CommandParameters.GetValueOrDefault("instanceid") : string.Empty;
+               ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
+               instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+               dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+               updateInstances = CommandParameters.GetValueOrDefault("updateinstances") != null ? CommandParameters.GetValueOrDefault("instanceid") : string.Empty;
+               appId = CommandParameters.GetValueOrDefault("appid") != null ? CommandParameters.GetValueOrDefault("appid") : string.Empty;
+               processIsComplete = CommandParameters.GetValueOrDefault("processIsComplete") != null ? bool.Parse(CommandParameters.GetValueOrDefault("processIsComplete")) : false;
+               lastChangedDate = CommandParameters.GetValueOrDefault("lastChangedDate") != null ? CommandParameters.GetValueOrDefault("lastChangedDate") : string.Empty;
 
                 if ((ownerId != null) && (instanceId != null) && (dataId != null))
                 {
@@ -125,7 +136,7 @@ namespace AltinnCLI.Services.Storage
                 }
                 else
                 {
-                    GetDocumentFromInstances(ownerId, instanceId, updateInstances);
+                    GetDocumentFromInstances();
                 }
 
 
@@ -143,13 +154,27 @@ namespace AltinnCLI.Services.Storage
         /// <param name="ownerId">The owner of the documents that shall be fetched</param>
         /// <param name="instanceId">The application instance for which the documents shall be fetched</param>
         /// <param name="updateInstances">Defines if the instances shall be marked to indicate that the documents is read </param>
-        private void GetDocumentFromInstances(int? ownerId, Guid? instanceId, string updateInstances)
+        private void GetDocumentFromInstances()
         {
-            InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(ownerId, instanceId);
-            _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
+            InstanceResponseMessage responsMessage = null;
 
-            Instance[] instances = responsMessage.Instances;
-            FetchAndSaveDocuments(instances, responsMessage.Next, updateInstances);
+            if (!string.IsNullOrEmpty(appId))
+            {
+                responsMessage = ClientWrapper.GetInstanceMetaData(appId, CommandParameters);
+
+            }
+            else if (ownerId != null)
+            {
+                responsMessage = ClientWrapper.GetInstanceMetaData(ownerId, instanceId);
+            }
+
+            if (responsMessage != null)
+            {
+                _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
+
+                Instance[] instances = responsMessage.Instances;
+                FetchAndSaveDocuments(instances, responsMessage.Next, updateInstances);
+            }
 
         }
 
@@ -196,33 +221,33 @@ namespace AltinnCLI.Services.Storage
         /// <returns></returns>
         protected bool Validate()
         {
-            if (HasParameter("ownerid"))
-            {
-                if (!HasParameterWithValue("ownerid"))
-                {
-                    _logger.LogError("Missing parameter value for OwnerId");
-                    return false;
-                }
+            //if (HasParameter("ownerid"))
+            //{
+            //    if (!HasParameterWithValue("ownerid"))
+            //    {
+            //        _logger.LogError("Missing parameter value for OwnerId");
+            //        return false;
+            //    }
 
-                if (HasParameter("instanceid"))
-                {
-                    if (!HasParameterWithValue("instanceid"))
-                    {
-                        _logger.LogError("Missing paramterer value for InstanceId");
-                        return false;
-                    }
+            //    if (HasParameter("instanceid"))
+            //    {
+            //        if (!HasParameterWithValue("instanceid"))
+            //        {
+            //            _logger.LogError("Missing paramterer value for InstanceId");
+            //            return false;
+            //        }
 
-                    if (HasParameter("dataId"))
-                    {
-                        if (!HasParameterWithValue("dataId"))
-                        {
-                            _logger.LogError("Missing paramterer value for dataId");
-                            return false;
-                        }
+            //        if (HasParameter("dataId"))
+            //        {
+            //            if (!HasParameterWithValue("dataId"))
+            //            {
+            //                _logger.LogError("Missing paramterer value for dataId");
+            //                return false;
+            //            }
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
             return true;
         }
     }

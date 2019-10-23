@@ -20,7 +20,7 @@ namespace AltinnCLI.Services.Application
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                _clientWrapper = new StorageClientWrapper();
+                _clientWrapper = new StorageClientWrapper(_logger);
             }
         }
 
