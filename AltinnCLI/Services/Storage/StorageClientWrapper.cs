@@ -41,9 +41,9 @@ namespace AltinnCLI.Services.Storage
             
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
-            Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
+            Task <HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
 
-            return response.Result.Content.ReadAsStreamAsync().Result.ToString();
+            return response.Result.Content.ReadAsStringAsync().Result;
 
         }
 
