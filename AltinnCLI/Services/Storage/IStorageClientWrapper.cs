@@ -22,7 +22,7 @@ namespace AltinnCLI.Services.Storage
 
         InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null);
 
-        InstanceResponseMessage GetInstanceMetaData(string appId, Dictionary<string, string> urlParams = null);
+        InstanceResponseMessage GetInstanceMetaData(Dictionary<string, string> urlParams = null);
 
         InstanceResponseMessage GetInstanceMetaData(Uri uri);
 

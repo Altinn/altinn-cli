@@ -204,7 +204,7 @@ namespace AltinnCLI.Services.Storage
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
-                responsMessage = ClientWrapper.GetInstanceMetaData(appId, CommandParameters);
+                responsMessage = ClientWrapper.GetInstanceMetaData(CommandParameters);
 
             }
             else if (ownerId != null)

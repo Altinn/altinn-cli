@@ -122,7 +122,7 @@ namespace AltinnCLI.Services.Storage
             return instanceMessage;
         }
 
-        public InstanceResponseMessage GetInstanceMetaData(string appId, Dictionary<string,string> urlParams = null )
+        public InstanceResponseMessage GetInstanceMetaData(Dictionary<string,string> urlParams = null )
         {
             string cmd = "instances";
 
