@@ -129,24 +129,70 @@ namespace AltinnCLI.Services.Storage
             return instanceMessage;
         }
 
-        public InstanceResponseMessage GetInstanceMetaData(string appId, Dictionary<string,string> urlParams = null )
+        public InstanceResponseMessage GetInstanceMetaData(Dictionary<string,string> urlParams = null )
         {
             string cmd = "instances";
 
-            cmd += $@"?appId={appId}";
-
             if (urlParams != null)
             {
+                if (urlParams.ContainsKey("org"))
+                {
+                    cmd += $@"?org={urlParams["org"]}";
+                }
+                else if (urlParams.ContainsKey("appid"))
+                {
+                    cmd += $@"?appId={urlParams["appid"]}";
+                }
+
+                if (urlParams.ContainsKey("currenttaskid"))
+                {
+                    cmd += $@"&process.currentTask={urlParams["currenttaskid"]}";
+                }
+
                 if (urlParams.ContainsKey("processiscomplete"))
                 {
                     cmd += $@"&process.isComplete={urlParams["processiscomplete"]}";
                 }
 
-                if (urlParams.ContainsKey("lastchangeddate"))
+                if (urlParams.ContainsKey("processisinerror"))
                 {
-                    cmd += $@"&lastChangedDateTime={urlParams["lastchangeddate"]}";
+                    cmd += $@"&process.isInError={urlParams["processisinerror"]}";
                 }
 
+                if (urlParams.ContainsKey("processendstate"))
+                {
+                    cmd += $@"&process.endState={urlParams["processendstate"]}";
+                }
+
+                if (urlParams.ContainsKey("lastchangeddatetime"))
+                {
+                    cmd += $@"&lastChangedDateTime={urlParams["lastchangeddatetime"]}";
+                }
+
+                if (urlParams.ContainsKey("createddatetime"))
+                {
+                    cmd += $@"&createdDateTime={urlParams["createddatetime"]}";
+                }
+
+                if (urlParams.ContainsKey("visibledatetime"))
+                {
+                    cmd += $@"&visibleDateTime={urlParams["visibledatetime"]}";
+                }
+
+                if (urlParams.ContainsKey("duedatetime"))
+                {
+                    cmd += $@"&dueDateTime={urlParams["duedatetime"]}";
+                }
+
+                if (urlParams.ContainsKey("continuationToken"))
+                {
+                    cmd += $@"&continuationToken={urlParams["continuationToken"]}";
+                }
+
+                if (urlParams.ContainsKey("size"))
+                {
+                    cmd += $@"&size={urlParams["size"]}";
+                }
             }
 
             HttpClientWrapper client = new HttpClientWrapper(_logger);

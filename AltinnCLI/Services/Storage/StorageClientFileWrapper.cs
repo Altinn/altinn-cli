@@ -52,7 +52,7 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
-        public InstanceResponseMessage GetInstanceMetaData(string appId, Dictionary<string, string> urlParams = null)
+        public InstanceResponseMessage GetInstanceMetaData(Dictionary<string, string> urlParams = null)
         {
             throw new NotImplementedException();
         }

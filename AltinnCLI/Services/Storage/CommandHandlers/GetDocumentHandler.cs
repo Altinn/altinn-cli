@@ -19,10 +19,21 @@ namespace AltinnCLI.Services.Storage
         private Guid? instanceId;
         private Guid? dataId;
         private string updateInstances = string.Empty;
+        private string org = string.Empty;
         private string appId = string.Empty;
-        private bool? processIsComplete = false;
-        private string lastChangedDate = string.Empty;
-        
+        private string currentTaskId = string.Empty;
+        private bool? processIsComplete = null;
+        private bool? processIsInError = null;
+        private string processEndState = string.Empty;
+
+        private string lastChangedDateTime = string.Empty;
+        private string createdDateTime = string.Empty;
+        private string visibleDateTime = string.Empty;
+        private string dueDateTime = string.Empty;
+
+        private string continuationToken = string.Empty;
+        private int? size = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
         /// </summary>
@@ -70,7 +81,23 @@ namespace AltinnCLI.Services.Storage
         {
             get
             {
-                return  $"Storage GetDocument  -Fetch all documents from storage \n" +
+                return  $"Storage GetDocument org=<org> appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org or app that is completed for the org/appId since lastchangeddate \n" +
+                        $"Use either app or appid \n" +
+                        $" Available parameters for the command that download documents for an application \n" + 
+                        $"  org -application\n" +
+                        $"  appId -application id\n" +
+                        $"  currentTaskId -running process current task id\n" +
+                        $"  processIsComplete -is process complete\n" +
+                        $"  processIsInError -is process in error\n" +
+                        $"  processEndState -process end state\n" +
+                        $"  labels -labels\n" +
+                        $"  lastChangedDateTime -last changed date \n" +
+                        $"  createdDateTime -created time \n"+
+                        $"  visibleDateTime -the visible date time \n" +
+                        $"  dueDateTime -the due date time \n" +
+                        $"  continuationToken -continuation token \n" +
+                        $"  size the page size \n" +
+                        $"Storage GetDocument  -Fetch all documents from storage \n" +
                         $"Storage GetDocument ownerid=<id>  -Fetch all documents from owner \n" +
                         $"Storage GetDocument ownerid=<id> instanceId=<instance-guid> documentId=<document-guid> -Fetch specific document \n";
             }
@@ -115,13 +142,7 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-               ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
-               instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
-               dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
-               updateInstances = CommandParameters.GetValueOrDefault("updateinstances") != null ? CommandParameters.GetValueOrDefault("instanceid") : string.Empty;
-               appId = CommandParameters.GetValueOrDefault("appid") != null ? CommandParameters.GetValueOrDefault("appid") : string.Empty;
-               processIsComplete = CommandParameters.GetValueOrDefault("processIsComplete") != null ? bool.Parse(CommandParameters.GetValueOrDefault("processIsComplete")) : false;
-               lastChangedDate = CommandParameters.GetValueOrDefault("lastChangedDate") != null ? CommandParameters.GetValueOrDefault("lastChangedDate") : string.Empty;
+                SetLocals();
 
                 if ((ownerId != null) && (instanceId != null) && (dataId != null))
                 {
@@ -148,6 +169,29 @@ namespace AltinnCLI.Services.Storage
             return true;
         }
 
+        private void SetLocals()
+        {
+            ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
+            instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+            dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
+            updateInstances = CommandParameters.GetValueOrDefault("updateinstances") != null ? CommandParameters.GetValueOrDefault("instanceid") : string.Empty;
+
+            appId = CommandParameters.GetValueOrDefault("appid") != null ? CommandParameters.GetValueOrDefault("appid") : string.Empty;
+            org = CommandParameters.GetValueOrDefault("org") != null ? CommandParameters.GetValueOrDefault("org") : string.Empty;
+
+            processIsComplete = CommandParameters.GetValueOrDefault("processsscomplete") != null ? bool.Parse(CommandParameters.GetValueOrDefault("processIsComplete")) : false;
+            processIsInError = CommandParameters.GetValueOrDefault("processisisError") != null ? bool.Parse(CommandParameters.GetValueOrDefault("processisinerror")) : false;
+            processEndState = CommandParameters.GetValueOrDefault("processendstate") != null ? CommandParameters.GetValueOrDefault("processendstate") : string.Empty;
+
+            lastChangedDateTime = CommandParameters.GetValueOrDefault("lastchangedatetime") != null ? CommandParameters.GetValueOrDefault("lastchangeddatetime") : string.Empty;
+            createdDateTime = CommandParameters.GetValueOrDefault("createddatetime") != null ? CommandParameters.GetValueOrDefault("createdtatetime") : string.Empty;
+            visibleDateTime = CommandParameters.GetValueOrDefault("visibledatetime") != null ? CommandParameters.GetValueOrDefault("visibledatetime") : string.Empty;
+            dueDateTime = CommandParameters.GetValueOrDefault("duedatetime") != null ? CommandParameters.GetValueOrDefault("duedatetme") : string.Empty;
+
+            continuationToken = CommandParameters.GetValueOrDefault("continuationToken") != null ? CommandParameters.GetValueOrDefault("continuationToken") : string.Empty;
+            size = CommandParameters.GetValueOrDefault("size") != null ? int.Parse(CommandParameters.GetValueOrDefault("size")) : (int?)null;
+        }
+
         /// <summary>
         /// Fetch instance data and call member method to fetch and save document on file
         /// </summary>
@@ -158,9 +202,9 @@ namespace AltinnCLI.Services.Storage
         {
             InstanceResponseMessage responsMessage = null;
 
-            if (!string.IsNullOrEmpty(appId))
+            if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
-                responsMessage = ClientWrapper.GetInstanceMetaData(appId, CommandParameters);
+                responsMessage = ClientWrapper.GetInstanceMetaData(CommandParameters);
 
             }
             else if (ownerId != null)
@@ -221,33 +265,157 @@ namespace AltinnCLI.Services.Storage
         /// <returns></returns>
         protected bool Validate()
         {
-            //if (HasParameter("ownerid"))
-            //{
-            //    if (!HasParameterWithValue("ownerid"))
-            //    {
-            //        _logger.LogError("Missing parameter value for OwnerId");
-            //        return false;
-            //    }
+            if (HasParameter("ownerid"))
+            {
+                if (!HasParameterWithValue("ownerid"))
+                {
+                    _logger.LogError("Missing parameter value for OwnerId");
+                    return false;
+                }
 
-            //    if (HasParameter("instanceid"))
-            //    {
-            //        if (!HasParameterWithValue("instanceid"))
-            //        {
-            //            _logger.LogError("Missing paramterer value for InstanceId");
-            //            return false;
-            //        }
+                if (HasParameter("instanceid"))
+                {
+                    if (!HasParameterWithValue("instanceid"))
+                    {
+                        _logger.LogError("Missing paramterer value for InstanceId");
+                        return false;
+                    }
 
-            //        if (HasParameter("dataId"))
-            //        {
-            //            if (!HasParameterWithValue("dataId"))
-            //            {
-            //                _logger.LogError("Missing paramterer value for dataId");
-            //                return false;
-            //            }
+                    if (HasParameter("dataId"))
+                    {
+                        if (!HasParameterWithValue("dataId"))
+                        {
+                            _logger.LogError("Missing paramterer value for dataId");
+                            return false;
+                        }
 
-            //        }
-            //    }
-            //}
+                    }
+                }
+            }
+
+            if (HasParameter(org) && HasParameter(appId))
+            {
+                _logger.LogError("Oly org or app can be defined as parameter");
+                return false;
+            }
+
+            if (HasParameter(org))
+            {
+                if (!HasParameterWithValue("org"))
+                {
+                    _logger.LogError("Missing parameter value for org");
+                    return false;
+                }
+
+                return CheckInstanceOptions();
+            }
+
+            if (HasParameter(appId))
+            {
+                if (!HasParameterWithValue("appid"))
+                {
+                    _logger.LogError("Missing parameter value for appId");
+                    return false;
+                }
+
+                return CheckInstanceOptions();
+            }
+
+            return true;
+        }
+
+        private bool CheckInstanceOptions()
+        {
+            if (HasParameter("currenttaskid"))
+            {
+                if (!HasParameterWithValue("currenttaskid"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for currenttaskid");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processiscomplete"))
+            {
+                if (!HasParameterWithValue("processiscomplete"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for processiscomplete");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("processisinerror"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for processisinerror");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("processendstate"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for processendstate");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("lastchangeddatetime"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for lastchangeddatetime");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("createddatetime"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for createddatetime");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("visibledatetime"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for visibledatetime");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("duedatetime"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for duedatetime");
+                    return false;
+                }
+
+            }
+                
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("continuationToken"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for continuationToken");
+                    return false;
+                }
+            }
+
+            if (HasParameter("processisinerror"))
+            {
+                if (!HasParameterWithValue("size"))
+                {
+                    _logger.LogError("Wrong or missing parameter value for size");
+                    return false;
+                }
+            }
             return true;
         }
     }
