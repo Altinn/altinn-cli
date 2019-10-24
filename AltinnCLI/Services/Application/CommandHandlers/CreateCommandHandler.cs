@@ -108,7 +108,7 @@ namespace AltinnCLI.Services.Application
                     }
 
                     string response = _clientWrapper.CreateApplication(org, app, instanceowner, multipartFormData);
-                    // _logger.LogInformation("App instanciated : ", response);
+                    _logger.LogInformation("App instanciated : ", response);
                 }
                 else
                 {
