@@ -120,13 +120,15 @@ namespace AltinnCLI.Services.Storage
             }
 
             HttpClientWrapper client = new HttpClientWrapper(_logger);
-            Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);
+            HttpResponseMessage response = client.GetCommand(BaseAddress, cmd).Result;
 
-            string responsMessage = response.Result.Content.ReadAsStringAsync().Result;
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                string responsMessage = response.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<InstanceResponseMessage>(responsMessage);
+            }
 
-            InstanceResponseMessage instanceMessage = JsonConvert.DeserializeObject<InstanceResponseMessage>(responsMessage);
-
-            return instanceMessage;
+            return null;
         }
 
         public InstanceResponseMessage GetInstanceMetaData(Dictionary<string,string> urlParams = null )
@@ -236,7 +238,7 @@ namespace AltinnCLI.Services.Storage
 
 
         /// <summary>
-        /// /instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}
+        /// Uploads a data element to storage 
         /// </summary>
         /// <param name="instanceOwnerId">owner id</param>
         /// <param name="instanceGuid">id of the instance</param>
