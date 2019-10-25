@@ -70,7 +70,7 @@ namespace AltinnCLI.Services.Storage
         {
             get
             {
-                return "Returns a specific document from Storage";
+                return "Download document(s) from Storage and saves to folder set by config value StorageOutputFolder";
             }
         }
 
@@ -81,24 +81,25 @@ namespace AltinnCLI.Services.Storage
         {
             get
             {
-                return  $"Storage GetDocument org=<org> appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org or app that is completed for the org/appId since lastchangeddate \n" +
-                        $"Use either app or appid \n" +
-                        $" Available parameters for the command that download documents for an application \n" + 
-                        $"  org -application\n" +
-                        $"  appId -application id\n" +
-                        $"  currentTaskId -running process current task id\n" +
-                        $"  processIsComplete -is process complete\n" +
-                        $"  processIsInError -is process in error\n" +
-                        $"  processEndState -process end state\n" +
-                        $"  labels -labels\n" +
-                        $"  lastChangedDateTime -last changed date \n" +
-                        $"  createdDateTime -created time \n"+
-                        $"  visibleDateTime -the visible date time \n" +
-                        $"  dueDateTime -the due date time \n" +
-                        $"  continuationToken -continuation token \n" +
-                        $"  size the page size \n" +
-                        $"Storage GetDocument  -Fetch all documents from storage \n" +
-                        $"Storage GetDocument ownerid=<id>  -Fetch all documents from owner \n" +
+                return  $"\n"+
+                        $"Storage GetDocument org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
+                        $"Storage GetDocument appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
+                        $"\n" +
+                        $" Available parameters for the command that download documents for an org or app \n" + 
+                        $"    org                 -org \n" +
+                        $"    appId               -application id\n" +
+                        $"    currentTaskId       -running process current task id\n" +
+                        $"    processIsComplete   -is process complete\n" +
+                        $"    processIsInError    -is process in error\n" +
+                        $"    processEndState     -process end state\n" +
+                        $"    labels              -labels\n" +
+                        $"    lastChangedDateTime -last changed date \n" +
+                        $"    createdDateTime     -created time \n"+
+                        $"    visibleDateTime     -the visible date time \n" +
+                        $"    dueDateTime         -the due date time \n" +
+                        $"    continuationToken   -continuation token \n" +
+                        $"    size                -the page size \n\n" +
+                        $"Storage GetDocument ownerid=<id>  -Fetch all documents for owner \n" +
                         $"Storage GetDocument ownerid=<id> instanceId=<instance-guid> documentId=<document-guid> -Fetch specific document \n";
             }
         }

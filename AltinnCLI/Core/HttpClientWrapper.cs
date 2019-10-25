@@ -105,7 +105,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Console.WriteLine($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
@@ -148,7 +148,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-               Console.WriteLine($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
@@ -183,7 +183,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Console.WriteLine($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             return response;
