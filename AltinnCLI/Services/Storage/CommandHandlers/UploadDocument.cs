@@ -110,9 +110,10 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
                 string elementType = "default";
 
                 FileStream stream = new FileStream(fullFileName, FileMode.Open);
-
-                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(ownerId, instanceId, elementType, stream, fullFileName);
-
+                MemoryStream memstr = new MemoryStream(new byte[stream.Length]);
+                stream.CopyTo(memstr);
+                stream.Close();
+                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(ownerId, instanceId, elementType, memstr, fullFileName);
 
             }
 

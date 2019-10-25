@@ -122,14 +122,16 @@ namespace AltinnCLI.Core
         {
             Uri uri = new Uri(baseAddress + "/" + command);
 
-            HttpResponseMessage response;
+            HttpResponseMessage response = null;
 
             try
             {
                 var cookieContainer = new CookieContainer();
                 using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer} )
-                using (HttpClient client = new HttpClient(handler))
+                using (HttpClient client = new HttpClient())
                 {
+                    client.Timeout = new TimeSpan(0, 0, 30);
+
                     /*
                     cookieContainer.Add(uri, new Cookie("AltinnStudioRuntime", "eyJhbGciOiJSUzI1NiIsImtpZCI6IjAwQTEyRDkyRTRDNEMxQTI5REZCOTU2QTAzMzQwNDYwRDYwNTlDMDkiLCJ4NXQiOiJBS0V0a3VURXdhS2QtNVZxQXpRRVlOWUZuQWsiLCJ0eXAiOiJKV1QifQ.eyJVc2VySUQiOiIyMDAwMzUyMCIsIlVzZXJOYW1lIjoiIiwiUGFydHlJRCI6NTAwMTI5NjAsIkF1dGhlbnRpY2F0ZU1ldGhvZCI6IkFsdGlublBJTiIsIkF1dGhlbnRpY2F0aW9uTGV2ZWwiOjIsIm5iZiI6MTU3MTc1NTA0OSwiZXhwIjoxNTcxNzU2ODQ5LCJpYXQiOjE1NzE3NTUwNDl9.whiKfHP-LwgX6t2yh96mjSxu3XejYp3op0Q-fzQ_wfDqSS8ouVlSZ5XOb3TZOiblKRAnf0UCslmSGl3NyznJHVgMOL5pfZ8rCvubFkpADeGH9zsaty8reOlKF0vWTXFo54MgU5v3Kmctf6L7yMpp78URcm8J6bG0ciJq8S1pDOCv2yowC6hLzalgswaU_t4LsRyd1msWgYZrg6KhrrPIUMgW8-QpAZz4AVnGEFkIZgML0z2Z9C9vtACw205pBfe6y52h6kbMRRebFTS8fRG0HBZjhiT_SPZM1iRb75DpyuAHREGdh0LCjJ5-OLVfJVxR0qIG7TsFId51auvHjlg7nA"));
                     cookieContainer.Add(uri, new Cookie("AltinnPartyId", "50012960"));
@@ -141,7 +143,7 @@ namespace AltinnCLI.Core
             }
             catch (Exception ex)
             {
-                throw new System.Exception("Unable to connect to Altinn:", ex);
+                _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }
 
             if (response.StatusCode != HttpStatusCode.OK)
