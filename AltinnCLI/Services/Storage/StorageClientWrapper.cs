@@ -43,7 +43,14 @@ namespace AltinnCLI.Services.Storage
 
             Task <HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
 
-            return response.Result.Content.ReadAsStringAsync().Result;
+            if (response.Result.IsSuccessStatusCode)
+            {
+                return response.Result.Content.ReadAsStringAsync().Result;
+            }
+            else
+            {
+                return $@"Could not create application instance. Error code: {response.Result.StatusCode} Error message: {response.Result.ReasonPhrase}";
+            }
 
         }
 
