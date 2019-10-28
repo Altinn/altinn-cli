@@ -35,7 +35,7 @@ namespace AltinnCLI.Services.Storage
         {
             get
             {
-                return "Commands for interacting with the Storage";
+                return "\tCommands for interacting with the Storage";
             }
         }
 
