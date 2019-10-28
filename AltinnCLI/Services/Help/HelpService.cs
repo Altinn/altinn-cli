@@ -30,15 +30,15 @@ namespace AltinnCLI.Services
 
            Console.WriteLine(GetHelp());
 
-            foreach (IHelp item in ServiceProvider.GetServices<IHelp>())
+            List<IHelp> items = ServiceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(IService))).ToList();
+
+            foreach (IHelp item in items)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(item.Name);
+                Console.Write(item.Name);
                 Console.ResetColor();
 
-                Console.WriteLine("\nDESCRIPTION\t{0}", item.Description);
-
-                Console.WriteLine("\nUSAGE\t{0}\n\n", item.Usage);
+                Console.Write($"\t{item.Description}\n");
 
             }
         }
@@ -61,13 +61,34 @@ namespace AltinnCLI.Services
         {
             IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(service.Name);
-            Console.ResetColor();
+            if (service != null)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(service.Name);
+                Console.ResetColor();
 
-            Console.WriteLine("\nDESCRIPTION\t{0}", service.Description);
+                Console.WriteLine("\nDESCRIPTION\t{0}", service.Description);
 
-            Console.WriteLine("\nUSAGE\t{0}\n\n", service.Usage);
+                Console.WriteLine("\nUSAGE\t{0}\n", service.Usage);
+
+                Console.WriteLine("Commands\n");
+
+                List <ICommandHandler> items = ServiceProvider.GetServices<ICommandHandler>().
+                        Where(x => x is IHelp && string.Equals(x.ServiceProvider,service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                foreach (IHelp handler in items)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write(handler.Name);
+                    Console.ResetColor();
+
+                    Console.Write("\t{0}\n", handler.Description);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No help, the requested service is not found");
+            }
 
         }
 
@@ -83,7 +104,7 @@ namespace AltinnCLI.Services
         {
             get
             {
-                return "Help";
+                return "\tCommands for getting help";
             }
         }
 
