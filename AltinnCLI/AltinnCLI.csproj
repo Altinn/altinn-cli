@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <Folder Include="Attributes\" />
+    <Folder Include="Services\Login\CommandHandlers\" />
   </ItemGroup>
 
 </Project>
