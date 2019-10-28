@@ -2,66 +2,65 @@
 using AltinnCLI.Services.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 
 namespace AltinnCLI.Services.Application
 {
 
     /// <summary>
-    /// 
+    /// Command for creating instances of an app. The command can be used both to create a single instance for 
+    /// a specified instance owner, or for instanciating the app for several users simultaniously. The command
+    /// also supports prefilling instances.
     /// </summary>
     class CreateInstanceCommandHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
         /// <summary>
-        /// 
+        /// Handles communication with the runtime API
         /// </summary>
         private IStorageClientWrapper _clientWrapper = null;
 
         /// <summary>
-        /// 
+        /// Short code of the app the instance is being created for
         /// </summary>
         private string app = string.Empty;
         
         /// <summary>
-        /// 
+        /// Short code for the application owner
         /// </summary>
         private string org = string.Empty;
         
         /// <summary>
-        /// 
+        /// Id of the party the instance will be created for
         /// </summary>
         private string instanceOwnerId = string.Empty;
         
         /// <summary>
-        /// 
+        /// Name of the file containing the datamodel for the instance. Defaults to 'Default.xml'
         /// </summary>
         private string dataModel = string.Empty;
         
         /// <summary>
-        /// 
+        /// Name of the file containing the instance template. Defaults to 'Instance.json'
         /// </summary>
         private string instanceTemplate = string.Empty;
         
         /// <summary>
-        /// 
+        /// Name of the folder where instance information is stored on the users local machine
         /// </summary>
         private string folder = string.Empty;
         
         /// <summary>
-        /// 
+        /// Name of the folder holding prefill instance datamodels
         /// </summary>
         private string instanceData = string.Empty;
 
         /// <summary>
-        /// 
+        /// Creates an instance of <see cref="CreateInstanceCommandHandler" /> class
         /// </summary>
-        /// <param name="logger"></param>
+        /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information</param>
         public CreateInstanceCommandHandler(ILogger<CreateInstanceCommandHandler> logger) : base(logger)
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
@@ -71,7 +70,7 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Gets the name of the command
         /// </summary>
         public string Name
         {
@@ -82,7 +81,7 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Gets the description of the command. Will be used to generate help documentation
         /// </summary>
         public string Description
         {
@@ -93,25 +92,30 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Gets the usage of the command. Will be used to generate help documentation
         /// </summary>
         public string Usage
         {
             get
             {
-                return $"AltinnCLI > Application createInstance -app -org -instanceOwnerId -dataModel -instanceTemplate -folder -instanceData\n\n" +
-                       $"\t-app <-a> \tApplication short code \n" +
-                       $"\t-org <-o> \tApplication owner identification code \n" +
-                       $"\t-instanceOwnerId <-i> \tIdentification number of the person the app instance will be created for \n" +
-                       $"\t-dataModel <-dm> \tPath to xml document specifying the data model for the instance. If no value is given the tool will look for 'Default.xml' in the specified input folder\n" +
-                       $"\t-instanceTemplate <-t> \tApplication short code \n" +
-                       $"\t-folder <-dir> \tPath to local folder containing data elements for the instance that is created\n" +
-                       $"\t-instanceData <-data> \tPath to local folder containing prefill data for multiple  instance owners\n";
+                return $"AltinnCLI > Application createInstance app org instanceOwnerId dataModel instanceTemplate folder instanceData\n\n" +
+                       $"\tapp <-a> \tApplication short code \n" +
+                       $"\torg <-o> \tApplication owner identification code \n" +
+                       $"\tinstanceOwnerId <-i> \tIdentification number of the person the app instance will be created for \n" +
+                       $"\tdataModel <-dm> \tPath to xml document specifying the data model for the instance. If no value is given the tool will look for 'Default.xml'" +
+                       $" in the specified input folder\n" +
+                       $"\tinstanceTemplate <-t> \tApplication short code \n" +
+                       $"\tfolder <-dir> \tPath to local folder containing data elements for the instance that is created\n" +
+                       $"\tinstanceData <-data> \tPath to local folder containing prefill data for multiple  instance owners\n\n" +
+                       $"Application createInstance app=<app code> org=<organisation code> instanceOwnerId=<id> folder=<path> " +
+                       $"-Creates an instance of the app for an instance owner. Will scan folder for datamodel named Default.xml\n" +
+                       $"Application createInstance app=<app code> org=<organisation code> instanceOwnerId=<id> dataModel=<filename> folder=<path> " +
+                       $"-Creates an instance of the app for an instance owner based on the file specified by dataModel. Will scan folder for instance template and attachements\n";
             }
         }
 
         /// <summary>
-        /// 
+        /// Gets the name of the ServiceProvider for the command
         /// </summary>
         public string ServiceProvider
         {
@@ -122,7 +126,7 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Gets the validation status of the command
         /// </summary>
         public bool IsValid
         {
@@ -142,9 +146,9 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Processes and runs the command
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns true if the command completes succesfully</returns>
         public bool Run()
         {
             if (IsValid)
@@ -166,33 +170,7 @@ namespace AltinnCLI.Services.Application
                 }
 
                 // Handle single app instanciation
-                
-
-                if (Directory.Exists(folder))
-                {
-                    foreach (string filePath in readFiles(folder))
-                    {
-                        string contentType = "application/octet-stream";
-                        string contentName = "default";
-
-                        if (filePath.Contains(".xml"))
-                        {
-                            contentType = "application/xml";
-                        }
-                        if (filePath.Contains(".json"))
-                        {
-                            contentType = "application/json; charset=utf-8";
-                            contentName = "instance";
-                        }
-
-                        if (contentType != "application/octet-stream")
-                        {
-                            StringContent content = new StringContent(File.ReadAllText(filePath));
-                            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
-                            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse($"form-data; name={contentName}");
-                            multipartFormData.Add(content, Path.GetFileNameWithoutExtension(filePath));
-                        }
-                    }
+                multipartFormData = buildContentForInstance(folder);
 
                     string response = _clientWrapper.CreateApplication(org, app, instanceOwnerId, multipartFormData);
                     _logger.LogInformation(response);
@@ -201,16 +179,57 @@ namespace AltinnCLI.Services.Application
                 {
                     _logger.LogError(@$"Could not open folder '{folder}'");
                 }
-            }
-
             return true;
         }
 
+        private MultipartFormDataContent buildContentForInstance(string path)
+        {
+            MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
+            if (Directory.Exists(path))
+            {
+                foreach (string filePath in readFiles(path))
+                {
+                    string contentType = "application/octet-stream";
+                    string contentName = "default";
+
+                    if (filePath.Contains(".xml"))
+                    {
+                        contentType = "application/xml";
+                    }
+                    if (filePath.Contains(".json"))
+                    {
+                        contentType = "application/json; charset=utf-8";
+                        contentName = "instance";
+                    }
+
+                    if (contentType != "application/octet-stream")
+                    {
+                        StringContent content = new StringContent(File.ReadAllText(filePath));
+                        content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+                        content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse($"form-data; name={contentName}");
+                        multipartFormData.Add(content, Path.GetFileNameWithoutExtension(filePath));
+                    }
+                }
+
+                return multipartFormData;
+            }
+            else
+            {
+                _logger.LogError(@$"Could not open folder '{folder}'");
+                return null;
+            }
+        }
+
+        private MultipartFormDataContent buildContentForMultipleInstances()
+        {
+            return null;
+        }
+
         /// <summary>
-        /// 
+        /// Reads all files in the directory specified by <see cref="path" />
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="path">Path to the directory that will be read</param>
+        /// <returns>A list of strings representing the path to each file in the directory</returns>
         private String[] readFiles(string path)
         {
             if (Directory.Exists(path))
@@ -224,10 +243,10 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Reads the value of a parameter if it has been set
         /// </summary>
-        /// <param name="paramName"></param>
-        /// <returns></returns>
+        /// <param name="paramName">Name of the parameter</param>
+        /// <returns>Returns the value of the parameter if one is given, null otherwise</returns>
         private string getParamValue(string paramName)
         {
             if (HasParameter(paramName))
@@ -241,34 +260,34 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// 
+        /// Verifies that the input parameters are valid.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the command is valid, false if any required parameters are missing</returns>
         protected bool Validate()
         {
             bool valid = true;
             if (!HasParameterWithValue("app"))
             {
                 valid = false;
-                _logger.LogError("Invalid or missing value for parameter app");
+                _logger.LogError("Invalid or missing value for parameter: 'app'");
             }
 
             if (!HasParameterWithValue("org"))
             {
                 valid = false;
-                _logger.LogError("Invalid or missing value for parameter org");
+                _logger.LogError("Invalid or missing value for parameter: 'org'");
             }
 
             if (!HasParameterWithValue("instanceowner"))
             {
                 valid = false;
-                _logger.LogError("Invalid or missing value for parameter instanceOwnerId");
+                _logger.LogError("Invalid or missing value for parameter: 'instanceOwnerId'");
             }
 
             if (!HasParameterWithValue("folder"))
             {
                 valid = false;
-                _logger.LogError("Invalid or missing value for folder");
+                _logger.LogError("Invalid or missing value for parameter: 'folder'");
             }
 
             if (!HasParameterWithValue("dataModel"))

@@ -10,10 +10,21 @@ using System.Text;
 
 namespace AltinnCLI.Services.Storage
 {
+    /// <summary>
+    /// Command for getting metadata for an instances of an app.
+    /// </summary>
     public class GetInstanceHandler : CommandHandlerBase, ICommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
 
+        private string instanceOwnerId;
+        private string instanceId;
+        private string saveToFile;
+        
+        /// <summary>
+        /// Creates an instance of the <see cref="GetInstanceHandler" /> class
+        /// </summary>
+        /// <param name="logger"></param>
         public GetInstanceHandler(ILogger<GetInstanceHandler> logger) : base(logger)
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
@@ -23,6 +34,9 @@ namespace AltinnCLI.Services.Storage
 
         }
 
+        /// <summary>
+        /// Gets the name of the command
+        /// </summary>
         public string Name
         {
             get
@@ -31,6 +45,9 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        /// <summary>
+        /// Gets the description of the command. Will be used to generate help documentation
+        /// </summary>
         public string Description
         {
             get
@@ -39,14 +56,20 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        /// <summary>
+        /// Gets the usage of the command. Will be used to generate help documentation
+        /// </summary>
         public string Usage
         {
             get
             {
-                return "AltinnCLI > storage GetInstance -instanceId=<instance-guid>";
+                return "AltinnCLI > storage GetInstance instanceOwnerId=<id> instanceId=<instance-guid> saveToFile";
             }
         }
 
+        /// <summary>
+        /// Gets the name of the ServiceProvider for the command
+        /// </summary>
         public string ServiceProvider
         {
             get
@@ -55,6 +78,9 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        /// <summary>
+        /// Gets the validation status of the command
+        /// </summary>
         public bool IsValid
         {
 
@@ -64,11 +90,19 @@ namespace AltinnCLI.Services.Storage
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetHelp()
         {
             return Name;
         }
 
+        /// <summary>
+        /// Processes and runs the command
+        /// </summary>
+        /// <returns>Returns true if the command completes succesfully</returns>
         public bool Run()
         {
             if (IsValid)
@@ -77,23 +111,22 @@ namespace AltinnCLI.Services.Storage
                                          Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")));
 
 
-                if (HasParameterWithValue("savefile"))
+                if (HasParameter("saveToFile"))
                 {
+                    string fileName = CommandParameters.GetValueOrDefault("instanceid").ToString() + ".json";
                     if (response != null)
                     {
-                        string filefolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
+                        string fileFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
 
                         // chekc if file folder exists, if not create it
-                        if (!Directory.Exists(filefolder))
+                        if (!Directory.Exists(fileFolder))
                         {
-                            Directory.CreateDirectory(filefolder);
+                            Directory.CreateDirectory(fileFolder);
 
-                        }
-                        FileStream file = new FileStream(filefolder + "/" + CommandParameters.GetValueOrDefault("ownerid").ToString()+".json", FileMode.CreateNew);
-                        response.Position = 0;
-                        response.CopyTo(file);
-                        file.Flush();
-                        file.Close();
+                        }                      
+
+                        SaveToFile(fileFolder, fileName, response);
+                        
                     }
                 }
                 else
@@ -112,9 +145,30 @@ namespace AltinnCLI.Services.Storage
             return true;
         }
 
+        /// <summary>
+        /// Verifies that the input parameters are valid.
+        /// </summary>
+        /// <returns>True if the command is valid, false if any required parameters are missing</returns>
         private bool Validate()
         {
             return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid"));
+        }
+
+        /// <summary>
+        /// Reads the value of a parameter if it has been set
+        /// </summary>
+        /// <param name="paramName">Name of the parameter</param>
+        /// <returns>Returns the value of the parameter if one is given, null otherwise</returns>
+        private string getParamValue(string paramName)
+        {
+            if (HasParameter(paramName))
+            {
+                return CommandParameters[paramName];
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }

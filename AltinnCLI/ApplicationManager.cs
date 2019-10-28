@@ -11,8 +11,8 @@ using System.Text;
 namespace AltinnCLI.Core
 {
     /// <summary>
-    /// Finds according to user input chich type of service and which type of command that shall be executed. 
-    /// Which is from the ServiceProvider that contains executable services and command handlers
+    /// Finds which type of service and command that should be executed according to user input. 
+    /// Scans the ServiceProvider that contains executable services and command handlers
     /// </summary>
     public class ApplicationManager
     {
@@ -27,9 +27,9 @@ namespace AltinnCLI.Core
         }
 
         /// <summary>
-        /// Execute the user command with parameters. Consists in finding correct service and command handler and start service.
+        /// Execute the user command with parameters. Finds the correct service and command handler and starts the service.
         /// </summary>
-        /// <param name="args">input command line arguments</param>
+        /// <param name="args">User input from command line arguments</param>
         public void Execute(string args)
         {
             if (!string.IsNullOrEmpty(args))
@@ -66,11 +66,13 @@ namespace AltinnCLI.Core
         }
 
         /// <summary>
-        /// Finds according to input parameters the service and commmand handler that shall execute the command .
-        /// It co service
+        /// Parses input parameters and finds the correct service and commmand handler for executing the command.
         /// </summary>
-        /// <param name="input">command line arguments that is split into list of parameter separated by space</param>
-        /// <returns>A commandhanlder that shall execute the used input command</returns>
+        /// <param name="input">
+        /// User input from command line arguments, split into list of parameters separated by space. 
+        /// Commands are structured as follows: [command] [subcommand] [options]
+        /// </param>
+        /// <returns>A commandHandler that can execute the command given by user input</returns>
         private ICommandHandler processArgs(string[] input)
         {
             ICommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>()
@@ -93,7 +95,7 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Build Dictionary for input parameters
         /// </summary>
-        /// <param name="args">input parameters split into list of strings. Space has been used as split char</param>
+        /// <param name="args">Input parameters split into list of parameter names and values.</param>
         /// <returns></returns>
         protected Dictionary<string, string> ParseArguments(string[] args)
         {
