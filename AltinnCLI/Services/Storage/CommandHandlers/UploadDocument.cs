@@ -62,7 +62,9 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
         {
             get
             {
-                return $"Storage UploadDocument ownerid=<id> instanceid=<instanceid> file=<full path to file (includes filename)>-Upload ans save document to storage\n";
+                return $"\n" +
+                        $"Storage UploadDocument ownerId=<ownerid> instanceId=<instanceguid> elementType=<elementtype> file=c:<filename with full path>\n" +
+                        $"\n";
             }
         }
 

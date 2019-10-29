@@ -73,16 +73,37 @@ namespace AltinnCLI.Services
 
                 Console.WriteLine("Commands\n");
 
-                List <ICommandHandler> items = ServiceProvider.GetServices<ICommandHandler>().
-                        Where(x => x is IHelp && string.Equals(x.ServiceProvider,service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                List<ICommandHandler> items;
 
-                foreach (IHelp handler in items)
+                if (input.Count > 2)
                 {
+                    items = ServiceProvider.GetServices<ICommandHandler>()
+                            .Where(x => (x is IHelp && string.Equals(x.ServiceProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
+                                        string.Equals(x.Name, input.Keys.ElementAt<string>(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write(handler.Name);
-                    Console.ResetColor();
 
-                    Console.Write("\t{0}\n", handler.Description);
+                    foreach (IHelp handler in items)
+                    { 
+                        Console.Write(handler.Name);
+                        Console.ResetColor();
+
+                        Console.Write("\t{0}\n", handler.Description);
+                        Console.Write("\t{0}\n", handler.Usage);
+                    }
+                }
+                else
+                {
+                    items = ServiceProvider.GetServices<ICommandHandler>().
+                            Where(x => x is IHelp && string.Equals(x.ServiceProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                    foreach (IHelp handler in items)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write(handler.Name);
+                        Console.ResetColor();
+
+                        Console.Write("\t{0}\n", handler.Description);
+                    }
                 }
             }
             else
