@@ -24,6 +24,7 @@ namespace AltinnCLI.Core
         public SubCommandHandlerBase(ILogger<SubCommandHandlerBase> logger)
         {
             _logger = logger;
+            CliOptions = new List<IOption>();
         }
 
         /// <summary>
@@ -52,6 +53,11 @@ namespace AltinnCLI.Core
         /// Gets or set the dictionary with the command line arguments
         /// </summary>
         public Dictionary<string, string> Options { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<IOption> CliOptions { get; } 
 
         /// <summary>
         /// Verifies if the command parameters contain a specific key and that it has a value

@@ -50,6 +50,16 @@ namespace AltinnCLI.Commands.Storage
                 ClientWrapper = new StorageClientFileWrapper(_logger);
             }
 
+            DefineAvailableOptions(); 
+        }
+
+        private void DefineAvailableOptions()
+        {
+            IOption ownerId = (IOption)new Option<int>("ownerId", "100", "instanceownerid");
+            if (ownerId.IsValid())
+            {
+                CliOptions.Add(ownerId);
+            }
         }
 
         /// <summary>
