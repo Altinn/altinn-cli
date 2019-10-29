@@ -1,11 +1,15 @@
-﻿using AltinnCLI.Core;
+﻿using Altinn.Platform.Storage.Models;
+using AltinnCLI.Core;
 using AltinnCLI.Services.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace AltinnCLI.Services.Application
 {
@@ -20,7 +24,7 @@ namespace AltinnCLI.Services.Application
         /// <summary>
         /// Handles communication with the runtime API
         /// </summary>
-        private IStorageClientWrapper _clientWrapper = null;
+        private IStorageClientWrapper clientWrapper = null;
 
         /// <summary>
         /// Short code of the app the instance is being created for
@@ -65,7 +69,7 @@ namespace AltinnCLI.Services.Application
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                _clientWrapper = new StorageClientWrapper(_logger);
+                clientWrapper = new StorageClientWrapper(_logger);
             }
         }
 
@@ -166,13 +170,34 @@ namespace AltinnCLI.Services.Application
                 // Handle Prefill data
                 if (!String.IsNullOrEmpty(instanceTemplate))
                 {
+                    foreach (string filePath in readFiles(instanceData))
+                    {
+                        if (Path.GetExtension(filePath) == "xml")
+                        {
+                            string xmlFileName = Path.GetFileName(filePath);
+                            string personNumber = Path.GetFileNameWithoutExtension(filePath);
+                            multipartFormData = buildContentForMultipleInstances(xmlFileName);
 
+                            try
+                            {
+                                string result = clientWrapper.CreateApplication(app, org, instanceOwnerId, multipartFormData);
+
+                                Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
+                                File.WriteAllText($"{folder}\\{personNumber}.json", JsonConvert.SerializeObject(instanceResult, Formatting.Indented));
+
+                            }
+                            catch (Exception e)
+                            {
+                                File.WriteAllText($"{folder}\\error-{personNumber}.txt", $"{e.Message}");
+                            }
+                        }
+                    }
                 }
 
                 // Handle single app instanciation
                 multipartFormData = buildContentForInstance(folder);
 
-                    string response = _clientWrapper.CreateApplication(org, app, instanceOwnerId, multipartFormData);
+                    string response = clientWrapper.CreateApplication(org, app, instanceOwnerId, multipartFormData);
                     _logger.LogInformation(response);
                 }
                 else
@@ -220,9 +245,36 @@ namespace AltinnCLI.Services.Application
             }
         }
 
-        private MultipartFormDataContent buildContentForMultipleInstances()
+        private MultipartFormDataContent buildContentForMultipleInstances(string path)
         {
-            return null;
+            string xmlFileName, personNumber;
+
+            if (Path.GetExtension(path) == "xml")
+            {
+                xmlFileName = Path.GetFileName(path);
+
+                // The person number is the XML filename
+                personNumber = Path.GetFileNameWithoutExtension(path);
+
+                Instance instanceTemplate = new Instance()
+                {
+                    InstanceOwnerLookup = new InstanceOwnerLookup()
+                    {
+                        PersonNumber = personNumber,
+                    }
+                };
+
+                MultipartFormDataContent content = new MultipartContentBuilder(instanceTemplate)
+                .AddDataElement("default", new FileStream(path, FileMode.Open), "application/xml")
+                .Build();
+
+                return content;
+
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -325,4 +377,43 @@ namespace AltinnCLI.Services.Application
             return valid;
         }
     }
+}
+
+public class MultipartContentBuilder
+{
+    private MultipartFormDataContent builder;
+
+    public MultipartContentBuilder(Instance instanceTemplate)
+    {
+        builder = new MultipartFormDataContent();
+        if (instanceTemplate != null)
+        {
+            StringContent instanceContent = new StringContent(JsonConvert.SerializeObject(instanceTemplate), Encoding.UTF8, "application/json");
+
+            builder.Add(instanceContent, "instance");
+        }
+    }
+
+    public MultipartContentBuilder AddDataElement(string elementType, Stream stream, string contentType)
+    {
+        StreamContent streamContent = new StreamContent(stream);
+        streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+
+        builder.Add(streamContent, elementType);
+
+        return this;
+    }
+
+    public MultipartContentBuilder AddDataElement(string elementType, StringContent content)
+    {
+        builder.Add(content, elementType);
+
+        return this;
+    }
+
+    public MultipartFormDataContent Build()
+    {
+        return builder;
+    }
+
 }
