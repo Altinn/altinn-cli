@@ -36,7 +36,7 @@ namespace AltinnCLI.Services.Login
         {
             get
             {
-                return $@"Verifiy certificates and log in to Altinn";
+                return $"\tVerifiy certificates and log in to Altinn";
             }
         }
 

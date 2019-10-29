@@ -61,7 +61,7 @@ namespace AltinnCLI.Services
         {
             IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-            if (service != null)
+            if ((service != null) && (service is IService))
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(service.Name);
