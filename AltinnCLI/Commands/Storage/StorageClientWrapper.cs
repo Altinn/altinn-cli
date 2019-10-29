@@ -11,7 +11,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AltinnCLI.Services.Storage
+namespace AltinnCLI.Commands.Storage
 {
     public class StorageClientWrapper : IStorageClientWrapper
     {
@@ -66,7 +66,7 @@ namespace AltinnCLI.Services.Storage
         /// <param name="instanceGuid">id of the instance</param>
         /// <param name="dataId">id of the data element/file</param>
         /// <returns></returns>
-        public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
+        public Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
 
@@ -85,7 +85,7 @@ namespace AltinnCLI.Services.Storage
         /// <param name="command">Get URL</param>
         /// <param name="contentType">content type which must match content type in repons if defined</param>
         /// <returns></returns>
-        public Stream GetDocument(string command, string contentType = null)
+        public Stream GetData(string command, string contentType = null)
         {
 
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);

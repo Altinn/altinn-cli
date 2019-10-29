@@ -6,7 +6,7 @@ using System.Text;
 using AltinnCLI.Core;
 using Microsoft.Extensions.Logging;
 
-namespace AltinnCLI.Services.Storage
+namespace AltinnCLI.Commands.Storage
 {
     public class StorageClientFileWrapper : IStorageClientWrapper
     {
@@ -32,12 +32,12 @@ namespace AltinnCLI.Services.Storage
             throw new NotImplementedException();
         }
 
-        public Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId)
+        public Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             throw new NotImplementedException();
         }
 
-        public Stream GetDocument(string command, string contentType = null)
+        public Stream GetData(string command, string contentType = null)
         {
             throw new NotImplementedException();
         }

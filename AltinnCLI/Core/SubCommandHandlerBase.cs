@@ -10,7 +10,7 @@ namespace AltinnCLI.Core
     /// <summary>
     /// Base class for Commandhandlers
     /// </summary>
-    public abstract class CommandHandlerBase
+    public abstract class SubCommandHandlerBase
     {
         /// <summary>
         /// Application logger 
@@ -21,7 +21,7 @@ namespace AltinnCLI.Core
         /// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
         /// </summary>
         /// <param name="logger">Application logger to be used for logging</param>
-        public CommandHandlerBase(ILogger<CommandHandlerBase> logger)
+        public SubCommandHandlerBase(ILogger<SubCommandHandlerBase> logger)
         {
             _logger = logger;
         }
@@ -51,7 +51,7 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Gets or set the dictionary with the command line arguments
         /// </summary>
-        public Dictionary<string, string> CommandParameters { get; set; }
+        public Dictionary<string, string> Options { get; set; }
 
         /// <summary>
         /// Verifies if the command parameters contain a specific key and that it has a value
@@ -60,7 +60,7 @@ namespace AltinnCLI.Core
         /// <returns></returns>
         protected bool HasParameterWithValue(string key)
         {
-            if (CommandParameters.ContainsKey(key) && CommandParameters.GetValueOrDefault(key) != string.Empty)
+            if (Options.ContainsKey(key) && Options.GetValueOrDefault(key) != string.Empty)
             {
                 return true;
             }
@@ -75,7 +75,7 @@ namespace AltinnCLI.Core
         /// <returns></returns>
         protected bool HasParameter(string key)
         {
-            if (CommandParameters.ContainsKey(key))
+            if (Options.ContainsKey(key))
             {
                 return true;
             }

@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace AltinnCLI.Services.Login
+namespace AltinnCLI.Commands
 {
-    class LoginService : IService, IHelp
+    class LoginCommand : ICommand, IHelp
     {
         private IServiceProvider ServiceProvider;
 
         /// <summary>
         /// 
         /// </summary>
-        public LoginService()
+        public LoginCommand()
         {
             ServiceProvider = ApplicationManager.ServiceProvider;
         }
@@ -60,7 +60,7 @@ namespace AltinnCLI.Services.Login
             throw new NotImplementedException();
         }
 
-        public void Run(ICommandHandler commandHandler = null)
+        public void Run(ISubCommandHandler commandHandler = null)
         {
             Console.WriteLine("Logged in");
         }

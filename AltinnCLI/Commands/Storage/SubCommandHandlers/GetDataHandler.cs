@@ -6,12 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace AltinnCLI.Services.Storage
+namespace AltinnCLI.Commands.Storage
 {
     /// <summary>
     /// Commandhandler that is used to fetch documents from Altinn Blob storage.  
     /// </summary>
-    public class GetDocumentHandler : CommandHandlerBase, ICommandHandler, IHelp
+    public class GetDataHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
 
@@ -38,7 +38,7 @@ namespace AltinnCLI.Services.Storage
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
-        public GetDocumentHandler(ILogger<GetDocumentHandler> logger) : base(logger)
+        public GetDataHandler(ILogger<GetDataHandler> logger) : base(logger)
         {
 
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
@@ -59,7 +59,7 @@ namespace AltinnCLI.Services.Storage
         { 
             get
             {
-                return "GetDocument";
+                return "GetData";
             }
         }
 
@@ -70,7 +70,7 @@ namespace AltinnCLI.Services.Storage
         {
             get
             {
-                return "Download document(s) from Storage and saves to folder set by config value StorageOutputFolder";
+                return "Download data from Storage and saves to folder set by config value StorageOutputFolder";
             }
         }
 
@@ -82,8 +82,8 @@ namespace AltinnCLI.Services.Storage
             get
             {
                 return  $"\n"+
-                        $"Storage GetDocument org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
-                        $"Storage GetDocument appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
+                        $"Storage GetData org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
+                        $"Storage GetData appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
                         $"\n" +
                         $" Available parameters for the command that download documents for an org or app \n" + 
                         $"    org                 -org \n" +
@@ -99,15 +99,15 @@ namespace AltinnCLI.Services.Storage
                         $"    dueDateTime         -the due date time \n" +
                         $"    continuationToken   -continuation token \n" +
                         $"    size                -the page size \n\n" +
-                        $"Storage GetDocument ownerid=<id>  -Fetch all documents for owner \n" +
-                        $"Storage GetDocument ownerid=<id> instanceId=<instance-guid> documentId=<document-guid> -Fetch specific document \n";
+                        $"Storage GetData ownerid=<id>  -Fetch all documents for owner \n" +
+                        $"Storage GetData ownerid=<id> instanceId=<instance-guid> dataId=<data-guid> -Fetch specific data element \n";
             }
         }
 
         /// <summary>
-        /// Gets the name of the ServiceProvider that uses this command
+        /// Gets the name of the CommandProvider that uses this command
         /// </summary>
-        public string ServiceProvider
+        public string CommandProvider
         {
             get
             {
@@ -147,7 +147,7 @@ namespace AltinnCLI.Services.Storage
 
                 if ((ownerId != null) && (instanceId != null) && (dataId != null))
                 {
-                    Stream stream = ClientWrapper.GetDocument((int)ownerId, (Guid)instanceId, (Guid)dataId);
+                    Stream stream = ClientWrapper.GetData((int)ownerId, (Guid)instanceId, (Guid)dataId);
 
                     if (stream != null)
                     {
@@ -172,25 +172,25 @@ namespace AltinnCLI.Services.Storage
 
         private void SetLocals()
         {
-            ownerId = CommandParameters.GetValueOrDefault("ownerid") != null ? int.Parse(CommandParameters.GetValueOrDefault("ownerid")) : (int?)null;
-            instanceId = CommandParameters.GetValueOrDefault("instanceid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
-            dataId = CommandParameters.GetValueOrDefault("dataid") != null ? Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")) : (Guid?)null;
-            updateInstances = CommandParameters.GetValueOrDefault("updateinstances") != null ? CommandParameters.GetValueOrDefault("instanceid") : string.Empty;
+            ownerId = Options.GetValueOrDefault("ownerid") != null ? int.Parse(Options.GetValueOrDefault("ownerid")) : (int?)null;
+            instanceId = Options.GetValueOrDefault("instanceid") != null ? Guid.Parse(Options.GetValueOrDefault("instanceid")) : (Guid?)null;
+            dataId = Options.GetValueOrDefault("dataid") != null ? Guid.Parse(Options.GetValueOrDefault("dataid")) : (Guid?)null;
+            updateInstances = Options.GetValueOrDefault("updateinstances") != null ? Options.GetValueOrDefault("instanceid") : string.Empty;
 
-            appId = CommandParameters.GetValueOrDefault("appid") != null ? CommandParameters.GetValueOrDefault("appid") : string.Empty;
-            org = CommandParameters.GetValueOrDefault("org") != null ? CommandParameters.GetValueOrDefault("org") : string.Empty;
+            appId = Options.GetValueOrDefault("appid") != null ? Options.GetValueOrDefault("appid") : string.Empty;
+            org = Options.GetValueOrDefault("org") != null ? Options.GetValueOrDefault("org") : string.Empty;
 
-            processIsComplete = CommandParameters.GetValueOrDefault("processsscomplete") != null ? bool.Parse(CommandParameters.GetValueOrDefault("processIsComplete")) : false;
-            processIsInError = CommandParameters.GetValueOrDefault("processisisError") != null ? bool.Parse(CommandParameters.GetValueOrDefault("processisinerror")) : false;
-            processEndState = CommandParameters.GetValueOrDefault("processendstate") != null ? CommandParameters.GetValueOrDefault("processendstate") : string.Empty;
+            processIsComplete = Options.GetValueOrDefault("processsscomplete") != null ? bool.Parse(Options.GetValueOrDefault("processIsComplete")) : false;
+            processIsInError = Options.GetValueOrDefault("processisisError") != null ? bool.Parse(Options.GetValueOrDefault("processisinerror")) : false;
+            processEndState = Options.GetValueOrDefault("processendstate") != null ? Options.GetValueOrDefault("processendstate") : string.Empty;
 
-            lastChangedDateTime = CommandParameters.GetValueOrDefault("lastchangedatetime") != null ? CommandParameters.GetValueOrDefault("lastchangeddatetime") : string.Empty;
-            createdDateTime = CommandParameters.GetValueOrDefault("createddatetime") != null ? CommandParameters.GetValueOrDefault("createdtatetime") : string.Empty;
-            visibleDateTime = CommandParameters.GetValueOrDefault("visibledatetime") != null ? CommandParameters.GetValueOrDefault("visibledatetime") : string.Empty;
-            dueDateTime = CommandParameters.GetValueOrDefault("duedatetime") != null ? CommandParameters.GetValueOrDefault("duedatetme") : string.Empty;
+            lastChangedDateTime = Options.GetValueOrDefault("lastchangedatetime") != null ? Options.GetValueOrDefault("lastchangeddatetime") : string.Empty;
+            createdDateTime = Options.GetValueOrDefault("createddatetime") != null ? Options.GetValueOrDefault("createdtatetime") : string.Empty;
+            visibleDateTime = Options.GetValueOrDefault("visibledatetime") != null ? Options.GetValueOrDefault("visibledatetime") : string.Empty;
+            dueDateTime = Options.GetValueOrDefault("duedatetime") != null ? Options.GetValueOrDefault("duedatetme") : string.Empty;
 
-            continuationToken = CommandParameters.GetValueOrDefault("continuationToken") != null ? CommandParameters.GetValueOrDefault("continuationToken") : string.Empty;
-            size = CommandParameters.GetValueOrDefault("size") != null ? int.Parse(CommandParameters.GetValueOrDefault("size")) : (int?)null;
+            continuationToken = Options.GetValueOrDefault("continuationToken") != null ? Options.GetValueOrDefault("continuationToken") : string.Empty;
+            size = Options.GetValueOrDefault("size") != null ? int.Parse(Options.GetValueOrDefault("size")) : (int?)null;
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace AltinnCLI.Services.Storage
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
-                responsMessage = ClientWrapper.GetInstanceMetaData(CommandParameters);
+                responsMessage = ClientWrapper.GetInstanceMetaData(Options);
 
             }
             else if (ownerId != null)
@@ -218,26 +218,26 @@ namespace AltinnCLI.Services.Storage
                 _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
                 Instance[] instances = responsMessage.Instances;
-                FetchAndSaveDocuments(instances, responsMessage.Next, updateInstances);
+                FetchAndSaveData(instances, responsMessage.Next, updateInstances);
             }
 
         }
 
 
         /// <summary>
-        ///  Fetch document from storage and save it to file. If the Next link is defined continue to read rest of instances and documents
+        ///  Fetch document from storage and save it to file. If the Next link is defined continue to read rest of instances and data
         /// </summary>
-        /// <param name="instances">The insatnces for which the documents shall be fetched</param>
-        /// <param name="nextLink">The fetch of documents are paged, the next link shall be used to fetch next page of instances</param>
+        /// <param name="instances">The instances for which the data shall be fetched</param>
+        /// <param name="nextLink">The fetch of data elements is paged, the next link shall be used to fetch next page of instances</param>
         /// <param name="updateInstances"></param>
-        private void FetchAndSaveDocuments(Instance[] instances, Uri nextLink, string updateInstances)
+        private void FetchAndSaveData(Instance[] instances, Uri nextLink, string updateInstances)
         {
             foreach (Instance instance in instances)
             {
                 foreach (DataElement data in instance.Data)
                 { 
                     string url = data.DataLinks.Platform;
-                    Stream responsData = ClientWrapper.GetDocument(url, data.ContentType);
+                    Stream responsData = ClientWrapper.GetData(url, data.ContentType);
 
                     if (responsData != null)
                     {
@@ -256,7 +256,7 @@ namespace AltinnCLI.Services.Storage
                 InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(nextLink);
                 _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
-                FetchAndSaveDocuments(responsMessage.Instances, responsMessage.Next, updateInstances);
+                FetchAndSaveData(responsMessage.Instances, responsMessage.Next, updateInstances);
             }
         }
 
@@ -296,7 +296,7 @@ namespace AltinnCLI.Services.Storage
 
             if (HasParameter(org) && HasParameter(appId))
             {
-                _logger.LogError("Oly org or app can be defined as parameter");
+                _logger.LogError("Only org or app can be defined as parameter");
                 return false;
             }
 

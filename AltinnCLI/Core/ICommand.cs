@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace AltinnCLI.Core
 {
     /// <summary>
-    /// Interface that defines required method and properties for a cli service
+    /// Interface that defines required method and properties for a cli command
     /// </summary>
-    public interface IService
+    public interface ICommand
     {
         /// <summary>
         /// Run the supported command handler
         /// </summary>
         /// <param name="commandHandler">the command handler to execute</param>
-        void Run(ICommandHandler commandHandler = null);
+        void Run(ISubCommandHandler commandHandler = null);
 
         /// <summary>
         /// Parses the dictionary and run command. Used mainly by Help

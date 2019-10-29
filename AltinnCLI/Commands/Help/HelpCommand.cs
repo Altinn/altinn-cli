@@ -5,19 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AltinnCLI.Services
+namespace AltinnCLI.Commands
 {
-    class HelpService : IService, IHelp
+    class HelpCommand : ICommand, IHelp
     {
         private IServiceProvider ServiceProvider;
 
-        public HelpService()
+        public HelpCommand()
         {
             ServiceProvider = ApplicationManager.ServiceProvider;
         }
 
 
-        public void Run(ICommandHandler commandHandler = null)
+        public void Run(ISubCommandHandler commandHandler = null)
         {
             
             if (commandHandler != null)
@@ -30,7 +30,7 @@ namespace AltinnCLI.Services
 
            Console.WriteLine(GetHelp());
 
-            List<IHelp> items = ServiceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(IService))).ToList();
+            List<IHelp> items = ServiceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(ICommand))).ToList();
 
             foreach (IHelp item in items)
             {
@@ -54,14 +54,14 @@ namespace AltinnCLI.Services
         }
 
         /// <summary>
-        /// Assume that the input parameter order is  help GetDocument 
+        /// Assume that the input parameter order is  help GetData 
         /// </summary>
         /// <param name="input"></param>
         public void Run(Dictionary<string, string> input)
         {
             IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-            if ((service != null) && (service is IService))
+            if ((service != null) && (service is ICommand))
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(service.Name);
@@ -73,12 +73,12 @@ namespace AltinnCLI.Services
 
                 Console.WriteLine("Commands\n");
 
-                List<ICommandHandler> items;
+                List<ISubCommandHandler> items;
 
                 if (input.Count > 2)
                 {
-                    items = ServiceProvider.GetServices<ICommandHandler>()
-                            .Where(x => (x is IHelp && string.Equals(x.ServiceProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
+                    items = ServiceProvider.GetServices<ISubCommandHandler>()
+                            .Where(x => (x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
                                         string.Equals(x.Name, input.Keys.ElementAt<string>(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
                     Console.ForegroundColor = ConsoleColor.Yellow;
 
@@ -93,8 +93,8 @@ namespace AltinnCLI.Services
                 }
                 else
                 {
-                    items = ServiceProvider.GetServices<ICommandHandler>().
-                            Where(x => x is IHelp && string.Equals(x.ServiceProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                    items = ServiceProvider.GetServices<ISubCommandHandler>().
+                            Where(x => x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
 
                     foreach (IHelp handler in items)
                     {

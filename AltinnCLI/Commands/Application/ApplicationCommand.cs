@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AltinnCLI.Services.Application
+namespace AltinnCLI.Commands.Application
 {
-    class ApplicationService : IService, IHelp
+    class ApplicationCommand : ICommand, IHelp
     {
-        public ApplicationService()
+        public ApplicationCommand()
         {
         }
 
@@ -40,11 +40,11 @@ namespace AltinnCLI.Services.Application
             return "";
         }
 
-        public virtual void Run(ICommandHandler commandHandler)
+        public virtual void Run(ISubCommandHandler subCommandHandler)
         {
-            if (commandHandler != null)
+            if (subCommandHandler != null)
             {
-                commandHandler.Run();
+                subCommandHandler.Run();
             }
         }
 

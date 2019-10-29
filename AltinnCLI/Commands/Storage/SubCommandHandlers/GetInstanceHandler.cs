@@ -1,19 +1,16 @@
-﻿using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using StorageClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
+using AltinnCLI.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace AltinnCLI.Services.Storage
+namespace AltinnCLI.Commands.Storage
 {
     /// <summary>
     /// Command for getting metadata for an instances of an app.
     /// </summary>
-    public class GetInstanceHandler : CommandHandlerBase, ICommandHandler, IHelp
+    public class GetInstanceHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
 
@@ -68,9 +65,9 @@ namespace AltinnCLI.Services.Storage
         }
 
         /// <summary>
-        /// Gets the name of the ServiceProvider for the command
+        /// Gets the name of the CommandProvider for the command
         /// </summary>
-        public string ServiceProvider
+        public string CommandProvider
         {
             get
             {
@@ -107,13 +104,13 @@ namespace AltinnCLI.Services.Storage
         {
             if (IsValid)
             {
-                Stream response = ClientWrapper.GetInstances(int.Parse(CommandParameters.GetValueOrDefault("ownerid")),
-                                         Guid.Parse(CommandParameters.GetValueOrDefault("instanceid")));
+                Stream response = ClientWrapper.GetInstances(int.Parse(Options.GetValueOrDefault("ownerid")),
+                                         Guid.Parse(Options.GetValueOrDefault("instanceid")));
 
 
                 if (HasParameter("saveToFile"))
                 {
-                    string fileName = CommandParameters.GetValueOrDefault("instanceid").ToString() + ".json";
+                    string fileName = Options.GetValueOrDefault("instanceid").ToString() + ".json";
                     if (response != null)
                     {
                         string fileFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
@@ -141,7 +138,7 @@ namespace AltinnCLI.Services.Storage
             }
 
             
-            //documentStream = wrapper.GetDocument(instanceOwnerId, instanceGuid, dataId);
+            //documentStream = wrapper.GetData(instanceOwnerId, instanceGuid, dataId);
             return true;
         }
 
@@ -163,7 +160,7 @@ namespace AltinnCLI.Services.Storage
         {
             if (HasParameter(paramName))
             {
-                return CommandParameters[paramName];
+                return Options[paramName];
             }
             else
             {

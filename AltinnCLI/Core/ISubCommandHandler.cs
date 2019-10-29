@@ -5,9 +5,9 @@ using System.Text;
 namespace AltinnCLI.Core
 {
     /// <summary>
-    /// Interface that defines required method and properties for a CommandHandler
+    /// Interface that defines required method and properties for a SubCommandHandler
     /// </summary>
-    public interface ICommandHandler
+    public interface ISubCommandHandler
     {
         /// <summary>
         /// 
@@ -21,14 +21,14 @@ namespace AltinnCLI.Core
         string Name { get; }
 
         /// <summary>
-        /// Name of the service provider for which the command is implemented
+        /// Name of the command for which the command is implemented
         /// </summary>
-        string ServiceProvider { get; }
+        string CommandProvider { get; }
 
         /// <summary>
-        /// Dictionary with cli input parameters
+        /// Dictionary with cli input options
         /// </summary>
-        Dictionary<string,string> CommandParameters { get; set; }
+        Dictionary<string,string> Options { get; set; }
 
         /// <summary>
         /// Validation status of the command hanlder. 

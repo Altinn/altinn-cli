@@ -1,7 +1,6 @@
-using StorageClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using AltinnCLI.Services.Storage;
+using AltinnCLI.Commands.Storage;
 
 namespace StorageClientTest
 {
@@ -15,7 +14,7 @@ namespace StorageClientTest
             Guid instanceGuid = Guid.NewGuid();
             Guid dataGuid = Guid.NewGuid();
 
-            wrapper.GetDocument(1, instanceGuid, dataGuid);
+            wrapper.GetData(1, instanceGuid, dataGuid);
         }
     }
 }

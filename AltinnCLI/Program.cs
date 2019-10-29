@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
-using StorageClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace StorageClient
+namespace AltinnCLI
 {
     /// <summary>
     ///  The CLI startup that prepares the application configuration, serviceprovider for handling cli-commands 
@@ -46,35 +45,35 @@ namespace StorageClient
         }
 
         /// <summary>
-        /// Finds all IService, ICommandHandler and  IHelp implemented klasses in running assembly and according to type
-        /// registers them to be avilable through the Applications ServiceProvider. 
+        /// Finds all ICommand, ISubCommandHandler and  IHelp implemented klasses in running assembly and according to type
+        /// registers them to be avilable through the Applications CommandProvider. 
         /// </summary>
         /// <returns>List of registred services</returns>
         private static IServiceCollection GetServices()
         {
             IServiceCollection services = new ServiceCollection();
 
-            // register all Services that can be accessed from commandline, they all implements the IService interface
+            // register all Commands that can be accessed from commandline, they all implements the ICommand interface
             // that contains a name property that is used to select the properiate class according to cli command type, args[0]
-            Assembly.GetEntryAssembly().GetTypesAssignableFrom<IService>().ForEach((t) =>
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommand>().ForEach((t) =>
             {
-                services.AddTransient(typeof(IService), t);
+                services.AddTransient(typeof(ICommand), t);
             });
 
-            // register all Services that can be accessed from commandline, they all implements the IHelp interface
+            // register all Commands that can be accessed from commandline, they all implements the IHelp interface
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
             {
                 services.AddTransient(typeof(IHelp), t);
             });
 
-            // register all services that implements the ICommandHandler interface, and in addtion add reference to the application logger
-            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommandHandler>().ForEach((t) =>
+            // register all services that implements the ISubCommandHandler interface, and in addtion add reference to the application logger
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ISubCommandHandler>().ForEach((t) =>
             {
                 services.AddLogging(configure =>
                 {
                     configure.ClearProviders();
                     configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
-                }).AddTransient(typeof(ICommandHandler),t);
+                }).AddTransient(typeof(ISubCommandHandler),t);
             });
 
             return services;

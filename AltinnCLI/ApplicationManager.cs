@@ -3,16 +3,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 
-namespace AltinnCLI.Core
+using AltinnCLI.Core;
+
+namespace AltinnCLI
 {
     /// <summary>
     /// Finds which type of service and command that should be executed according to user input. 
-    /// Scans the ServiceProvider that contains executable services and command handlers
+    /// Scans the CommandProvider that contains executable services and command handlers
     /// </summary>
     public class ApplicationManager
     {
@@ -36,13 +35,13 @@ namespace AltinnCLI.Core
             {
                 string[] input = args.ToLower().Split(" ");
 
-                IService service = ServiceProvider.GetServices<IService>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                ICommand service = ServiceProvider.GetServices<ICommand>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
                 if (service != null)
                 {
                     if (input.Length > 1)
                     {
-                        ICommandHandler commandHandler = processArgs(input);
+                        ISubCommandHandler commandHandler = processArgs(input);
                         if (commandHandler != null)
                         {
                             service.Run(commandHandler);
@@ -73,15 +72,15 @@ namespace AltinnCLI.Core
         /// Commands are structured as follows: [command] [subcommand] [options]
         /// </param>
         /// <returns>A commandHandler that can execute the command given by user input</returns>
-        private ICommandHandler processArgs(string[] input)
+        private ISubCommandHandler processArgs(string[] input)
         {
-            ICommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ICommandHandler>()
+            ISubCommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ISubCommandHandler>()
                 .FirstOrDefault(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) && 
-                string.Equals(s.ServiceProvider, input[0],StringComparison.OrdinalIgnoreCase));
+                string.Equals(s.CommandProvider, input[0],StringComparison.OrdinalIgnoreCase));
 
             if (commandHandler != null)
             {
-                commandHandler.CommandParameters = ParseArguments(input);
+                commandHandler.Options = ParseArguments(input);
                 return commandHandler;
             }
             else

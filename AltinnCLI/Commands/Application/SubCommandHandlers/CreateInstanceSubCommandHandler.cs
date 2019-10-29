@@ -1,6 +1,6 @@
 ﻿using Altinn.Platform.Storage.Models;
 using AltinnCLI.Core;
-using AltinnCLI.Services.Storage;
+using AltinnCLI.Commands.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -11,7 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace AltinnCLI.Services.Application
+namespace AltinnCLI.Commands.Application
 {
 
     /// <summary>
@@ -19,7 +19,7 @@ namespace AltinnCLI.Services.Application
     /// a specified instance owner, or for instanciating the app for several users simultaniously. The command
     /// also supports prefilling instances.
     /// </summary>
-    class CreateInstanceCommandHandler : CommandHandlerBase, ICommandHandler, IHelp
+    class CreateInstanceSubCommandHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
         /// <summary>
         /// Handles communication with the runtime API
@@ -62,10 +62,10 @@ namespace AltinnCLI.Services.Application
         private string instanceData = string.Empty;
 
         /// <summary>
-        /// Creates an instance of <see cref="CreateInstanceCommandHandler" /> class
+        /// Creates an instance of <see cref="CreateInstanceSubCommandHandler" /> class
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information</param>
-        public CreateInstanceCommandHandler(ILogger<CreateInstanceCommandHandler> logger) : base(logger)
+        public CreateInstanceSubCommandHandler(ILogger<CreateInstanceSubCommandHandler> logger) : base(logger)
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
@@ -119,9 +119,9 @@ namespace AltinnCLI.Services.Application
         }
 
         /// <summary>
-        /// Gets the name of the ServiceProvider for the command
+        /// Gets the name of the CommandProvider for the command
         /// </summary>
-        public string ServiceProvider
+        public string CommandProvider
         {
             get
             {
@@ -303,7 +303,7 @@ namespace AltinnCLI.Services.Application
         {
             if (HasParameter(paramName))
             {
-                return CommandParameters[paramName];
+                return Options[paramName];
             }
             else
             {
@@ -349,7 +349,7 @@ namespace AltinnCLI.Services.Application
                     valid = false;
                     try
                     {
-                        string[] files = readFiles(CommandParameters["folder"]);
+                        string[] files = readFiles(Options["folder"]);
                         foreach(string file in files)
                         {
                             if (file.Contains("default.xml"))
@@ -360,12 +360,12 @@ namespace AltinnCLI.Services.Application
 
                         if (!valid)
                         {
-                            _logger.LogError($@"No data model specified and no Default.xml file found in {CommandParameters["folder"]}");
+                            _logger.LogError($@"No data model specified and no Default.xml file found in {Options["folder"]}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($@"Error opening '{CommandParameters["folder"]}': {ex.Message}");
+                        _logger.LogError($@"Error opening '{Options["folder"]}': {ex.Message}");
                     }
                 }
                 else

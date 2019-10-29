@@ -6,20 +6,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace AltinnCLI.Services.Storage
+namespace AltinnCLI.Commands.Storage
 {
-    public class StorageEngine : IService, IHelp
+    public class StorageCommand : ICommand, IHelp
     {
-        public StorageEngine()
+        public StorageCommand()
         {
         }
 
-
-        public virtual void Run(ICommandHandler commandHandler)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="subCommandHandler"></param>
+        public virtual void Run(ISubCommandHandler subCommandHandler)
         {
-            if (commandHandler != null)
+            if (subCommandHandler != null)
             {
-                commandHandler.Run();
+                subCommandHandler.Run();
             }
         }
 

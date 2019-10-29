@@ -6,13 +6,13 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 
-namespace AltinnCLI.Services.Storage
+namespace AltinnCLI.Commands.Storage
 {
     public interface IStorageClientWrapper
     {
-        Stream GetDocument(int instanceOwnerId, Guid instanceGuid, Guid dataId);
+        Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId);
 
-        Stream GetDocument(string command, string contentType = null);
+        Stream GetData(string command, string contentType = null);
 
         Stream GetInstances(int instanceOwnerOd, Guid instanceGuid);
 

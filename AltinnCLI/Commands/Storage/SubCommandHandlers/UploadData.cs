@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace AltinnCLI.Services.Storage.CommandHandlers
+namespace AltinnCLI.Commands.Storage
 {
     /// <summary>
-    /// Commandhandler that is used to upload documents to the ALtinn Blob storage.  
+    /// Commandhandler that is used to upload data to the Altinn Blob storage.  
     /// </summary>
-    public class UploadDocument : CommandHandlerBase, ICommandHandler, IHelp
+    public class UploadData : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
 
@@ -19,7 +19,7 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
-        public UploadDocument(ILogger<UploadDocument> logger) : base(logger)
+        public UploadData(ILogger<UploadData> logger) : base(logger)
         {
 
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
@@ -40,7 +40,7 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
         {
             get
             {
-                return "UploadDocument";
+                return "UploadData";
             }
         }
 
@@ -51,7 +51,7 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
         {
             get
             {
-                return "Uploads and save documents from a specific folder to Storage";
+                return "Uploads and save files from a specific folder to Storage";
             }
         }
 
@@ -63,15 +63,15 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
             get
             {
                 return $"\n" +
-                        $"Storage UploadDocument ownerId=<ownerid> instanceId=<instanceguid> elementType=<elementtype> file=c:<filename with full path>\n" +
+                        $"Storage UploadData ownerId=<ownerid> instanceId=<instanceguid> elementType=<elementtype> file=c:<filename with full path>\n" +
                         $"\n";
             }
         }
 
         /// <summary>
-        /// Gets the name of the ServiceProvider that uses this command
+        /// Gets the name of the CommandProvider that uses this command
         /// </summary>
-        public string ServiceProvider
+        public string CommandProvider
         {
             get
             {
@@ -105,9 +105,9 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
             if (IsValid)
             {
                 // values are validate both on exitent and value, så just fetch them
-                string ownerId = CommandParameters.GetValueOrDefault("ownerid");
-                string instanceId = CommandParameters.GetValueOrDefault("instanceid");
-                string fullFileName = CommandParameters.GetValueOrDefault("file");
+                string ownerId = Options.GetValueOrDefault("ownerid");
+                string instanceId = Options.GetValueOrDefault("instanceid");
+                string fullFileName = Options.GetValueOrDefault("file");
 
                 string elementType = "default";
 
@@ -116,7 +116,6 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
                 stream.CopyTo(memstr);
                 stream.Close();
                 InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(ownerId, instanceId, elementType, memstr, fullFileName);
-
             }
 
             return true;
@@ -129,7 +128,7 @@ namespace AltinnCLI.Services.Storage.CommandHandlers
         {
             if (HasParameterWithValue("ownerid") && HasParameterWithValue("instanceid") && HasParameterWithValue("file"))
             {
-                if (File.Exists(CommandParameters.GetValueOrDefault("file")))
+                if (File.Exists(Options.GetValueOrDefault("file")))
                 {
                     return true;
                 }

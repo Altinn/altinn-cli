@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AltinnCLI.Services
+namespace AltinnCLI.Commands
 {
-    class QuitService : IService
+    class QuitCommand : ICommand
     {
-        void IService.Run(ICommandHandler commandHandler)
+        void ICommand.Run(ISubCommandHandler commandHandler)
         {
             Environment.Exit(0);
         }
