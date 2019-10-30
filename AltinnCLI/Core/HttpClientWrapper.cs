@@ -123,7 +123,6 @@ namespace AltinnCLI.Core
             Uri uri = new Uri(baseAddress + "/" + command);
 
             HttpResponseMessage response = null;
-
             try
             {
                 var cookieContainer = new CookieContainer();
@@ -141,7 +140,7 @@ namespace AltinnCLI.Core
                     response = await client.PostAsync(uri, content).ConfigureAwait(false);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
             }

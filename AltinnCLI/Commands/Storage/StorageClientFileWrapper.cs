@@ -22,16 +22,6 @@ namespace AltinnCLI.Commands.Storage
 
         public string BaseAddress { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string CreateApplication(string app, string org, string instanceOwnerId, HttpContent content)
-        {
-            throw new NotImplementedException();
-        }
-
         public Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             throw new NotImplementedException();

@@ -16,10 +16,6 @@ namespace AltinnCLI.Commands.Storage
 
         Stream GetInstances(int instanceOwnerOd, Guid instanceGuid);
 
-        string CreateApplication(string appId, string instanceOwnerId, StringContent content);
-
-        string CreateApplication(string app, string org, string instanceOwnerId, HttpContent content);
-
         InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null);
 
         InstanceResponseMessage GetInstanceMetaData(Dictionary<string, string> urlParams = null);
