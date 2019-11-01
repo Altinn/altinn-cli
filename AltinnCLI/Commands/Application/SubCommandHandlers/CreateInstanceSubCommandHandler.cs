@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Collections.Generic;
 
 namespace AltinnCLI.Commands.Application
 {
@@ -139,6 +140,7 @@ namespace AltinnCLI.Commands.Application
                 return Validate();
             }
         }
+
 
         /// <summary>
         /// 
@@ -303,7 +305,7 @@ namespace AltinnCLI.Commands.Application
         {
             if (HasParameter(paramName))
             {
-                return Options[paramName];
+                return DictOptions[paramName];
             }
             else
             {
@@ -349,7 +351,7 @@ namespace AltinnCLI.Commands.Application
                     valid = false;
                     try
                     {
-                        string[] files = readFiles(Options["folder"]);
+                        string[] files = readFiles(DictOptions["folder"]);
                         foreach(string file in files)
                         {
                             if (file.Contains("default.xml"))
@@ -360,12 +362,12 @@ namespace AltinnCLI.Commands.Application
 
                         if (!valid)
                         {
-                            _logger.LogError($@"No data model specified and no Default.xml file found in {Options["folder"]}");
+                            _logger.LogError($@"No data model specified and no Default.xml file found in {DictOptions["folder"]}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($@"Error opening '{Options["folder"]}': {ex.Message}");
+                        _logger.LogError($@"Error opening '{DictOptions["folder"]}': {ex.Message}");
                     }
                 }
                 else

@@ -2,6 +2,7 @@
 using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,18 +51,10 @@ namespace AltinnCLI.Commands.Storage
                 ClientWrapper = new StorageClientFileWrapper(_logger);
             }
 
-            DefineAvailableOptions(); 
+            SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
         }
 
-        private void DefineAvailableOptions()
-        {
-            IOption ownerId = (IOption)new Option<int>("ownerId", "100", "instanceownerid");
-            if (ownerId.IsValid())
-            {
-                CliOptions.Add(ownerId);
-            }
-        }
-
+  
         /// <summary>
         /// Gets the name of of the command
         /// </summary>
@@ -91,26 +84,21 @@ namespace AltinnCLI.Commands.Storage
         {
             get
             {
-                return  $"\n"+
-                        $"Storage GetData org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
-                        $"Storage GetData appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
-                        $"\n" +
-                        $" Available parameters for the command that download documents for an org or app \n" + 
-                        $"    org                 -org \n" +
-                        $"    appId               -application id\n" +
-                        $"    currentTaskId       -running process current task id\n" +
-                        $"    processIsComplete   -is process complete\n" +
-                        $"    processIsInError    -is process in error\n" +
-                        $"    processEndState     -process end state\n" +
-                        $"    labels              -labels\n" +
-                        $"    lastChangedDateTime -last changed date \n" +
-                        $"    createdDateTime     -created time \n"+
-                        $"    visibleDateTime     -the visible date time \n" +
-                        $"    dueDateTime         -the due date time \n" +
-                        $"    continuationToken   -continuation token \n" +
-                        $"    size                -the page size \n\n" +
-                        $"Storage GetData ownerid=<id>  -Fetch all documents for owner \n" +
-                        $"Storage GetData ownerid=<id> instanceId=<instance-guid> dataId=<data-guid> -Fetch specific data element \n";
+                string usage = $"\n" +
+                $"Storage GetData org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
+                $"Storage GetData appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
+                $"\n" +
+                $" Available parameters for the command that download documents for an org or app \n";
+
+                foreach (IOption opt in SelectableCliOptions)
+                {
+                    usage += $"\t{opt.Name}\t\t {opt.Description} \n";
+                }
+
+                usage += $"Storage GetData ownerid=<id>  -Fetch all documents for owner \n" +
+                $"Storage GetData ownerid=<id> instanceId=<instance-guid> dataId=<data-guid> -Fetch specific data element \n";
+
+                return usage;
             }
         }
 
@@ -136,6 +124,7 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
+
         /// <summary>
         /// 
         /// </summary>
@@ -151,9 +140,9 @@ namespace AltinnCLI.Commands.Storage
         /// <returns></returns>
         public bool Run()
         {
+
             if (IsValid)
             {
-                SetLocals();
 
                 if ((ownerId != null) && (instanceId != null) && (dataId != null))
                 {
@@ -180,29 +169,7 @@ namespace AltinnCLI.Commands.Storage
             return true;
         }
 
-        private void SetLocals()
-        {
-            ownerId = Options.GetValueOrDefault("ownerid") != null ? int.Parse(Options.GetValueOrDefault("ownerid")) : (int?)null;
-            instanceId = Options.GetValueOrDefault("instanceid") != null ? Guid.Parse(Options.GetValueOrDefault("instanceid")) : (Guid?)null;
-            dataId = Options.GetValueOrDefault("dataid") != null ? Guid.Parse(Options.GetValueOrDefault("dataid")) : (Guid?)null;
-            updateInstances = Options.GetValueOrDefault("updateinstances") != null ? Options.GetValueOrDefault("instanceid") : string.Empty;
-
-            appId = Options.GetValueOrDefault("appid") != null ? Options.GetValueOrDefault("appid") : string.Empty;
-            org = Options.GetValueOrDefault("org") != null ? Options.GetValueOrDefault("org") : string.Empty;
-
-            processIsComplete = Options.GetValueOrDefault("processsscomplete") != null ? bool.Parse(Options.GetValueOrDefault("processIsComplete")) : false;
-            processIsInError = Options.GetValueOrDefault("processisisError") != null ? bool.Parse(Options.GetValueOrDefault("processisinerror")) : false;
-            processEndState = Options.GetValueOrDefault("processendstate") != null ? Options.GetValueOrDefault("processendstate") : string.Empty;
-
-            lastChangedDateTime = Options.GetValueOrDefault("lastchangedatetime") != null ? Options.GetValueOrDefault("lastchangeddatetime") : string.Empty;
-            createdDateTime = Options.GetValueOrDefault("createddatetime") != null ? Options.GetValueOrDefault("createdtatetime") : string.Empty;
-            visibleDateTime = Options.GetValueOrDefault("visibledatetime") != null ? Options.GetValueOrDefault("visibledatetime") : string.Empty;
-            dueDateTime = Options.GetValueOrDefault("duedatetime") != null ? Options.GetValueOrDefault("duedatetme") : string.Empty;
-
-            continuationToken = Options.GetValueOrDefault("continuationToken") != null ? Options.GetValueOrDefault("continuationToken") : string.Empty;
-            size = Options.GetValueOrDefault("size") != null ? int.Parse(Options.GetValueOrDefault("size")) : (int?)null;
-        }
-
+ 
         /// <summary>
         /// Fetch instance data and call member method to fetch and save document on file
         /// </summary>
@@ -215,7 +182,7 @@ namespace AltinnCLI.Commands.Storage
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
-                responsMessage = ClientWrapper.GetInstanceMetaData(Options);
+                responsMessage = ClientWrapper.GetInstanceMetaData(this.SelectableCliOptions);
 
             }
             else if (ownerId != null)
@@ -276,62 +243,6 @@ namespace AltinnCLI.Commands.Storage
         /// <returns></returns>
         protected bool Validate()
         {
-            if (HasParameter("ownerid"))
-            {
-                if (!HasParameterWithValue("ownerid"))
-                {
-                    _logger.LogError("Missing parameter value for OwnerId");
-                    return false;
-                }
-
-                if (HasParameter("instanceid"))
-                {
-                    if (!HasParameterWithValue("instanceid"))
-                    {
-                        _logger.LogError("Missing paramterer value for InstanceId");
-                        return false;
-                    }
-
-                    if (HasParameter("dataId"))
-                    {
-                        if (!HasParameterWithValue("dataId"))
-                        {
-                            _logger.LogError("Missing paramterer value for dataId");
-                            return false;
-                        }
-
-                    }
-                }
-            }
-
-            if (HasParameter(org) && HasParameter(appId))
-            {
-                _logger.LogError("Only org or app can be defined as parameter");
-                return false;
-            }
-
-            if (HasParameter(org))
-            {
-                if (!HasParameterWithValue("org"))
-                {
-                    _logger.LogError("Missing parameter value for org");
-                    return false;
-                }
-
-                return CheckInstanceOptions();
-            }
-
-            if (HasParameter(appId))
-            {
-                if (!HasParameterWithValue("appid"))
-                {
-                    _logger.LogError("Missing parameter value for appId");
-                    return false;
-                }
-
-                return CheckInstanceOptions();
-            }
-
             return true;
         }
 

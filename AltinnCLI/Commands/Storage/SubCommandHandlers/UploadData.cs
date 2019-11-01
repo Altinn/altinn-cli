@@ -90,6 +90,8 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
+        public List<IOption> Options { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         /// <summary>
         /// 
         /// </summary>
@@ -105,9 +107,9 @@ namespace AltinnCLI.Commands.Storage
             if (IsValid)
             {
                 // values are validate both on exitent and value, så just fetch them
-                string ownerId = Options.GetValueOrDefault("ownerid");
-                string instanceId = Options.GetValueOrDefault("instanceid");
-                string fullFileName = Options.GetValueOrDefault("file");
+                string ownerId = DictOptions.GetValueOrDefault("ownerid");
+                string instanceId = DictOptions.GetValueOrDefault("instanceid");
+                string fullFileName = DictOptions.GetValueOrDefault("file");
 
                 string elementType = "default";
 
@@ -128,7 +130,7 @@ namespace AltinnCLI.Commands.Storage
         {
             if (HasParameterWithValue("ownerid") && HasParameterWithValue("instanceid") && HasParameterWithValue("file"))
             {
-                if (File.Exists(Options.GetValueOrDefault("file")))
+                if (File.Exists(DictOptions.GetValueOrDefault("file")))
                 {
                     return true;
                 }

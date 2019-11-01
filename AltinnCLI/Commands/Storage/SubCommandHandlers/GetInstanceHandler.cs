@@ -87,6 +87,8 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
+        public List<IOption> Options { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         /// <summary>
         /// 
         /// </summary>
@@ -104,13 +106,13 @@ namespace AltinnCLI.Commands.Storage
         {
             if (IsValid)
             {
-                Stream response = ClientWrapper.GetInstances(int.Parse(Options.GetValueOrDefault("ownerid")),
-                                         Guid.Parse(Options.GetValueOrDefault("instanceid")));
+                Stream response = ClientWrapper.GetInstances(int.Parse(DictOptions.GetValueOrDefault("ownerid")),
+                                         Guid.Parse(DictOptions.GetValueOrDefault("instanceid")));
 
 
                 if (HasParameter("saveToFile"))
                 {
-                    string fileName = Options.GetValueOrDefault("instanceid").ToString() + ".json";
+                    string fileName = DictOptions.GetValueOrDefault("instanceid").ToString() + ".json";
                     if (response != null)
                     {
                         string fileFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
@@ -160,7 +162,7 @@ namespace AltinnCLI.Commands.Storage
         {
             if (HasParameter(paramName))
             {
-                return Options[paramName];
+                return DictOptions[paramName];
             }
             else
             {

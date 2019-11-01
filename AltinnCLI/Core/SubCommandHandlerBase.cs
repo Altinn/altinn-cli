@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AltinnCLI.Core.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace AltinnCLI.Core
@@ -52,12 +55,17 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Gets or set the dictionary with the command line arguments
         /// </summary>
-        public Dictionary<string, string> Options { get; set; }
+        public Dictionary<string, string> DictOptions { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public List<IOption> CliOptions { get; } 
+        public List<IOption> SelectableCliOptions { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<IOption> CliOptions { get; set; }
 
         /// <summary>
         /// Verifies if the command parameters contain a specific key and that it has a value
@@ -66,7 +74,7 @@ namespace AltinnCLI.Core
         /// <returns></returns>
         protected bool HasParameterWithValue(string key)
         {
-            if (Options.ContainsKey(key) && Options.GetValueOrDefault(key) != string.Empty)
+            if (DictOptions.ContainsKey(key) && DictOptions.GetValueOrDefault(key) != string.Empty)
             {
                 return true;
             }
@@ -81,7 +89,7 @@ namespace AltinnCLI.Core
         /// <returns></returns>
         protected bool HasParameter(string key)
         {
-            if (Options.ContainsKey(key))
+            if (DictOptions.ContainsKey(key))
             {
                 return true;
             }

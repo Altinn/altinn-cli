@@ -1,0 +1,105 @@
+{
+  "Commands": [
+    {
+      "Name": "Storage",
+      "SubCommands": [
+        {
+          "Name": "GetData",
+          "Options": [
+            {
+              "Name": "org",
+              "type": "int",
+              "valuerangeange": "0-99999999",
+              "description": "org",
+              "apiname": "org"
+            },
+            {
+              "Name": "appId",
+              "type": "string",
+              "valuerangeange": "0-99999999",
+              "description": "application id",
+              "apiname": "appId"
+            },
+            {
+              "Name": "currentTaskId",
+              "type": "int",
+              "valuerangeange": "running process current task id",
+              "description": "appid",
+              "apiname": "process.currentTask"
+            },
+            {
+              "Name": "processIsComplete",
+              "type": "bool",
+              "valuerangeange": "is process complete",
+              "description": "is process complete",
+              "apiname": "process.isComplete"
+            },
+            {
+              "Name": "processIsInError",
+              "type": "bool",
+              "valuerangeange": "is process in error",
+              "description": "is process in error",
+              "apiname": "process.isInError"
+            },
+            {
+              "Name": "processEndState",
+              "type": "bool",
+              "valuerangeange": "process end state",
+              "description": "process end state",
+              "apiname": "process.endState"
+            },
+            {
+              "Name": "labels",
+              "type": "string",
+              "valuerangeange": "labels",
+              "description": "labels",
+              "apiname": "labels"
+            },
+            {
+              "Name": "lastChangedDateTime",
+              "type": "DateTime",
+              "valuerangeange": "last changed date",
+              "description": "\"last changed date,",
+              "apiname": "lastChangedDateTime"
+            },
+            {
+              "Name": "createdDateTime",
+              "type": "DateTime",
+              "valuerangeange": "created time",
+              "description": "created time",
+              "apiname": "createdDateTime"
+            },
+            {
+              "Name": "visibleDateTime",
+              "type": "DateTime",
+              "valuerangeange": "the visible date time",
+              "description": "the visible date time",
+              "apiname": "visibleDateTime"
+            },
+            {
+              "Name": "dueDateTime",
+              "type": "DateTime",
+              "valuerangeange": "the due date time",
+              "description": "the due date time",
+              "apiname": "dueDateTime"
+            },
+            {
+              "Name": "continuationToken",
+              "type": "string",
+              "valuerangeange": "continuation token",
+              "description": "continuation token",
+              "apiname": "continuationToken"
+            },
+            {
+              "Name": "size",
+              "type": "int",
+              "valuerangeange": "the page size",
+              "description": "the page size",
+              "apiname": "size"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -131,72 +132,31 @@ namespace AltinnCLI.Commands.Storage
             return null;
         }
 
-        public InstanceResponseMessage GetInstanceMetaData(Dictionary<string,string> urlParams = null )
+        public InstanceResponseMessage GetInstanceMetaData(List<IOption> urlParams = null )
         {
             string cmd = "instances";
 
-            if (urlParams != null)
+            IOption org = urlParams.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase) && x.IsAssigned);
+            IOption appid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "appid", StringComparison.OrdinalIgnoreCase) && x.IsAssigned);
+
+            
+            if (org != null)
             {
-                if (urlParams.ContainsKey("org"))
-                {
-                    cmd += $@"?org={urlParams["org"]}";
-                }
-                else if (urlParams.ContainsKey("appid"))
-                {
-                    cmd += $@"?appId={urlParams["appid"]}";
-                }
+                cmd += $@"?org={org.Value}";
+                urlParams.Remove(org);
 
-                if (urlParams.ContainsKey("currenttaskid"))
-                {
-                    cmd += $@"&process.currentTask={urlParams["currenttaskid"]}";
-                }
+            }
+            else
+            {
+                cmd += $@"?appId={appid.Value}";
+                urlParams.Remove(appid);
 
-                if (urlParams.ContainsKey("processiscomplete"))
-                {
-                    cmd += $@"&process.isComplete={urlParams["processiscomplete"]}";
-                }
-
-                if (urlParams.ContainsKey("processisinerror"))
-                {
-                    cmd += $@"&process.isInError={urlParams["processisinerror"]}";
-                }
-
-                if (urlParams.ContainsKey("processendstate"))
-                {
-                    cmd += $@"&process.endState={urlParams["processendstate"]}";
-                }
-
-                if (urlParams.ContainsKey("lastchangeddatetime"))
-                {
-                    cmd += $@"&lastChangedDateTime={urlParams["lastchangeddatetime"]}";
-                }
-
-                if (urlParams.ContainsKey("createddatetime"))
-                {
-                    cmd += $@"&createdDateTime={urlParams["createddatetime"]}";
-                }
-
-                if (urlParams.ContainsKey("visibledatetime"))
-                {
-                    cmd += $@"&visibleDateTime={urlParams["visibledatetime"]}";
-                }
-
-                if (urlParams.ContainsKey("duedatetime"))
-                {
-                    cmd += $@"&dueDateTime={urlParams["duedatetime"]}";
-                }
-
-                if (urlParams.ContainsKey("continuationToken"))
-                {
-                    cmd += $@"&continuationToken={urlParams["continuationToken"]}";
-                }
-
-                if (urlParams.ContainsKey("size"))
-                {
-                    cmd += $@"&size={urlParams["size"]}";
-                }
             }
 
+            foreach(IOption param in urlParams )
+            {
+                cmd += $@"&{param.ApiName}={param.Value}";
+            }
             HttpClientWrapper client = new HttpClientWrapper(_logger);
             HttpResponseMessage response = (HttpResponseMessage)client.GetCommand(BaseAddress, cmd).Result;
 

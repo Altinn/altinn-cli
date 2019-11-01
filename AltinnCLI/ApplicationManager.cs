@@ -6,6 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using AltinnCLI.Core;
+using System.IO;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using AltinnCLI.Core.Json;
+using Microsoft.Extensions.Logging;
 
 namespace AltinnCLI
 {
@@ -19,10 +24,13 @@ namespace AltinnCLI
         public static IConfigurationRoot ApplicationConfiguration;
         public static IServiceProvider ServiceProvider;
 
-        public ApplicationManager(IServiceProvider serviceProvider, IConfigurationRoot applicationConfiguration)
+        private static ILogger _logger;
+
+        public ApplicationManager(IServiceProvider serviceProvider, IConfigurationRoot applicationConfiguration, ILogger logger = null)
         {
             ServiceProvider = serviceProvider;
             ApplicationConfiguration = applicationConfiguration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -75,12 +83,13 @@ namespace AltinnCLI
         private ISubCommandHandler processArgs(string[] input)
         {
             ISubCommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ISubCommandHandler>()
-                .FirstOrDefault(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) && 
-                string.Equals(s.CommandProvider, input[0],StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(s.CommandProvider, input[0], StringComparison.OrdinalIgnoreCase));
 
             if (commandHandler != null)
             {
-                commandHandler.Options = ParseArguments(input);
+                commandHandler.DictOptions = ParseArguments(input);
+                OptionBuilder.Instance(_logger).AssignValueToCliOptions(commandHandler);
                 return commandHandler;
             }
             else

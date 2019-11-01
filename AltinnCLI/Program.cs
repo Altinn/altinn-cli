@@ -61,7 +61,7 @@ namespace AltinnCLI
             });
 
             // register all Commands that can be accessed from commandline, they all implements the IHelp interface
-            Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
+           Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
             {
                 services.AddTransient(typeof(IHelp), t);
             });

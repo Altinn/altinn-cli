@@ -6,17 +6,36 @@ using System.Text;
 
 namespace AltinnCLI.Core
 {
-    public class Option<T> : IOption, IHelp
+    public class Option<T> : IOption //, IHelp
     {
 
-        public Option(string name, string value, string apiName = null)
+        public Option()
         {
-            Name = name;
-            Value = value;
+            IsAssigned = false;
         }
 
-        public string Name { get; }
-        public string Value { get; }
+        public Option(string name, string apiName = null)
+        {
+            Name = name;
+            ApiName = apiName;
+        }
+
+        public Option(string name, string value = null, string apiName = null) : this(value, apiName)
+        {
+            Name = name;
+            ApiName = apiName;
+
+            if (value != null)
+            {
+                Value = value;
+            }
+        }
+
+        public string Name { get; set; }
+
+        public string Value { get; set; }
+
+        public string ApiName { get; set; }
 
         public object GetValue()
         {
@@ -25,16 +44,22 @@ namespace AltinnCLI.Core
 
         public bool IsValid()
         {
+            if (TryParse(Value) == null)
+            {
+                return false;
+            }
+
             return true;
         }
           
-        public string Description { get; }
+        public string Description { get; set; }
 
         public string Usage { get; }
+        public bool IsAssigned { get; set; }
 
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return "Not implemented help for Option";
         }
 
         private T TryParse(string inValue)
@@ -44,6 +69,11 @@ namespace AltinnCLI.Core
 
             return (T)converter.ConvertFromString(null,
                 CultureInfo.InvariantCulture, inValue);
+        }
+
+        public bool HasValue()
+        {
+            throw new NotImplementedException();
         }
     }
     

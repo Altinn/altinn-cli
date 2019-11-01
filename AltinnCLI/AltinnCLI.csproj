@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Commands\DefinitionFiles\Commands.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Commands\DefinitionFiles\Commands.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Altinn.Platform.Storage.Interface" Version="1.2.6-alpha" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />

@@ -43,6 +43,11 @@ namespace AltinnCLI.Commands
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<IOption> CliOptions { get; set; }
+
         public string GetHelp()
         {
             return "Altinn CLI - A command line interface for managing your Altinn Applications\n\nCOMMANDS:\n\n";

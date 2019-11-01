@@ -28,7 +28,17 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Dictionary with cli input options
         /// </summary>
-        Dictionary<string,string> Options { get; set; }
+        Dictionary<string,string> DictOptions { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<IOption> SelectableCliOptions { get; set; }
+
+        /// <summary>
+        /// Dictionary with cli input options
+        /// </summary>
+        List<IOption> CliOptions { get; set; }
 
         /// <summary>
         /// Validation status of the command hanlder. 
