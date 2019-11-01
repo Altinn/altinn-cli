@@ -1,12 +1,10 @@
 ﻿using Altinn.Platform.Storage.Models;
 using AltinnCLI.Core;
-using AltinnCLI.Commands.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -25,7 +23,7 @@ namespace AltinnCLI.Commands.Application
         /// <summary>
         /// Handles communication with the runtime API
         /// </summary>
-        private IStorageClientWrapper clientWrapper = null;
+        private IApplicationClientWrapper clientWrapper = null;
 
         /// <summary>
         /// Short code of the app the instance is being created for
@@ -70,7 +68,18 @@ namespace AltinnCLI.Commands.Application
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                clientWrapper = new StorageClientWrapper(_logger);
+                clientWrapper = new ApplicationClientWrapper(_logger);
+            }
+
+            AddOptions();
+        }
+
+        public void AddOptions()
+        {
+            IOption app = (IOption)new Option<string>("app", Options["app"], "app");
+            if (app.IsValid())
+            {
+                CliOptions.Add(app);
             }
         }
 

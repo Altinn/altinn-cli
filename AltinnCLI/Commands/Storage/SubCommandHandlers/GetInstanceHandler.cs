@@ -13,10 +13,6 @@ namespace AltinnCLI.Commands.Storage
     public class GetInstanceHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
         private IStorageClientWrapper ClientWrapper = null;
-
-        private string instanceOwnerId;
-        private string instanceId;
-        private string saveToFile;
         
         /// <summary>
         /// Creates an instance of the <see cref="GetInstanceHandler" /> class

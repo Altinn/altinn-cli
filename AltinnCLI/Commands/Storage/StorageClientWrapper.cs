@@ -35,31 +35,6 @@ namespace AltinnCLI.Commands.Storage
         /// </summary>
         private string BaseAddress { get; set; }
 
-        public string CreateApplication(string org, string app, string instanceOwnerId, HttpContent content)
-        {
-            string AppBaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
-            string cmd = $@"{org}/{app}/instances";
-            
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
-
-            Task <HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
-
-            if (response.Result.IsSuccessStatusCode)
-            {
-                return response.Result.Content.ReadAsStringAsync().Result;
-            }
-            else
-            {
-                return $@"Could not create application instance. Error code: {response.Result.StatusCode} Error message: {response.Result.ReasonPhrase}";
-            }
-
-        }
-
-        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Get a document from Storage for owner,instance and specific document id
         /// </summary>

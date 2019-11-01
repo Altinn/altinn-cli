@@ -9,39 +9,43 @@ namespace AltinnCLI.Core
     public class Option<T> : IOption //, IHelp
     {
 
-        public Option()
-        {
-            IsAssigned = false;
-        }
-
-        public Option(string name, string apiName = null)
-        {
-            Name = name;
-            ApiName = apiName;
-        }
-
-        public Option(string name, string value = null, string apiName = null) : this(value, apiName)
+        /// <summary>
+        /// Creates an instance of the <see cref="Option" /> class
+        /// </summary>
+        /// <param name="name">Name of the option</param>
+        /// <param name="apiName">Mapping to internal API representatio</param>
+        public Option(string name,  string apiName = null)
         {
             Name = name;
             ApiName = apiName;
 
-            if (value != null)
-            {
-                Value = value;
-            }
         }
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Gets the name of the option
+        /// </summary>
+        public string Name { get; set }
 
-        public string Value { get; set; }
+        /// <summary>
+        /// Gets the value of the option. Read from the command line
+        /// </summary>
+        public string Value { get; set}
 
         public string ApiName { get; set; }
 
+        /// <summary>
+        /// Function to get the value of the parameter
+        /// </summary>
+        /// <returns>The value given to the option parsed into the correct type for the option, default value for the type if the value can not be parsed</returns>
         public object GetValue()
         {
             return TryParse(Value);
         }
 
+        /// <summary>
+        /// Function to verify that the option is valid
+        /// </summary>
+        /// <returns>True if the option is given a legal value, false otherwise</returns>
         public bool IsValid()
         {
             if (TryParse(Value) == null)
@@ -52,14 +56,24 @@ namespace AltinnCLI.Core
             return true;
         }
           
+        /// <summary>
+        /// Gets the description for the option.
+        /// </summary>
         public string Description { get; set; }
 
+        /// <summary>
+        /// Gets the usage examples for the option
+        /// </summary>
         public string Usage { get; }
         public bool IsAssigned { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetHelp()
         {
-            return "Not implemented help for Option";
+            return $@"{Name} - \t\t{Description}";
         }
 
         private T TryParse(string inValue)
