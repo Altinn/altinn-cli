@@ -76,11 +76,11 @@ namespace AltinnCLI.Commands.Application
 
         public void AddOptions()
         {
-            IOption app = (IOption)new Option<string>("app", Options["app"], "app");
-            if (app.IsValid())
-            {
-                CliOptions.Add(app);
-            }
+            //IOption app = (IOption)new Option<string>("app", Options["app"], "app");
+            //if (app.IsValid())
+            //{
+            //    CliOptions.Add(app);
+            //}
         }
 
         /// <summary>

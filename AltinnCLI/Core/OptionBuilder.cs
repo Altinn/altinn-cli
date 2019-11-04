@@ -16,6 +16,8 @@ namespace AltinnCLI.Core
         private static readonly object padlock = new object();
         private static CfgCommandList cfgCommands = null;
 
+        FileInfo fileIfo = null;
+
         /// <summary>
         /// Application logger 
         /// </summary>
@@ -107,9 +109,9 @@ namespace AltinnCLI.Core
         public  void AssignValueToCliOptions(ISubCommandHandler commandHandler)
         {
  
-            foreach (Option<IOption> option in commandHandler.SelectableCliOptions)
+            foreach (IOption option in commandHandler.SelectableCliOptions)
             {
-                KeyValuePair<string, string> valuePair = commandHandler.DictOptions.FirstOrDefault(x => x.Key == option.Name);
+                KeyValuePair<string, string> valuePair = commandHandler.DictOptions.FirstOrDefault(x => string.Equals(x.Key, option.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (valuePair.Value != null)
                 {
@@ -146,8 +148,9 @@ namespace AltinnCLI.Core
                 case "ushort": systemType = "System.UInt16"; break;
                 case "string": systemType = "System.String"; break;
                 case "datetime": systemType = "System.DateTime"; break;
+                case "guid": systemType = "System.Guid"; break;
+                case "file": systemType = "System.IO.FileStream"; break;
             }
-
 
             return Type.GetType(systemType);
         }

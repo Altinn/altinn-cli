@@ -31,6 +31,7 @@ namespace AltinnCLI.Commands.Storage
                 ClientWrapper = new StorageClientFileWrapper(_logger);
             }
 
+            SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
         }
 
         /// <summary>
@@ -62,9 +63,17 @@ namespace AltinnCLI.Commands.Storage
         {
             get
             {
-                return $"\n" +
-                        $"Storage UploadData ownerId=<ownerid> instanceId=<instanceguid> elementType=<elementtype> file=c:<filename with full path>\n" +
-                        $"\n";
+                string usage = $"\n" +
+                $"Storage UploadData ownerId=<ownerid> instanceId=<instanceguid> elementType=<elementtype> file=c:<filename with full path>\n" +
+                $"\n" +
+                $" Available parameters for the command that download documents for an org or app \n";
+
+                foreach (IOption opt in SelectableCliOptions)
+                {
+                    usage += $"\t{opt.Name}\t\t {opt.Description} \n";
+                }
+
+                return usage;
             }
         }
 

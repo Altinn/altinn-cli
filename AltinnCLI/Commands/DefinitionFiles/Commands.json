@@ -59,7 +59,7 @@
               "Name": "lastChangedDateTime",
               "type": "DateTime",
               "valuerangeange": "last changed date",
-              "description": "\"last changed date,",
+              "description": "last changed date",
               "apiname": "lastChangedDateTime"
             },
             {
@@ -96,6 +96,39 @@
               "valuerangeange": "the page size",
               "description": "the page size",
               "apiname": "size"
+            }
+          ]
+        },
+        {
+          "Name": "UploadData",
+          "Options": [
+            {
+              "Name": "ownerid",
+              "type": "int",
+              "valuerangeange": "0-99999999",
+              "description": "ownerid",
+              "apiname": "instanceownerid"
+            },
+            {
+              "Name": "instanceId",
+              "type": "Guid",
+              "valuerangeange": "0-99999999",
+              "description": "application instance id",
+              "apiname": "appId"
+            },
+            {
+              "Name": "elementType",
+              "type": "string",
+              "valuerangeange": "0-99999999",
+              "description": "type of data element to save",
+              "apiname": "elementType"
+            },
+            {
+              "Name": "file",
+              "type": "string",
+              "valuerangeange": "0-99999999",
+              "description": "name with full path to file to save",
+              "apiname": "file"
             }
           ]
         }

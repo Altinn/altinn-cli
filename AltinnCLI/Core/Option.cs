@@ -8,6 +8,14 @@ namespace AltinnCLI.Core
 {
     public class Option<T> : IOption //, IHelp
     {
+        /// <summary>
+        /// Creates an instance of the <see cref="Option"/> class. Is required for building instance with correct Type
+        /// </summary>
+        /// <param name="name">Name of the option</param>
+        /// <param name="apiName">Mapping to internal API representatio</param>
+        public Option()
+        {
+        }
 
         /// <summary>
         /// Creates an instance of the <see cref="Option" /> class
@@ -24,12 +32,12 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Gets the name of the option
         /// </summary>
-        public string Name { get; set }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the value of the option. Read from the command line
         /// </summary>
-        public string Value { get; set}
+        public string Value { get; set;  }
 
         public string ApiName { get; set; }
 
@@ -46,7 +54,7 @@ namespace AltinnCLI.Core
         /// Function to verify that the option is valid
         /// </summary>
         /// <returns>True if the option is given a legal value, false otherwise</returns>
-        public bool IsValid()
+        public virtual bool IsValid()
         {
             if (TryParse(Value) == null)
             {
@@ -76,7 +84,7 @@ namespace AltinnCLI.Core
             return $@"{Name} - \t\t{Description}";
         }
 
-        private T TryParse(string inValue)
+        protected virtual T TryParse(string inValue)
         {
             TypeConverter converter =
                 TypeDescriptor.GetConverter(typeof(T));

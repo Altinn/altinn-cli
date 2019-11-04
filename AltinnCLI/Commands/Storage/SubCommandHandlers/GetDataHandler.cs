@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace AltinnCLI.Commands.Storage
 {
@@ -20,20 +21,6 @@ namespace AltinnCLI.Commands.Storage
         private Guid? instanceId;
         private Guid? dataId;
         private string updateInstances = string.Empty;
-        private string org = string.Empty;
-        private string appId = string.Empty;
-        private string currentTaskId = string.Empty;
-        private bool? processIsComplete = null;
-        private bool? processIsInError = null;
-        private string processEndState = string.Empty;
-
-        private string lastChangedDateTime = string.Empty;
-        private string createdDateTime = string.Empty;
-        private string visibleDateTime = string.Empty;
-        private string dueDateTime = string.Empty;
-
-        private string continuationToken = string.Empty;
-        private int? size = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
@@ -179,6 +166,8 @@ namespace AltinnCLI.Commands.Storage
         private void GetDocumentFromInstances()
         {
             InstanceResponseMessage responsMessage = null;
+            string appId = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "appId", StringComparison.OrdinalIgnoreCase)).Name;
+            string org = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase)).Name;
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
@@ -243,101 +232,6 @@ namespace AltinnCLI.Commands.Storage
         /// <returns></returns>
         protected bool Validate()
         {
-            return true;
-        }
-
-        private bool CheckInstanceOptions()
-        {
-            if (HasParameter("currenttaskid"))
-            {
-                if (!HasParameterWithValue("currenttaskid"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for currenttaskid");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processiscomplete"))
-            {
-                if (!HasParameterWithValue("processiscomplete"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for processiscomplete");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("processisinerror"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for processisinerror");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("processendstate"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for processendstate");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("lastchangeddatetime"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for lastchangeddatetime");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("createddatetime"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for createddatetime");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("visibledatetime"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for visibledatetime");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("duedatetime"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for duedatetime");
-                    return false;
-                }
-
-            }
-                
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("continuationToken"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for continuationToken");
-                    return false;
-                }
-            }
-
-            if (HasParameter("processisinerror"))
-            {
-                if (!HasParameterWithValue("size"))
-                {
-                    _logger.LogError("Wrong or missing parameter value for size");
-                    return false;
-                }
-            }
             return true;
         }
     }
