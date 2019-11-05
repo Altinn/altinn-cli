@@ -7,7 +7,7 @@ using System.IO;
 
 namespace AltinnCLI.Core
 {
-    public class FileOption<T>  : Option<T> where T : FileStream
+    public class FileOption<FileStream>  : Option<FileStream>
     {
         /// <summary>
         /// Verifies if the input parameters are valid.
@@ -20,17 +20,6 @@ namespace AltinnCLI.Core
                 return true;
             }
             return false;
-        }
-
-        protected override T TryParse(string inValue)
-        {
-
-            if (File.Exists(inValue))
-            {
-                return (T)default(FileStream); ///; (FileStream)File.Open(inValue, FileMode.Open);
-            }
-
-            return (T)default(FileStream);
         }
     }
 }

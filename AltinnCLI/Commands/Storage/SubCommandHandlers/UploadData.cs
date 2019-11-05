@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace AltinnCLI.Commands.Storage
@@ -115,18 +116,14 @@ namespace AltinnCLI.Commands.Storage
         {
             if (IsValid)
             {
-                // values are validate both on exitent and value, så just fetch them
-                string ownerId = DictOptions.GetValueOrDefault("ownerid");
-                string instanceId = DictOptions.GetValueOrDefault("instanceid");
-                string fullFileName = DictOptions.GetValueOrDefault("file");
+                IOption fileNameOption = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "file", StringComparison.OrdinalIgnoreCase));
 
-                string elementType = "default";
-
-                FileStream stream = new FileStream(fullFileName, FileMode.Open);
+                FileStream stream = new FileStream(fileNameOption.Value, FileMode.Open);
                 MemoryStream memstr = new MemoryStream(new byte[stream.Length]);
                 stream.CopyTo(memstr);
                 stream.Close();
-                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(ownerId, instanceId, elementType, memstr, fullFileName);
+
+                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(SelectableCliOptions, memstr, fileNameOption.Value);
             }
 
             return true;
@@ -137,18 +134,17 @@ namespace AltinnCLI.Commands.Storage
             /// <returns></returns>
         protected bool Validate()
         {
-            if (HasParameterWithValue("ownerid") && HasParameterWithValue("instanceid") && HasParameterWithValue("file"))
-            {
-                if (File.Exists(DictOptions.GetValueOrDefault("file")))
-                {
-                    return true;
-                }
+            IOption fileNameOption = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "file", StringComparison.OrdinalIgnoreCase));
 
-               _logger.LogError("Upload file does not exists");
-                return false;
+            if ((fileNameOption != null) && File.Exists(fileNameOption.Value))
+            {
+                return true;
+            }
+            else
+            {
+                _logger.LogError("Upload file does not exists");
             }
 
-           _logger.LogError("Missing parameter values");
             return false;
         }
     }

@@ -86,10 +86,11 @@ namespace AltinnCLI.Core
 
                         foreach (CfgOption cfgOption in cfgOptions)
                         {
-                            Type t = GetSystemType(cfgOption.DataType);
+                            Type baseType = null;
 
-                            var baseClass = typeof(Option<>);
-                            var combinedType = baseClass.MakeGenericType(t);
+                            Type t = GetSystemType(cfgOption.DataType, out baseType);
+
+                            var combinedType = baseType.MakeGenericType(t);
                             IOption option = (IOption)Activator.CreateInstance(combinedType);
 
                             option.Description = cfgOption.Description;
@@ -126,30 +127,30 @@ namespace AltinnCLI.Core
 
 
 
-        private static Type GetSystemType(string type)
+        private static Type GetSystemType(string type, out Type baseType)
         {
             string lowerCaseType = type.ToLower();
-
             string systemType = string.Empty;
+            baseType = null;
 
             switch (lowerCaseType)
             {
-                case "bool": systemType = "System.Boolean"; break;
-                case "byte": systemType = "System.Byte"; break;
-                case "sbyte": systemType = "System.Decimal"; break;
-                case "double": systemType = "System.Double"; break;
-                case "float": systemType = "System.Single"; break;
-                case "int": systemType = "System.Int32"; break;
-                case "uint": systemType = "System.UInt32"; break;
-                case "long": systemType = "System.Int64"; break;
-                case "ulong": systemType = "System.UInt64"; break;
-                case "object": systemType = "System.Object"; break;
-                case "short": systemType = "System.Int16"; break;
-                case "ushort": systemType = "System.UInt16"; break;
-                case "string": systemType = "System.String"; break;
-                case "datetime": systemType = "System.DateTime"; break;
-                case "guid": systemType = "System.Guid"; break;
-                case "file": systemType = "System.IO.FileStream"; break;
+                case "bool":    systemType = "System.Boolean";      baseType = typeof(NumberOption<>); break;
+                case "byte":    systemType = "System.Byte";         baseType = typeof(NumberOption<>); break;
+                case "sbyte":   systemType = "System.Decimal";      baseType = typeof(NumberOption<>); break;
+                case "double":  systemType = "System.Double";       baseType = typeof(NumberOption<>); break;
+                case "float":   systemType = "System.Single";       baseType = typeof(NumberOption<>); break;
+                case "int":     systemType = "System.Int32";        baseType = typeof(NumberOption<>); break;
+                case "uint":    systemType = "System.UInt32";       baseType = typeof(NumberOption<>); break;
+                case "long":    systemType = "System.Int64";        baseType = typeof(NumberOption<>); break;
+                case "ulong":   systemType = "System.UInt64";       baseType = typeof(NumberOption<>); break;
+                case "object":  systemType = "System.Object";       baseType = typeof(NumberOption<>); break;
+                case "short":   systemType = "System.Int16";        baseType = typeof(NumberOption<>); break;
+                case "ushort":  systemType = "System.UInt16";       baseType = typeof(NumberOption<>); break;
+                case "string":  systemType = "System.String";       baseType = typeof(NumberOption<>); break;
+                case "datetime":systemType = "System.DateTime";     baseType = typeof(NumberOption<>); break;
+                case "guid":    systemType = "System.Guid";         baseType = typeof(NumberOption<>); break;
+                case "file":    systemType = "System.IO.FileStream";baseType = typeof(FileOption<>);   break;
             }
 
             return Type.GetType(systemType);

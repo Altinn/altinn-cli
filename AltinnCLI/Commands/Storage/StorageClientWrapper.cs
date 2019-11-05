@@ -81,7 +81,7 @@ namespace AltinnCLI.Commands.Storage
             return null;
         }
 
-        public InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId=null, Guid? instanceGuid = null)
+        public InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null)
         {
             string cmd = "instances";
 
@@ -107,14 +107,14 @@ namespace AltinnCLI.Commands.Storage
             return null;
         }
 
-        public InstanceResponseMessage GetInstanceMetaData(List<IOption> urlParams = null )
+        public InstanceResponseMessage GetInstanceMetaData(List<IOption> urlParams = null)
         {
             string cmd = "instances";
 
             IOption org = urlParams.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase) && x.IsAssigned);
             IOption appid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "appid", StringComparison.OrdinalIgnoreCase) && x.IsAssigned);
 
-            
+
             if (org != null)
             {
                 cmd += $@"?org={org.Value}";
@@ -128,7 +128,7 @@ namespace AltinnCLI.Commands.Storage
 
             }
 
-            foreach(IOption param in urlParams )
+            foreach (IOption param in urlParams)
             {
                 cmd += $@"&{param.ApiName}={param.Value}";
             }
@@ -193,6 +193,28 @@ namespace AltinnCLI.Commands.Storage
             return null;
         }
 
+        /// <summary>
+        /// Uploads a data element to storage 
+        /// </summary>
+        /// <param name="urlParams"></param>
+        /// <returns></returns>
+        public InstanceResponseMessage UploadDataElement(List<IOption> urlParams, Stream data, string fileName)
+        {
+            string instanceOwnerId = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceownerid", StringComparison.OrdinalIgnoreCase))?.Value;
+            string instanceGuid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceguid", StringComparison.OrdinalIgnoreCase))?.Value;
+            string elementType = urlParams.FirstOrDefault(x => string.Equals(x.Name, "elementtype", StringComparison.OrdinalIgnoreCase))?.Value;
 
+            string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}";
+            string contentType = "application/xml";
+
+            HttpClientWrapper client = new HttpClientWrapper(_logger);
+            StreamContent content = new StreamContent(data);
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name=" + Path.GetFileNameWithoutExtension(fileName));
+            content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);
+            Task<HttpResponseMessage> response = client.PostCommand(BaseAddress, cmd, content);
+
+            return null;
+        }
     }
 }

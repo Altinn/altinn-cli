@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AltinnCLI.Core
 {
-    public class Option<T> : IOption //, IHelp
+    public abstract class Option<T> : IOption //, IHelp
     {
         /// <summary>
         /// Creates an instance of the <see cref="Option"/> class. Is required for building instance with correct Type
@@ -54,16 +54,8 @@ namespace AltinnCLI.Core
         /// Function to verify that the option is valid
         /// </summary>
         /// <returns>True if the option is given a legal value, false otherwise</returns>
-        public virtual bool IsValid()
-        {
-            if (TryParse(Value) == null)
-            {
-                return false;
-            }
+        public abstract bool IsValid();
 
-            return true;
-        }
-          
         /// <summary>
         /// Gets the description for the option.
         /// </summary>
