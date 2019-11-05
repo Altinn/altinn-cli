@@ -61,7 +61,7 @@ namespace AltinnCLI.Core
                     }
 
                     message.RequestUri = uri;
-
+                    _logger.LogInformation($"Get data with URL:{uri}\n");
                     response = await client.SendAsync(message).ConfigureAwait(false);
                 }
             }

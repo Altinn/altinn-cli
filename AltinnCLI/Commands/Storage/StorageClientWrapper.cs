@@ -130,7 +130,10 @@ namespace AltinnCLI.Commands.Storage
 
             foreach (IOption param in urlParams)
             {
-                cmd += $@"&{param.ApiName}={param.Value}";
+                if (param.IsAssigned == true)
+                {
+                    cmd += $@"&{param.ApiName}={param.Value}";
+                }
             }
             HttpClientWrapper client = new HttpClientWrapper(_logger);
             HttpResponseMessage response = (HttpResponseMessage)client.GetCommand(BaseAddress, cmd).Result;
