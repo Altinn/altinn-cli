@@ -128,12 +128,12 @@ namespace AltinnCLI.Commands.Application
         {
             if (IsValid)
             {
-                string instanceTemplate = GetOptionValue("instancetemplate");
-                string folder = GetOptionValue("folder");
-                string app = GetOptionValue("app");
-                string org = GetOptionValue("org");
-                string instanceOwnerId = GetOptionValue("instanceOwnerId");
-                string instanceData = GetOptionValue("instanceData");
+                string instanceTemplate = (string)GetOptionValue("instancetemplate");
+                string folder = (string)GetOptionValue("folder");
+                string app = (string)GetOptionValue("app");
+                string org = (string)GetOptionValue("org");
+                string instanceOwnerId = (string)GetOptionValue("instanceOwnerId");
+                string instanceData = (string)GetOptionValue("instanceData");
 
                 MultipartFormDataContent multipartFormData;
 
@@ -165,8 +165,7 @@ namespace AltinnCLI.Commands.Application
                 }
                 else
                 {
-                    // Handle single app instanciation
-                    multipartFormData = buildContentForInstance(folder);
+                    multipartFormData = BuildContentForInstance(folder);
 
                     string response = clientWrapper.CreateInstance(org, app, instanceOwnerId, multipartFormData);
                     _logger.LogInformation(response);
@@ -177,7 +176,7 @@ namespace AltinnCLI.Commands.Application
             return true;
         }
 
-        private MultipartFormDataContent buildContentForInstance(string path)
+        private MultipartFormDataContent BuildContentForInstance(string path)
         {
             using (MultipartFormDataContent multipartFormData = new MultipartFormDataContent())
             {
@@ -277,7 +276,7 @@ namespace AltinnCLI.Commands.Application
 
 public class MultipartContentBuilder
 {
-    private MultipartFormDataContent builder;
+    private readonly MultipartFormDataContent builder;
 
     public MultipartContentBuilder(Instance instanceTemplate)
     {
