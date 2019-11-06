@@ -17,9 +17,6 @@ namespace AltinnCLI.Commands.Storage
     {
         private IStorageClientWrapper ClientWrapper = null;
 
-        private int? ownerId = null;
-        private Guid? instanceId;
-        private Guid? dataId;
         private string updateInstances = string.Empty;
 
         /// <summary>
@@ -74,6 +71,8 @@ namespace AltinnCLI.Commands.Storage
                 string usage = $"\n" +
                 $"Storage GetData org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
                 $"Storage GetData appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
+                $"Storage GetData ownerid=<id>  -Fetch all documents for owner \n" +
+                $"Storage GetData ownerid=<id> instanceId=<instance-guid> dataId=<data-guid> -Fetch specific data element \n" +
                 $"\n" +
                 $" Available parameters for the command that download documents for an org or app \n";
 
@@ -82,8 +81,6 @@ namespace AltinnCLI.Commands.Storage
                     usage += $"\t{opt.Name}\t\t {opt.Description} \n";
                 }
 
-                usage += $"Storage GetData ownerid=<id>  -Fetch all documents for owner \n" +
-                $"Storage GetData ownerid=<id> instanceId=<instance-guid> dataId=<data-guid> -Fetch specific data element \n";
 
                 return usage;
             }
@@ -130,8 +127,11 @@ namespace AltinnCLI.Commands.Storage
 
             if (IsValid)
             {
+                int? ownerId = (int?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "ownerId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+                Guid? instanceId =(Guid?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "instanceId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+                Guid? dataId = (Guid?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "dataId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
 
-                if ((ownerId != null) && (instanceId != null) && (dataId != null))
+                if ((ownerId.HasValue) && (instanceId != null) && (dataId != null))
                 {
                     Stream stream = ClientWrapper.GetData((int)ownerId, (Guid)instanceId, (Guid)dataId);
 
@@ -166,8 +166,10 @@ namespace AltinnCLI.Commands.Storage
         private void GetDocumentFromInstances()
         {
             InstanceResponseMessage responsMessage = null;
-            string appId = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "appId", StringComparison.OrdinalIgnoreCase)).Name;
-            string org = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase)).Name;
+            string appId = (string)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "appId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+            string org = (string)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+            int? ownerId = (int?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "ownerId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+            Guid? instanceId = (Guid?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "instanceId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {

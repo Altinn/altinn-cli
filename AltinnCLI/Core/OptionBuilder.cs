@@ -10,40 +10,45 @@ using System.Text;
 
 namespace AltinnCLI.Core
 {
+    /// <summary>
+    /// Singleton class the loads the command file and for each command to execute build and validate options
+    /// </summary>
     public sealed class OptionBuilder
     {
         private static OptionBuilder instance = null;
-        private static readonly object padlock = new object();
         private static CfgCommandList cfgCommands = null;
-
-        FileInfo fileIfo = null;
-
-        /// <summary>
-        /// Application logger 
-        /// </summary>
         private static ILogger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OptionBuilder" /> class.
+        /// </summary>
+        /// <param name="logger">The application logger</param>
         OptionBuilder(ILogger logger)
         {
+            _logger = logger;
         }
 
+        /// <summary>
+        /// Returns or if not already created creates an instance of the Option builder 
+        /// </summary>
+        /// <param name="logger">the application builder</param>
+        /// <returns>The singleton instance of the OptionBuilder class</returns>
         public static OptionBuilder Instance(ILogger logger)
         {
-            //get
-            //{
-            //    lock (padlock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new OptionBuilder(logger);
+
+            if (instance == null)
+            {
+                instance = new OptionBuilder(logger);
                         
-                        LoadCommandFile();
-                    }
-                }
-                return instance;
- //           }
+                LoadCommandFile();
+            }
+
+            return instance;
         }
 
+        /// <summary>
+        /// Reads the command file from disk
+        /// </summary>
         private static void LoadCommandFile()
         {
             string fileName = (ApplicationManager.ApplicationConfiguration.GetSection("CommandDefinitionFile").Get<string>());
@@ -62,6 +67,11 @@ namespace AltinnCLI.Core
             }
         }
 
+        /// <summary>
+        ///  Builds the paramters that can be used by a subcommand. 
+        /// </summary>
+        /// <param name="commandHandler">The SubCommand for which the paramters are build</param>
+        /// <returns>List of subcommand paramters</returns>
         public  List<IOption> BuildAvailableOptions(ISubCommandHandler commandHandler)
         {
             string fileName = (ApplicationManager.ApplicationConfiguration.GetSection("CommandDefinitionFile").Get<string>());
@@ -96,6 +106,7 @@ namespace AltinnCLI.Core
                             option.Description = cfgOption.Description;
                             option.Name = cfgOption.Name;
                             option.IsAssigned = false;
+                            option.ApiName = cfgOption.Apiname;
 
                             subCommandOptions.Add(option);
                         }
@@ -107,6 +118,10 @@ namespace AltinnCLI.Core
         }
 
 
+        /// <summary>
+        /// Assigns value for the options defined as input paramters to selectable parameters.
+        /// </summary>
+        /// <param name="commandHandler"></param>
         public  void AssignValueToCliOptions(ISubCommandHandler commandHandler)
         {
  
@@ -126,7 +141,12 @@ namespace AltinnCLI.Core
         }
 
 
-
+        /// <summary>
+        ///  Gets the System.Type for a typefind type. Is the type specified as type in the command definition file
+        /// </summary>
+        /// <param name="type">The string that represents a Type</param>
+        /// <param name="baseType">The base class that represents the Type</param>
+        /// <returns></returns>
         private static Type GetSystemType(string type, out Type baseType)
         {
             string lowerCaseType = type.ToLower();

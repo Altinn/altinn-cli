@@ -90,7 +90,7 @@ namespace AltinnCLI.Core
             throw new NotImplementedException();
         }
     }
-    
+   
 }
 
 

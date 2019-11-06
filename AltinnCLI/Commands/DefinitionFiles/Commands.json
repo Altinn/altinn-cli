@@ -96,6 +96,27 @@
               "valuerangeange": "the page size",
               "description": "the page size",
               "apiname": "size"
+            },
+            {
+              "Name": "ownerId",
+              "type": "int",
+              "valuerangeange": "",
+              "description": "the id of the ownerpage size",
+              "apiname": "instanceOwnerId"
+            },
+            {
+              "Name": "instanceId",
+              "type": "guid",
+              "valuerangeange": "",
+              "description": "the id of the instance",
+              "apiname": "instanceGuid"
+            },
+            {
+              "Name": "dataId",
+              "type": "guid",
+              "valuerangeange": "",
+              "description": "the id of the data element",
+              "apiname": "dataId"
             }
           ]
         },
@@ -125,7 +146,7 @@
             },
             {
               "Name": "file",
-              "type": "string",
+              "type": "file",
               "valuerangeange": "0-99999999",
               "description": "name with full path to file to save",
               "apiname": "file"
