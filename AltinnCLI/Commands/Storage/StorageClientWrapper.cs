@@ -114,7 +114,6 @@ namespace AltinnCLI.Commands.Storage
             IOption org = urlParams.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase) && x.IsAssigned);
             IOption appid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "appid", StringComparison.OrdinalIgnoreCase) && x.IsAssigned);
 
-
             if (org != null)
             {
                 cmd += $@"?org={org.Value}";
@@ -178,6 +177,7 @@ namespace AltinnCLI.Commands.Storage
         /// <returns></returns>
         public InstanceResponseMessage UploadDataElement(List<IOption> urlParams, Stream data, string fileName)
         {
+            // assumes that the values are validated by caller
             string instanceOwnerId = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceownerid", StringComparison.OrdinalIgnoreCase))?.Value;
             string instanceGuid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceguid", StringComparison.OrdinalIgnoreCase))?.Value;
             string elementType = urlParams.FirstOrDefault(x => string.Equals(x.Name, "elementtype", StringComparison.OrdinalIgnoreCase))?.Value;
