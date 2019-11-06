@@ -134,18 +134,7 @@ namespace AltinnCLI.Commands.Storage
             /// <returns></returns>
         protected bool Validate()
         {
-            IOption fileNameOption = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "file", StringComparison.OrdinalIgnoreCase));
-
-            if ((fileNameOption != null) && File.Exists(fileNameOption.Value))
-            {
-                return true;
-            }
-            else
-            {
-                _logger.LogError("Upload file does not exists");
-            }
-
-            return false;
+            return true;
         }
     }
 }

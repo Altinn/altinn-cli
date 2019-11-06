@@ -119,18 +119,16 @@ namespace AltinnCLI.Commands.Storage
             {
                 cmd += $@"?org={org.Value}";
                 urlParams.Remove(org);
-
             }
             else
             {
                 cmd += $@"?appId={appid.Value}";
                 urlParams.Remove(appid);
-
             }
 
             foreach (IOption param in urlParams)
             {
-                if (param.IsAssigned == true)
+                if ((param.IsAssigned == true) && (!string.IsNullOrEmpty(param.ApiName)))
                 {
                     cmd += $@"&{param.ApiName}={param.Value}";
                 }
@@ -171,29 +169,6 @@ namespace AltinnCLI.Commands.Storage
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
 
             return stream;
-        }
-
-
-
-        /// <summary>
-        /// Uploads a data element to storage 
-        /// </summary>
-        /// <param name="instanceOwnerId">owner id</param>
-        /// <param name="instanceGuid">id of the instance</param>
-        /// <param name="elementType">type of document to upload</param>
-        public InstanceResponseMessage UploadDataElement(string instanceOwnerId, string instanceGuid, string elementType, Stream data, string fileName)
-        {
-            string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}";
-            string contentType = "application/xml";
-
-            HttpClientWrapper client = new HttpClientWrapper(_logger);
-            StreamContent content = new StreamContent(data);
-            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
-            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name=" + Path.GetFileNameWithoutExtension(fileName));
-            content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);
-            Task<HttpResponseMessage> response = client.PostCommand(BaseAddress, cmd, content);
-
-            return null;
         }
 
         /// <summary>
