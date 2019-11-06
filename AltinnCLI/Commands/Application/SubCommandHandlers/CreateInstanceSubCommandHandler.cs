@@ -179,45 +179,47 @@ namespace AltinnCLI.Commands.Application
 
         private MultipartFormDataContent buildContentForInstance(string path)
         {
-            MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
-            if (Directory.Exists(path))
+            using (MultipartFormDataContent multipartFormData = new MultipartFormDataContent())
             {
-                foreach (string filePath in ReadFiles(path))
+                if (Directory.Exists(path))
                 {
-                    string contentType = "application/octet-stream";
-                    string contentName = "default";
+                    foreach (string filePath in ReadFiles(path))
+                    {
+                        string contentType = "application/octet-stream";
+                        string contentName = "default";
 
-                    if (filePath.Contains(".xml"))
-                    {
-                        contentType = "application/xml";
-                    }
-                    if (filePath.Contains(".json"))
-                    {
-                        contentType = "application/json; charset=utf-8";
-                        contentName = "instance";
+                        if (filePath.Contains(".xml"))
+                        {
+                            contentType = "application/xml";
+                        }
+                        if (filePath.Contains(".json"))
+                        {
+                            contentType = "application/json; charset=utf-8";
+                            contentName = "instance";
+                        }
+
+                        if (contentType != "application/octet-stream")
+                        {
+                            StringContent content = new StringContent(File.ReadAllText(filePath));
+                            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+                            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse($"form-data; name={contentName}");
+                            multipartFormData.Add(content, Path.GetFileNameWithoutExtension(filePath));
+                        }
                     }
 
-                    if (contentType != "application/octet-stream")
-                    {
-                        StringContent content = new StringContent(File.ReadAllText(filePath));
-                        content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
-                        content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse($"form-data; name={contentName}");
-                        multipartFormData.Add(content, Path.GetFileNameWithoutExtension(filePath));
-                    }
+                    return multipartFormData;
                 }
-
-                return multipartFormData;
-            }
-            else
-            {
-                _logger.LogError(@$"Could not open folder '{path}'");
-                return null;
+                else
+                {
+                    _logger.LogError(@$"Could not open folder '{path}'");
+                    return null;
+                }
             }
         }
 
         private MultipartFormDataContent buildContentForMultipleInstances(string path)
         {
-            string xmlFileName, personNumber;
+            string personNumber;
 
             if (Path.GetExtension(path) == "xml")
             {
