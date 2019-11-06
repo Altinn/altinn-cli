@@ -96,27 +96,6 @@
               "valuerangeange": "the page size",
               "description": "the page size",
               "apiname": "size"
-            },
-            {
-              "Name": "ownerId",
-              "type": "int",
-              "valuerangeange": "",
-              "description": "the id of the ownerpage size",
-              "apiname": "instanceOwnerId"
-            },
-            {
-              "Name": "instanceId",
-              "type": "guid",
-              "valuerangeange": "",
-              "description": "the id of the instance",
-              "apiname": "instanceGuid"
-            },
-            {
-              "Name": "dataId",
-              "type": "guid",
-              "valuerangeange": "",
-              "description": "the id of the data element",
-              "apiname": "dataId"
             }
           ]
         },
@@ -146,7 +125,7 @@
             },
             {
               "Name": "file",
-              "type": "file",
+              "type": "string",
               "valuerangeange": "0-99999999",
               "description": "name with full path to file to save",
               "apiname": "file"
@@ -157,15 +136,48 @@
     },
     {
       "Name": "Application",
-      "Subcommands": [
+      "SubCommands": [
         {
           "Name": "CreateInstance",
           "Options": [
             {
               "Name": "app",
-              "Dexcription": "Short code for the app",
-              "DataType": "string",
-              "valuerange": "[a-zA-Z]"
+              "type": "string",
+              "valuerange": "",
+              "description": "String identifier for the Application",
+              "apiname": "app"
+            },
+            {
+              "Name": "org",
+              "type": "string",
+              "valuerange": "",
+              "description": "The letter identifier for the Application owner",
+              "apiname": "org"
+            },
+            {
+              "Name": "instanceowner",
+              "type": "string",
+              "valuerange": "",
+              "description": "Unique identifier for the instanceowner",
+              "apiname": "instanceOwnerId"
+            },
+            {
+              "Name": "folder",
+              "type": "string",
+              "valuerange": "",
+              "description": "Path to local folder where instance data is stored"
+            },
+            {
+              "Name": "instanceTemplate",
+              "type": "string",
+              "valuerange": "",
+              "description": "Path to the file that defines the instance"
+            },
+            {
+              "Name": "instanceTemplate",
+              "type": "string",
+              "valuerange": "",
+              "description": "Path to the file that defines the instance"
             }
           ]
         }
