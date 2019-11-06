@@ -127,9 +127,9 @@ namespace AltinnCLI.Commands.Storage
 
             if (IsValid)
             {
-                int? ownerId = (int?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "ownerId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
-                Guid? instanceId =(Guid?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "instanceId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
-                Guid? dataId = (Guid?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "dataId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+                int? ownerId = (int?)GetOptionValue("ownerId");
+                Guid? instanceId = (Guid?)GetOptionValue("instanceId");
+                Guid? dataId = (Guid?)GetOptionValue("dataId");
 
                 if ((ownerId.HasValue) && (instanceId != null) && (dataId != null))
                 {
@@ -166,10 +166,10 @@ namespace AltinnCLI.Commands.Storage
         private void GetDocumentFromInstances()
         {
             InstanceResponseMessage responsMessage = null;
-            string appId = (string)GetOptionValue("appId"); //(string)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "appId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
-            string org = (string)GetOptionValue("org"); //SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "org", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
-            int? ownerId = (int?)GetOptionValue("ownerId"); // (int?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "ownerId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
-            Guid? instanceId = (Guid?)GetOptionValue("instanceId");  //(Guid?)SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "instanceId", StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
+            string appId = (string)GetOptionValue("appId");
+            string org = (string)GetOptionValue("org");
+            int? ownerId = (int?)GetOptionValue("ownerId"); 
+            Guid? instanceId = (Guid?)GetOptionValue("instanceId");
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
