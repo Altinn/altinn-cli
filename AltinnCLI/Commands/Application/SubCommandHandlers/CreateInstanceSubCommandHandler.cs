@@ -8,7 +8,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace AltinnCLI.Commands.Application
 {
@@ -26,41 +26,6 @@ namespace AltinnCLI.Commands.Application
         private IApplicationClientWrapper clientWrapper = null;
 
         /// <summary>
-        /// Short code of the app the instance is being created for
-        /// </summary>
-        private string app = string.Empty;
-        
-        /// <summary>
-        /// Short code for the application owner
-        /// </summary>
-        private string org = string.Empty;
-        
-        /// <summary>
-        /// Id of the party the instance will be created for
-        /// </summary>
-        private string instanceOwnerId = string.Empty;
-        
-        /// <summary>
-        /// Name of the file containing the datamodel for the instance. Defaults to 'Default.xml'
-        /// </summary>
-        private string dataModel = string.Empty;
-        
-        /// <summary>
-        /// Name of the file containing the instance template. Defaults to 'Instance.json'
-        /// </summary>
-        private string instanceTemplate = string.Empty;
-        
-        /// <summary>
-        /// Name of the folder where instance information is stored on the users local machine
-        /// </summary>
-        private string folder = string.Empty;
-        
-        /// <summary>
-        /// Name of the folder holding prefill instance datamodels
-        /// </summary>
-        private string instanceData = string.Empty;
-
-        /// <summary>
         /// Creates an instance of <see cref="CreateInstanceSubCommandHandler" /> class
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information</param>
@@ -70,17 +35,12 @@ namespace AltinnCLI.Commands.Application
             {
                 clientWrapper = new ApplicationClientWrapper(_logger);
             }
+            else
+            {
+                clientWrapper = new ApplicationFileClientWrapper(_logger);
+            }
 
-            AddOptions();
-        }
-
-        public void AddOptions()
-        {
-            //IOption app = (IOption)new Option<string>("app", Options["app"], "app");
-            //if (app.IsValid())
-            //{
-            //    CliOptions.Add(app);
-            //}
+            SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
         }
 
         /// <summary>
@@ -168,20 +128,19 @@ namespace AltinnCLI.Commands.Application
         {
             if (IsValid)
             {
-                app = getParamValue("app");
-                org = getParamValue("org");
-                instanceOwnerId = getParamValue("instanceOwnerId");
-                dataModel = getParamValue("dataModel");
-                instanceTemplate = getParamValue("instanceTemplate");
-                folder = getParamValue("folder");
-                instanceData = getParamValue("instanceData");
+                string instanceTemplate = GetOptionValue("instancetemplate");
+                string folder = GetOptionValue("folder");
+                string app = GetOptionValue("app");
+                string org = GetOptionValue("org");
+                string instanceOwnerId = GetOptionValue("instanceOwnerId");
+                string instanceData = GetOptionValue("instanceData");
 
-                MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
+                MultipartFormDataContent multipartFormData;
 
                 // Handle Prefill data
                 if (!String.IsNullOrEmpty(instanceTemplate))
                 {
-                    foreach (string filePath in readFiles(instanceData))
+                    foreach (string filePath in ReadFiles(instanceData))
                     {
                         if (Path.GetExtension(filePath) == "xml")
                         {
@@ -191,7 +150,7 @@ namespace AltinnCLI.Commands.Application
 
                             try
                             {
-                                string result = clientWrapper.CreateApplication(app, org, instanceOwnerId, multipartFormData);
+                                string result = clientWrapper.CreateInstance(app, org, instanceOwnerId, multipartFormData);
 
                                 Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
                                 File.WriteAllText($"{folder}\\{personNumber}.json", JsonConvert.SerializeObject(instanceResult, Formatting.Indented));
@@ -204,17 +163,17 @@ namespace AltinnCLI.Commands.Application
                         }
                     }
                 }
-
-                // Handle single app instanciation
-                multipartFormData = buildContentForInstance(folder);
-
-                    string response = clientWrapper.CreateApplication(org, app, instanceOwnerId, multipartFormData);
-                    _logger.LogInformation(response);
-                }
                 else
                 {
-                    _logger.LogError(@$"Could not open folder '{folder}'");
+                    // Handle single app instanciation
+                    multipartFormData = buildContentForInstance(folder);
+
+                    string response = clientWrapper.CreateInstance(org, app, instanceOwnerId, multipartFormData);
+                    _logger.LogInformation(response);
                 }
+                
+            }
+
             return true;
         }
 
@@ -223,7 +182,7 @@ namespace AltinnCLI.Commands.Application
             MultipartFormDataContent multipartFormData = new MultipartFormDataContent();
             if (Directory.Exists(path))
             {
-                foreach (string filePath in readFiles(path))
+                foreach (string filePath in ReadFiles(path))
                 {
                     string contentType = "application/octet-stream";
                     string contentName = "default";
@@ -251,7 +210,7 @@ namespace AltinnCLI.Commands.Application
             }
             else
             {
-                _logger.LogError(@$"Could not open folder '{folder}'");
+                _logger.LogError(@$"Could not open folder '{path}'");
                 return null;
             }
         }
@@ -262,8 +221,6 @@ namespace AltinnCLI.Commands.Application
 
             if (Path.GetExtension(path) == "xml")
             {
-                xmlFileName = Path.GetFileName(path);
-
                 // The person number is the XML filename
                 personNumber = Path.GetFileNameWithoutExtension(path);
 
@@ -293,28 +250,11 @@ namespace AltinnCLI.Commands.Application
         /// </summary>
         /// <param name="path">Path to the directory that will be read</param>
         /// <returns>A list of strings representing the path to each file in the directory</returns>
-        private String[] readFiles(string path)
+        private String[] ReadFiles(string path)
         {
             if (Directory.Exists(path))
             { 
                 return Directory.GetFiles(path);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Reads the value of a parameter if it has been set
-        /// </summary>
-        /// <param name="paramName">Name of the parameter</param>
-        /// <returns>Returns the value of the parameter if one is given, null otherwise</returns>
-        private string getParamValue(string paramName)
-        {
-            if (HasParameter(paramName))
-            {
-                return DictOptions[paramName];
             }
             else
             {
@@ -328,64 +268,7 @@ namespace AltinnCLI.Commands.Application
         /// <returns>True if the command is valid, false if any required parameters are missing</returns>
         protected bool Validate()
         {
-            bool valid = true;
-            if (!HasParameterWithValue("app"))
-            {
-                valid = false;
-                _logger.LogError("Invalid or missing value for parameter: 'app'");
-            }
-
-            if (!HasParameterWithValue("org"))
-            {
-                valid = false;
-                _logger.LogError("Invalid or missing value for parameter: 'org'");
-            }
-
-            if (!HasParameterWithValue("instanceowner"))
-            {
-                valid = false;
-                _logger.LogError("Invalid or missing value for parameter: 'instanceOwnerId'");
-            }
-
-            if (!HasParameterWithValue("folder"))
-            {
-                valid = false;
-                _logger.LogError("Invalid or missing value for parameter: 'folder'");
-            }
-
-            if (!HasParameterWithValue("dataModel"))
-            {
-                if (HasParameterWithValue("folder"))
-                {
-                    valid = false;
-                    try
-                    {
-                        string[] files = readFiles(DictOptions["folder"]);
-                        foreach(string file in files)
-                        {
-                            if (file.Contains("default.xml"))
-                            {
-                                valid = true;
-                            }
-                        }
-
-                        if (!valid)
-                        {
-                            _logger.LogError($@"No data model specified and no Default.xml file found in {DictOptions["folder"]}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($@"Error opening '{DictOptions["folder"]}': {ex.Message}");
-                    }
-                }
-                else
-                {
-                    _logger.LogError("No data model or data directory specified");
-                }
-            }
-
-            return valid;
+            return true;
         }
     }
 }

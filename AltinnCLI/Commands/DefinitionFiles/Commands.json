@@ -133,6 +133,22 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "Application",
+      "Subcommands": [
+        {
+          "Name": "CreateInstance",
+          "Options": [
+            {
+              "Name": "app",
+              "Dexcription": "Short code for the app",
+              "DataType": "string",
+              "valuerange": "[a-zA-Z]"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

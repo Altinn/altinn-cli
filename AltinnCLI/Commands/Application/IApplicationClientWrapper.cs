@@ -15,7 +15,7 @@ namespace AltinnCLI.Commands.Application
         /// <param name="instanceOwnerId"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        string CreateApplication(string org, string app, string instanceOwnerId, HttpContent content);
+        string CreateInstance(string org, string app, string instanceOwnerId, HttpContent content);
 
         /// <summary>
         /// 
@@ -24,6 +24,6 @@ namespace AltinnCLI.Commands.Application
         /// <param name="instanceOwnerId"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        string CreateApplication(string appId, string instanceOwnerId, StringContent content);
+        string CreateInstance(string appId, string instanceOwnerId, StringContent content);
     }
 }

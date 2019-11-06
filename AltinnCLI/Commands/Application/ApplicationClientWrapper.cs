@@ -17,7 +17,7 @@ namespace AltinnCLI.Commands.Application
         protected static ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StorageClientWrapper" /> class.
+        /// Initializes a new instance of the <see cref="ApplicationClientWrapper" /> class.
         /// </summary>
         public ApplicationClientWrapper(ILogger logger)
         {
@@ -30,7 +30,7 @@ namespace AltinnCLI.Commands.Application
         /// </summary>
         private string BaseAddress { get; set; }
 
-        public string CreateApplication(string org, string app, string instanceOwnerId, HttpContent content)
+        public string CreateInstance(string org, string app, string instanceOwnerId, HttpContent content)
         {
             string AppBaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
             string cmd = $@"{org}/{app}/instances";
@@ -50,7 +50,7 @@ namespace AltinnCLI.Commands.Application
 
         }
 
-        public string CreateApplication(string appId, string instanceOwnerId, StringContent content)
+        public string CreateInstance(string appId, string instanceOwnerId, StringContent content)
         {
             throw new NotImplementedException();
         }

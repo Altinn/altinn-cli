@@ -1,12 +1,10 @@
-﻿using AltinnCLI.Core.Json;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
+
+using Microsoft.Extensions.Logging;
 using System.Linq;
-using System.Text;
+using System;
 
 namespace AltinnCLI.Core
 {
@@ -28,28 +26,6 @@ namespace AltinnCLI.Core
         {
             _logger = logger;
             CliOptions = new List<IOption>();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public Dictionary<string,string> ParseOptions(string[] args)
-        {
-            Dictionary<string, string> options = new Dictionary<string, string>();
-
-            return options;
-        }
-
-        protected virtual string BuildCommand(string[] args)
-        {
-            return string.Empty;
-        }
-
-        protected virtual bool RunCommand(string command)
-        {
-            return true;
         }
 
         /// <summary>
@@ -95,6 +71,24 @@ namespace AltinnCLI.Core
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected string GetOptionValue(string key)
+        {
+            IOption option = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, key, StringComparison.OrdinalIgnoreCase));
+            if (option != null)
+            {
+                return option.Name;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
