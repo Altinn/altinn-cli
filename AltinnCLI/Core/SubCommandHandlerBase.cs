@@ -78,17 +78,9 @@ namespace AltinnCLI.Core
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        protected string GetOptionValue(string key)
+        protected object GetOptionValue(string key)
         {
-            IOption option = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, key, StringComparison.OrdinalIgnoreCase));
-            if (option != null)
-            {
-                return option.Name;
-            }
-            else
-            {
-                return string.Empty;
-            }
+            return SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, key, StringComparison.OrdinalIgnoreCase) && x.IsAssigned)?.GetValue();
         }
 
         /// <summary>
