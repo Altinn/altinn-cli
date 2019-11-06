@@ -140,7 +140,6 @@ namespace AltinnCLI.Core
             }
         }
 
-
         /// <summary>
         ///  Gets the System.Type for a typefind type. Is the type specified as type in the command definition file
         /// </summary>
