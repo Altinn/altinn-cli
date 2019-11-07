@@ -98,18 +98,6 @@ namespace AltinnCLI.Commands.Storage
         }
 
         /// <summary>
-        /// Gets the validation status for the command parameters
-        /// </summary>
-        public bool IsValid 
-        {
-            get
-            {
-                return Validate();
-            }
-        }
-
-
-        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
@@ -151,11 +139,13 @@ namespace AltinnCLI.Commands.Storage
             }
             else
             {
-                _logger.LogInformation("Missing parameters");
+                string error = "Error in command parameter(s)\n";
+                error += GetParameterErrors();
+              
+                _logger.LogInformation(error);
             }
             return true;
         }
-
  
         /// <summary>
         /// Fetch instance data and call member method to fetch and save document on file
@@ -226,15 +216,6 @@ namespace AltinnCLI.Commands.Storage
 
                 FetchAndSaveData(responsMessage.Instances, responsMessage.Next, updateInstances);
             }
-        }
-
-        /// <summary>
-        /// Verifies if the input parameters are valid.
-        /// </summary>
-        /// <returns></returns>
-        protected bool Validate()
-        {
-            return true;
         }
     }
 }

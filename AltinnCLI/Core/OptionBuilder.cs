@@ -122,9 +122,10 @@ namespace AltinnCLI.Core
         /// Assigns value for the options defined as input paramters to selectable parameters.
         /// </summary>
         /// <param name="commandHandler"></param>
-        public  void AssignValueToCliOptions(ISubCommandHandler commandHandler)
+        /// <returns>Status of assignments which includes validation of paramters</returns>
+        public bool AssignValueToCliOptions(ISubCommandHandler commandHandler)
         {
- 
+            bool hasError = false;
             foreach (IOption option in commandHandler.SelectableCliOptions)
             {
                 KeyValuePair<string, string> valuePair = commandHandler.DictOptions.FirstOrDefault(x => string.Equals(x.Key, option.Name, StringComparison.OrdinalIgnoreCase));
@@ -132,12 +133,12 @@ namespace AltinnCLI.Core
                 if (valuePair.Value != null)
                 {
                     option.Value = valuePair.Value;
-                    if (option.IsValid())
-                    {
-                        option.IsAssigned = true;
-                    }
+                    option.IsAssigned = true;
+                    option.Validate();
                 }
             }
+
+            return hasError;
         }
 
         /// <summary>

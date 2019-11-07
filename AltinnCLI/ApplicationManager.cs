@@ -26,10 +26,8 @@ namespace AltinnCLI
 
         private static ILogger _logger;
 
-        public ApplicationManager(IServiceProvider serviceProvider, IConfigurationRoot applicationConfiguration, ILogger logger = null)
+        public ApplicationManager(ILogger<ApplicationManager> logger = null)
         {
-            ServiceProvider = serviceProvider;
-            ApplicationConfiguration = applicationConfiguration;
             _logger = logger;
         }
 
@@ -50,20 +48,27 @@ namespace AltinnCLI
                     if (input.Length > 1)
                     {
                         ISubCommandHandler commandHandler = processArgs(input);
-                        if (commandHandler != null)
+
+                        if (commandHandler.IsValid)
                         {
-                            service.Run(commandHandler);
+                            if (commandHandler != null && commandHandler.IsValid)
+                            {
+                                service.Run(commandHandler);
+                            }
+                            else if (commandHandler.IsValid)
+                            {
+                                service.Run(ParseArguments(input));
+                            }
                         }
                         else
                         {
-                            service.Run(ParseArguments(input));
-                        }
+                            _logger.LogError($"Command error: {commandHandler.ErrorMessage}");
+                        }    
                     }
                     else
                     {
                         service.Run();
                     }
-
                 }
                 else
                 {

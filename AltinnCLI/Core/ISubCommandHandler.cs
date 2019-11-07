@@ -7,7 +7,7 @@ namespace AltinnCLI.Core
     /// <summary>
     /// Interface that defines required method and properties for a SubCommandHandler
     /// </summary>
-    public interface ISubCommandHandler
+    public interface ISubCommandHandler : IValidate
     {
         /// <summary>
         /// 
@@ -40,9 +40,5 @@ namespace AltinnCLI.Core
         /// </summary>
         List<IOption> CliOptions { get; set; }
 
-        /// <summary>
-        /// Validation status of the command hanlder. 
-        /// </summary>
-        bool IsValid { get; }
     }
 }

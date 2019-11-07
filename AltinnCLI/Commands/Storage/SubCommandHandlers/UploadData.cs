@@ -89,16 +89,6 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
-        /// <summary>
-        /// Gets the validation status for the command parameters
-        /// </summary>
-        public bool IsValid
-        {
-            get
-            {
-                return Validate();
-            }
-        }
 
         public List<IOption> Options { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -126,14 +116,6 @@ namespace AltinnCLI.Commands.Storage
                 InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(SelectableCliOptions, memstr, fileNameOption.Value);
             }
 
-            return true;
-        }
-            /// <summary>
-            /// Verifies if the input parameters are valid.
-            /// </summary>
-            /// <returns></returns>
-        protected bool Validate()
-        {
             return true;
         }
     }

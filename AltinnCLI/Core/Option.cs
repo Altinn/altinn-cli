@@ -8,6 +8,8 @@ namespace AltinnCLI.Core
 {
     public abstract class Option<T> : IOption //, IHelp
     {
+        protected bool? isValid = null; 
+
         /// <summary>
         /// Creates an instance of the <see cref="Option"/> class. Is required for building instance with correct Type
         /// </summary>
@@ -54,7 +56,23 @@ namespace AltinnCLI.Core
         /// Function to verify that the option is valid
         /// </summary>
         /// <returns>True if the option is given a legal value, false otherwise</returns>
-        public abstract bool IsValid();
+        public virtual bool IsValid
+        {
+            get
+            {
+                if (!isValid.HasValue)
+                {
+                    isValid = Validate();
+                }
+
+                return (bool)isValid;
+            }
+
+            set
+            {
+                isValid = value;
+            }
+        }
 
         /// <summary>
         /// Gets the description for the option.
@@ -65,7 +83,12 @@ namespace AltinnCLI.Core
         /// Gets the usage examples for the option
         /// </summary>
         public string Usage { get; }
+
         public bool IsAssigned { get; set; }
+
+        public string ErrorMessage { get; set; }
+
+        public string Range { get; set; }
 
         /// <summary>
         /// 
@@ -81,14 +104,26 @@ namespace AltinnCLI.Core
             TypeConverter converter =
                 TypeDescriptor.GetConverter(typeof(T));
 
-            return (T)converter.ConvertFromString(null,
-                CultureInfo.InvariantCulture, inValue);
+            try
+            {
+                var value = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, inValue);
+                IsValid = true;
+                return value;
+            }
+            catch (Exception ex)
+            {
+                IsValid = false;
+                ErrorMessage = $"Invalid Parameter value for paramter: <{Name}>,  {ex.Message}";
+                throw ex;
+            }
         }
 
-        public bool HasValue()
+        protected virtual bool CheckRange()
         {
-            throw new NotImplementedException();
+            return true;
         }
+
+        public abstract bool Validate();
     }
    
 }

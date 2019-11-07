@@ -13,7 +13,7 @@ namespace AltinnCLI.Core
         /// Verifies if the input parameters are valid.
         /// </summary>
         /// <returns></returns>
-        public override bool IsValid()
+        public override bool Validate()
         {
             if (File.Exists(Value))
             {

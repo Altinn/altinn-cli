@@ -33,7 +33,11 @@ namespace AltinnCLI
 
             IConfigurationRoot configuration = BuildConfiguration();
 
-            ApplicationManager app = new ApplicationManager(serviceProvider, configuration);
+            var app = serviceProvider.GetService<ApplicationManager>();
+
+            ApplicationManager.ServiceProvider = serviceProvider;
+            ApplicationManager.ApplicationConfiguration = configuration;
+          
             string args;            
 
             while(true)
@@ -52,6 +56,14 @@ namespace AltinnCLI
         private static IServiceCollection GetServices()
         {
             IServiceCollection services = new ServiceCollection();
+
+
+            services.AddLogging(configure =>
+            {
+                configure.ClearProviders();
+                configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
+            }).AddTransient<ApplicationManager>();
+
 
             // register all Commands that can be accessed from commandline, they all implements the ICommand interface
             // that contains a name property that is used to select the properiate class according to cli command type, args[0]

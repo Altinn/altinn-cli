@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AltinnCLI.Core
 {
-    public interface IOption
+    public interface IOption : IValidate
     {
         public string Name { get; set;  }
 
@@ -16,10 +16,9 @@ namespace AltinnCLI.Core
 
         string Description { get; set; }
 
+        string Range { get; set; }
+
         object GetValue();
 
-        bool IsValid();
-
-        bool HasValue();
     }
 }

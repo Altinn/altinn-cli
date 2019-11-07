@@ -11,8 +11,11 @@ namespace AltinnCLI.Core
     /// <summary>
     /// Base class for Commandhandlers
     /// </summary>
-    public abstract class SubCommandHandlerBase
+    public abstract class SubCommandHandlerBase : IValidate
     {
+        private string errorMessage;
+        private bool? isValid = null;
+
         /// <summary>
         /// Application logger 
         /// </summary>
@@ -107,6 +110,67 @@ namespace AltinnCLI.Core
             }
 
             _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
+        }
+
+        public virtual bool Validate()
+        {
+            // validate all options, not valid if one fails
+            return (SelectableCliOptions.Where(x => !x.IsValid) == null) ? true : false;
+        }
+
+
+        public string GetParameterErrors()
+        {
+            string errorMessage = string.Empty;
+            foreach (IOption option in SelectableCliOptions.Where(x => x.IsAssigned))
+            {
+                if (!option.IsValid)
+                {
+                    errorMessage += $"{option.ErrorMessage} \n";
+                }
+            }
+
+            return errorMessage;
+        }
+
+
+        public bool IsValid
+        {
+            get
+            {
+                if (!isValid.HasValue)
+                {
+                    isValid = Validate();
+                }
+
+                return (bool)isValid;
+            }
+
+            set
+            {
+                isValid = value;
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get 
+            {
+                string message = $"{errorMessage} \n";
+
+                List<IOption> optionsWithError = SelectableCliOptions.Where(x => (x.IsAssigned == true) && (x.IsValid == false)).ToList();
+                foreach (IOption option in optionsWithError)
+                {
+                    message += $"{option.ErrorMessage} \n";
+                }
+
+                return message;
+            }
+
+            set
+            {
+                errorMessage = value;
+            }
         }
     }
 }
