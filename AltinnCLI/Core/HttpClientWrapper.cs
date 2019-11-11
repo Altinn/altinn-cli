@@ -140,9 +140,9 @@ namespace AltinnCLI.Core
                     response = await client.PostAsync(uri, content).ConfigureAwait(false);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n Exception: {ex} \n");
             }
 
             if (response.StatusCode != HttpStatusCode.OK)
