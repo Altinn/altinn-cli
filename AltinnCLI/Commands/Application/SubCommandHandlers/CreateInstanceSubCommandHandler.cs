@@ -39,8 +39,6 @@ namespace AltinnCLI.Commands.Application
             {
                 clientWrapper = new ApplicationFileClientWrapper(_logger);
             }
-
-            SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
         }
 
         /// <summary>

@@ -34,8 +34,6 @@ namespace AltinnCLI.Commands.Storage
             {
                 ClientWrapper = new StorageClientFileWrapper(_logger);
             }
-
-            SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
         }
 
   

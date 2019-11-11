@@ -40,5 +40,9 @@ namespace AltinnCLI.Core
         /// </summary>
         List<IOption> CliOptions { get; set; }
 
+        /// <summary>
+        /// Builds the options that can control the command.
+        /// </summary>
+        void BuildSelectableCommands();
     }
 }

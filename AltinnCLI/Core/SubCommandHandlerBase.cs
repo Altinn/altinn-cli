@@ -14,7 +14,7 @@ namespace AltinnCLI.Core
     public abstract class SubCommandHandlerBase : IValidate
     {
         private string errorMessage;
-        private bool? isValid = null;
+        private bool? isValid; 
 
         /// <summary>
         /// Application logger 
@@ -28,6 +28,7 @@ namespace AltinnCLI.Core
         public SubCommandHandlerBase(ILogger<SubCommandHandlerBase> logger)
         {
             _logger = logger;
+            isValid = null;
             CliOptions = new List<IOption>();
         }
 
@@ -112,10 +113,23 @@ namespace AltinnCLI.Core
             _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
         }
 
+        public void BuildSelectableCommands()
+        {
+            SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
+        }
+
+
         public virtual bool Validate()
         {
             // validate all options, not valid if one fails
-            return (SelectableCliOptions.Where(x => !x.IsValid) == null) ? true : false;
+            List<IOption> opt = SelectableCliOptions.Where(x => x.IsValid == false && x.IsAssigned == true).ToList();
+
+            if (opt == null || opt.Count == 0)
+            {
+                return true;
+            }
+
+            return false;
         }
 
 

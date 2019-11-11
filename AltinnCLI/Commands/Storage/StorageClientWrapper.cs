@@ -178,8 +178,8 @@ namespace AltinnCLI.Commands.Storage
         public InstanceResponseMessage UploadDataElement(List<IOption> urlParams, Stream data, string fileName)
         {
             // assumes that the values are validated by caller
-            string instanceOwnerId = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceownerid", StringComparison.OrdinalIgnoreCase))?.Value;
-            string instanceGuid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceguid", StringComparison.OrdinalIgnoreCase))?.Value;
+            string instanceOwnerId = urlParams.FirstOrDefault(x => string.Equals(x.Name, "ownerid", StringComparison.OrdinalIgnoreCase))?.Value;
+            string instanceGuid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceid", StringComparison.OrdinalIgnoreCase))?.Value;
             string elementType = urlParams.FirstOrDefault(x => string.Equals(x.Name, "elementtype", StringComparison.OrdinalIgnoreCase))?.Value;
 
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data?elementType={elementType}";
