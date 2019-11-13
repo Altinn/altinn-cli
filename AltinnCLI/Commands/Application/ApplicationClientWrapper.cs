@@ -33,11 +33,11 @@ namespace AltinnCLI.Commands.Application
         public string CreateInstance(string org, string app, string instanceOwnerId, HttpContent content)
         {
             string AppBaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
-            string cmd = $@"{org}/{app}/instances";
+            string cmd = $@"instances?appId={org}/{app}";
 
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
-            Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
+            Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(BaseAddress, cmd, content);
 
             if (response.Result.IsSuccessStatusCode)
             {
