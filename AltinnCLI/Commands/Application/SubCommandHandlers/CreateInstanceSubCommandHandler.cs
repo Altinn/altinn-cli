@@ -97,17 +97,6 @@ namespace AltinnCLI.Commands.Application
             }
         }
 
-        /// <summary>
-        /// Gets the validation status of the command
-        /// </summary>
-        public bool IsValid
-        {
-            get
-            {
-                return Validate();
-            }
-        }
-
 
         /// <summary>
         /// 
@@ -130,7 +119,7 @@ namespace AltinnCLI.Commands.Application
                 string folder = (string)GetOptionValue("folder");
                 string app = (string)GetOptionValue("app");
                 string org = (string)GetOptionValue("org");
-                string instanceOwnerId = (string)GetOptionValue("instanceOwnerId");
+                string instanceOwnerId = (string)GetOptionValue("ownerid");
                 string instanceData = (string)GetOptionValue("instanceData");
 
                 MultipartFormDataContent multipartFormData;
@@ -176,41 +165,47 @@ namespace AltinnCLI.Commands.Application
 
         private MultipartFormDataContent BuildContentForInstance(string path)
         {
-            using (MultipartFormDataContent multipartFormData = new MultipartFormDataContent())
+            if (Directory.Exists(path))
             {
-                if (Directory.Exists(path))
+                FileStream stream = null;
+                Instance instance = new Instance();
+                string formData = string.Empty;
+
+                
+                foreach (string filePath in ReadFiles(path))
                 {
-                    foreach (string filePath in ReadFiles(path))
+                    if (filePath.Contains(".xml"))
                     {
-                        string contentType = "application/octet-stream";
-                        string contentName = "default";
 
-                        if (filePath.Contains(".xml"))
-                        {
-                            contentType = "application/xml";
-                        }
-                        if (filePath.Contains(".json"))
-                        {
-                            contentType = "application/json; charset=utf-8";
-                            contentName = "instance";
-                        }
-
-                        if (contentType != "application/octet-stream")
-                        {
-                            StringContent content = new StringContent(File.ReadAllText(filePath));
-                            content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
-                            content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse($"form-data; name={contentName}");
-                            multipartFormData.Add(content, Path.GetFileNameWithoutExtension(filePath));
-                        }
+                        formData = filePath;
                     }
 
-                    return multipartFormData;
+                    if (filePath.Contains(".json"))
+                    {
+                        instance = JsonConvert.DeserializeObject<Instance>(File.ReadAllText(filePath));
+                    }
                 }
+
+                if (instance.AppId != null && !string.IsNullOrEmpty(formData))
+                {
+                    StringContent stringContent = new StringContent(File.ReadAllText(formData));
+                    stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/xml");
+                    MultipartFormDataContent content = new MultipartContentBuilder(instance)
+                     .AddDataElement("default", stringContent)
+                     .Build();
+
+                    return content;
+                } 
                 else
                 {
-                    _logger.LogError(@$"Could not open folder '{path}'");
+                    _logger.LogError($@"{path} is must contain both an instance template and form data");
                     return null;
                 }
+            }
+            else
+            {
+                _logger.LogError(@$"Could not open folder '{path}'");
+                return null;
             }
         }
 
@@ -265,48 +260,16 @@ namespace AltinnCLI.Commands.Application
         /// Verifies that the input parameters are valid.
         /// </summary>
         /// <returns>True if the command is valid, false if any required parameters are missing</returns>
-        protected bool Validate()
+        public override bool Validate()
         {
-            return true;
+            bool valid = true;
+
+            if (!HasParameterWithValue("app") || !HasParameterWithValue("org"))
+            {
+                valid = false;
+            }
+
+            return valid;
         }
     }
-}
-
-public class MultipartContentBuilder
-{
-    private readonly MultipartFormDataContent builder;
-
-    public MultipartContentBuilder(Instance instanceTemplate)
-    {
-        builder = new MultipartFormDataContent();
-        if (instanceTemplate != null)
-        {
-            StringContent instanceContent = new StringContent(JsonConvert.SerializeObject(instanceTemplate), Encoding.UTF8, "application/json");
-
-            builder.Add(instanceContent, "instance");
-        }
-    }
-
-    public MultipartContentBuilder AddDataElement(string elementType, Stream stream, string contentType)
-    {
-        StreamContent streamContent = new StreamContent(stream);
-        streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
-
-        builder.Add(streamContent, elementType);
-
-        return this;
-    }
-
-    public MultipartContentBuilder AddDataElement(string elementType, StringContent content)
-    {
-        builder.Add(content, elementType);
-
-        return this;
-    }
-
-    public MultipartFormDataContent Build()
-    {
-        return builder;
-    }
-
 }

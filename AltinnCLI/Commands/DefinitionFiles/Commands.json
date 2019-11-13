@@ -155,7 +155,7 @@
               "apiname": "org"
             },
             {
-              "Name": "instanceowner",
+              "Name": "ownerId",
               "type": "string",
               "valuerange": "",
               "description": "Unique identifier for the instanceowner",
