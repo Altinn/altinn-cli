@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Altinn.Platform.Storage.Interface.Models;
+using Newtonsoft.Json;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-
-using Altinn.Platform.Storage.Models;
-using Newtonsoft.Json;
 
 namespace AltinnCLI.Core
 {
