@@ -109,6 +109,7 @@ namespace AltinnCLI.Commands.Storage
                 FileStream stream = new FileStream(fileNameOption.Value, FileMode.Open);
                 MemoryStream memstr = new MemoryStream(new byte[stream.Length]);
                 stream.CopyTo(memstr);
+                memstr.Position = 0;
                 stream.Close();
 
                 InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(SelectableCliOptions, memstr, fileNameOption.Value);

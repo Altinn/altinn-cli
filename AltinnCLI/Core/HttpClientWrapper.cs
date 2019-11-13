@@ -142,7 +142,7 @@ namespace AltinnCLI.Core
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}\n{ex.Message}");
+                _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n Exception: {ex} \n");
             }
 
             if (response.StatusCode != HttpStatusCode.OK)
