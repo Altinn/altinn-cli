@@ -1,4 +1,4 @@
-﻿using Altinn.Platform.Storage.Models;
+﻿using Altinn.Platform.Storage;
 using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Linq;
+using Altinn.Platform.Storage.Interface.Models;
 
 namespace AltinnCLI.Commands.Application
 {
@@ -225,7 +226,7 @@ namespace AltinnCLI.Commands.Application
 
                 Instance instanceTemplate = new Instance()
                 {
-                    InstanceOwnerLookup = new InstanceOwnerLookup()
+                    InstanceOwner = new InstanceOwner()
                     {
                         PersonNumber = personNumber,
                     }

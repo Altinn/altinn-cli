@@ -1,10 +1,7 @@
-﻿using Altinn.Platform.Storage.Models;
-using AltinnCLI.Core;
+﻿using AltinnCLI.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 
 namespace AltinnCLI.Commands.Storage
 {

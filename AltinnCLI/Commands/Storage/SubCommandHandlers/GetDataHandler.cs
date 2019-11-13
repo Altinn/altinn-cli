@@ -1,4 +1,4 @@
-﻿using Altinn.Platform.Storage.Models;
+﻿using Altinn.Platform.Storage.Interface.Models;
 using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -192,15 +192,15 @@ namespace AltinnCLI.Commands.Storage
             {
                 foreach (DataElement data in instance.Data)
                 { 
-                    string url = data.DataLinks.Platform;
+                    string url = data.SelfLinks.Platform;
                     Stream responsData = ClientWrapper.GetData(url, data.ContentType);
 
                     if (responsData != null)
                     {
                         string instanceGuidId = instance.Id.Split('/')[1];
-                        string fileName = $"{data.ElementType.ToString()}_{((string.IsNullOrEmpty(data.FileName)) ? data.Id : data.FileName)}";
+                        string fileName = $"{data.DataType.ToString()}_{((string.IsNullOrEmpty(data.Filename)) ? data.Id : data.Filename)}";
 
-                        string fileFolder = $@"{instance.InstanceOwnerId}\{instanceGuidId}";
+                        string fileFolder = $@"{instance.InstanceOwner.PartyId}\{instanceGuidId}";
 
                         SaveToFile(fileFolder, fileName, responsData);
                     }

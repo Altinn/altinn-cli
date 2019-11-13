@@ -72,7 +72,7 @@ namespace AltinnCLI.Core
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-               _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+               _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n");
             }
 
             return response;
@@ -103,9 +103,9 @@ namespace AltinnCLI.Core
                 throw new System.Exception("Unable to connect to Altinn:", ex);
             }
 
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.Created)
             {
-                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n Url:{uri} \n");
             }
 
             return response;
@@ -145,11 +145,14 @@ namespace AltinnCLI.Core
                 _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n Exception: {ex} \n");
             }
 
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.Created)
             {
-                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n");
             }
-
+            else
+            {
+                _logger.LogInformation($"Successfully uploaded file. Url:{uri} \n");
+            }
             return response;
         }
 
@@ -180,9 +183,9 @@ namespace AltinnCLI.Core
                 throw new System.Exception("Unable to connect to Altinn:", ex);
             }
 
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.Created)
             {
-                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n Url:{uri} \n");
             }
 
             return response;

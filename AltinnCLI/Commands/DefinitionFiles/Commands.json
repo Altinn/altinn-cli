@@ -46,42 +46,42 @@
               "type": "bool",
               "valuerangeange": "process end state",
               "description": "process end state",
-              "apiname": "process.endState"
+              "apiname": "process.ended"
             },
             {
               "Name": "labels",
               "type": "string",
               "valuerangeange": "labels",
               "description": "labels",
-              "apiname": "labels"
+              "apiname": "appOwner.labels"
             },
             {
               "Name": "lastChangedDateTime",
               "type": "DateTime",
               "valuerangeange": "last changed date",
               "description": "last changed date",
-              "apiname": "lastChangedDateTime"
+              "apiname": "lastChanged"
             },
             {
               "Name": "createdDateTime",
               "type": "DateTime",
               "valuerangeange": "created time",
               "description": "created time",
-              "apiname": "createdDateTime"
+              "apiname": "created"
             },
             {
               "Name": "visibleDateTime",
               "type": "DateTime",
               "valuerangeange": "the visible date time",
               "description": "the visible date time",
-              "apiname": "visibleDateTime"
+              "apiname": "visibleAfter"
             },
             {
               "Name": "dueDateTime",
               "type": "DateTime",
               "valuerangeange": "the due date time",
               "description": "the due date time",
-              "apiname": "dueDateTime"
+              "apiname": "dueBefore"
             },
             {
               "Name": "continuationToken",
@@ -96,6 +96,27 @@
               "valuerangeange": "the page size",
               "description": "the page size",
               "apiname": "size"
+            },
+            {
+              "Name": "ownerId",
+              "type": "int",
+              "valuerangeange": "",
+              "description": "the id of the ownerpage size",
+              "apiname": "instanceOwner.partyId"
+            },
+            {
+              "Name": "instanceId",
+              "type": "guid",
+              "valuerangeange": "",
+              "description": "the id of the instance",
+              "apiname": "instanceGuid"
+            },
+            {
+              "Name": "dataId",
+              "type": "guid",
+              "valuerangeange": "",
+              "description": "the id of the data element",
+              "apiname": "dataId"
             }
           ]
         },
@@ -107,7 +128,7 @@
               "type": "int",
               "valuerangeange": "0-99999999",
               "description": "ownerid",
-              "apiname": "instanceownerid"
+              "apiname": "instanceOwner.partyId"
             },
             {
               "Name": "instanceId",
@@ -121,11 +142,11 @@
               "type": "string",
               "valuerangeange": "0-99999999",
               "description": "type of data element to save",
-              "apiname": "elementType"
+              "apiname": "dataType"
             },
             {
               "Name": "file",
-              "type": "string",
+              "type": "file",
               "valuerangeange": "0-99999999",
               "description": "name with full path to file to save",
               "apiname": "file"
