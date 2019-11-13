@@ -1,4 +1,4 @@
-﻿using Altinn.Platform.Storage.Models;
+﻿using Altinn.Platform.Storage.Interface.Models;
 using AltinnCLI.Core;
 using System;
 using System.Collections.Generic;
