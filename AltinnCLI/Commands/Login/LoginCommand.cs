@@ -62,7 +62,7 @@ namespace AltinnCLI.Commands
 
         public void Run(ISubCommandHandler commandHandler = null)
         {
-            Console.WriteLine("Logged in");
+            commandHandler.Run();
         }
 
         public void Run(Dictionary<string, string> input)

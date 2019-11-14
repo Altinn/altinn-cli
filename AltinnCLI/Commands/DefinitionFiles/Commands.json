@@ -206,24 +206,28 @@
     },
     {
       "Name": "Login",
-      "Options": [
+      "SubCommands": [
         {
-          "Name": "org",
-          "type": "int",
-          "valuerangeange": "0-99999999",
-          "description": "org",
-          "apiname": "org"
-        },
-        {
-          "Name": "file",
-          "type": "file",
-          "valuerangeange": "0-99999999",
-          "description": "name with full path to file to save",
-          "apiname": "file"
+          "Name": "Maskinporten",
+          "Options": [
+            {
+              "Name": "clientId",
+              "type": "Guid",
+              "valuerangeange": "",
+              "description": "client guid id",
+              "apiname": "clientid"
+            },
+            {
+              "Name": "cert",
+              "type": "file",
+              "valuerangeange": "",
+              "description": "name with full path to the certification file",
+              "apiname": "cert"
+            }
+          ]
         }
       ]
     }
   ]
-},
-  ]
 }
+
