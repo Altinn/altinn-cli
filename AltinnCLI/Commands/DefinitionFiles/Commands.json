@@ -203,6 +203,27 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "Login",
+      "Options": [
+        {
+          "Name": "org",
+          "type": "int",
+          "valuerangeange": "0-99999999",
+          "description": "org",
+          "apiname": "org"
+        },
+        {
+          "Name": "file",
+          "type": "file",
+          "valuerangeange": "0-99999999",
+          "description": "name with full path to file to save",
+          "apiname": "file"
+        }
+      ]
     }
+  ]
+},
   ]
 }
