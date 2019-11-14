@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AltinnCLI.Commands.Login
 {
-    class MaskinPortenClientFileWrapper : IMaskinPortenClientWrapper
+    public class MaskinPortenClientFileWrapper : IMaskinPortenClientWrapper
     {
     }
 }
