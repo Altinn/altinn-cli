@@ -218,11 +218,11 @@
               "apiname": "clientid"
             },
             {
-              "Name": "cert",
+              "Name": "thumbprint",
               "type": "file",
-              "valuerangeange": "",
-              "description": "name with full path to the certification file",
-              "apiname": "cert"
+              "valuerange": "",
+              "description": "certificate_thumbprint",
+              "apiname": "thumbprint"
             }
           ]
         }
