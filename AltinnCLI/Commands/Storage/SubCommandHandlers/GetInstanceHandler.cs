@@ -71,18 +71,6 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
-        /// <summary>
-        /// Gets the validation status of the command
-        /// </summary>
-        public bool IsValid
-        {
-
-            get
-            {
-                return Validate();
-            }
-        }
-
         public List<IOption> Options { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /// <summary>
@@ -144,7 +132,7 @@ namespace AltinnCLI.Commands.Storage
         /// Verifies that the input parameters are valid.
         /// </summary>
         /// <returns>True if the command is valid, false if any required parameters are missing</returns>
-        private bool Validate()
+        public override bool Validate()
         {
             return (HasParameterWithValue("ownerid") & HasParameterWithValue("instanceid"));
         }

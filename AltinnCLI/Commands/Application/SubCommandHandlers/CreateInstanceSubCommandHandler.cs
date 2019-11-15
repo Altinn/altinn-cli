@@ -168,7 +168,6 @@ namespace AltinnCLI.Commands.Application
         {
             if (Directory.Exists(path))
             {
-                FileStream stream = null;
                 Instance instance = new Instance();
                 string formData = string.Empty;
 
