@@ -107,6 +107,12 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 {
                     FormUrlEncodedContent content = GetUrlEncodedContent(jwtAssertion);
                     string token = ClientWrapper.PostToken(content);
+
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        ApplicationManager.IsLoggedIn = true;
+                        ApplicationManager.MaskinportenToken = token;
+                    }
                 }
 
                 return true;

@@ -23,7 +23,8 @@ namespace AltinnCLI
 
         public static IConfigurationRoot ApplicationConfiguration;
         public static IServiceProvider ServiceProvider;
-
+        public static string MaskinportenToken = string.Empty;
+        public static bool IsLoggedIn = false;
         private static ILogger _logger;
 
         public ApplicationManager(ILogger<ApplicationManager> logger = null)
@@ -45,29 +46,39 @@ namespace AltinnCLI
 
                 if (service != null)
                 {
-                    if (input.Length > 1)
+                    if (IsLoggedIn
+                        || (string.Equals(service.Name, "Login", StringComparison.OrdinalIgnoreCase)) 
+                        || (string.Equals(service.Name, "Help", StringComparison.OrdinalIgnoreCase)))
                     {
-                        ISubCommandHandler commandHandler = processArgs(input);
 
-                        if (commandHandler.IsValid)
+                        if (input.Length > 1)
                         {
-                            if (commandHandler != null && commandHandler.IsValid)
+                            ISubCommandHandler commandHandler = processArgs(input);
+
+                            if (commandHandler.IsValid)
                             {
-                                service.Run(commandHandler);
+                                if (commandHandler != null && commandHandler.IsValid)
+                                {
+                                    service.Run(commandHandler);
+                                }
+                                else if (commandHandler.IsValid)
+                                {
+                                    service.Run(ParseArguments(input));
+                                }
                             }
-                            else if (commandHandler.IsValid)
+                            else
                             {
-                                service.Run(ParseArguments(input));
+                                _logger.LogError($"Command error: {commandHandler.ErrorMessage}");
                             }
                         }
                         else
                         {
-                            _logger.LogError($"Command error: {commandHandler.ErrorMessage}");
-                        }    
+                            service.Run();
+                        }
                     }
                     else
                     {
-                        service.Run();
+                        _logger.LogInformation($"The command can not be execute, please log in \n");
                     }
                 }
                 else
