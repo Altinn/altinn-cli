@@ -19,28 +19,7 @@ namespace AltinnCLI.Commands
 
         public void Run(ISubCommandHandler commandHandler = null)
         {
-            
-            if (commandHandler != null)
-            {
-
-                IHelp item = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, commandHandler.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                item.GetHelp();
-                return;
-            }
-
-           Console.WriteLine(GetHelp());
-
-            List<IHelp> items = ServiceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(ICommand))).ToList();
-
-            foreach (IHelp item in items)
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write(item.Name);
-                Console.ResetColor();
-
-                Console.Write($"\t{item.Description}\n");
-
-            }
+            AllCommandsHelp();
         }
 
         /// <summary>
@@ -64,58 +43,89 @@ namespace AltinnCLI.Commands
         /// <param name="input"></param>
         public void Run(Dictionary<string, string> input)
         {
-            IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-            if ((service != null) && (service is ICommand))
+            if (input.Count == 1)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(service.Name);
-                Console.ResetColor();
+                AllCommandsHelp();
+            }
+            else
+            {
+                IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                Console.WriteLine("\nDESCRIPTION\t{0}", service.Description);
-
-                Console.WriteLine("\nUSAGE\t{0}\n", service.Usage);
-
-                Console.WriteLine("Commands\n");
-
-                List<ISubCommandHandler> items;
-
-                if (input.Count > 2)
+                if ((service != null) && (service is ICommand))
                 {
-                    items = ServiceProvider.GetServices<ISubCommandHandler>()
-                            .Where(x => (x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
-                                        string.Equals(x.Name, input.Keys.ElementAt<string>(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
                     Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine(service.Name);
+                    Console.ResetColor();
 
-                    foreach (IHelp handler in items)
-                    { 
-                        Console.Write(handler.Name);
-                        Console.ResetColor();
+                    Console.WriteLine($"\nDESCRIPTION\t{service.Description}");
 
-                        Console.Write("\t{0}\n", handler.Description);
-                        Console.Write("\t{0}\n", handler.Usage);
+                    Console.WriteLine($"\nUSAGE\t{service.Usage}\n");
+
+                    Console.WriteLine($"Commands\n");
+
+                    List<ISubCommandHandler> items;
+
+                    if (input.Count > 2)
+                    {
+                        items = ServiceProvider.GetServices<ISubCommandHandler>()
+                                .Where(x => (x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
+                                            string.Equals(x.Name, input.Keys.ElementAt<string>(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+//                        Console.ForegroundColor = ConsoleColor.Yellow;
+
+                        if (items != null && items.Count > 0)
+                        {
+                            foreach (IHelp handler in items)
+                            {
+                                ((ISubCommandHandler)handler).BuildSelectableCommands();
+                                Console.Write(handler.Name);
+                                Console.ResetColor();
+
+                                Console.Write($"\t{handler.Description}\n");
+                                Console.Write($"\t{handler.Usage}\n");
+                            }
+                         }
+                        else
+                        {
+                            Console.Write($"No help for specified options\n");
+                        }
+                    }
+                    else
+                    {
+                        items = ServiceProvider.GetServices<ISubCommandHandler>().
+                                Where(x => x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                        foreach (IHelp handler in items)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.Write(handler.Name);
+                            Console.ResetColor();
+
+                            Console.Write($"\t{handler.Description}\n");
+                        }
                     }
                 }
                 else
                 {
-                    items = ServiceProvider.GetServices<ISubCommandHandler>().
-                            Where(x => x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
-
-                    foreach (IHelp handler in items)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write(handler.Name);
-                        Console.ResetColor();
-
-                        Console.Write("\t{0}\n", handler.Description);
-                    }
+                    Console.WriteLine("No help, the requested service is not found");
                 }
             }
-            else
-            {
-                Console.WriteLine("No help, the requested service is not found");
-            }
+        }
 
+        private void AllCommandsHelp()
+        {
+            Console.WriteLine(GetHelp());
+
+            List<IHelp> items = ServiceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(ICommand))).ToList();
+
+            foreach (IHelp item in items)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(item.Name);
+                Console.ResetColor();
+
+                Console.Write($"\t{item.Description}\n");
+
+            }
         }
 
         public string Name
