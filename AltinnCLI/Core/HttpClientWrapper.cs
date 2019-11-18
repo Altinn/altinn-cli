@@ -60,6 +60,7 @@ namespace AltinnCLI.Core
                         message.Headers.Add("ContentType", contentType);
                     }
 
+                    client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
                     message.RequestUri = uri;
                     _logger.LogInformation($"Get data with URL:{uri}\n");
                     response = await client.SendAsync(message).ConfigureAwait(false);
@@ -95,6 +96,7 @@ namespace AltinnCLI.Core
             {
                 using (HttpClient client = new HttpClient())
                 {
+                    client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
                     response = await client.PostAsync(uri, content).ConfigureAwait(false);
                 }
             }
@@ -129,8 +131,11 @@ namespace AltinnCLI.Core
                 HttpClient client = new HttpClient();
                 
                 client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+
                 response = await client.PostAsync(uri, content);
                 
+                }
             }
             catch (Exception ex)
             {
@@ -167,6 +172,7 @@ namespace AltinnCLI.Core
                 using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
                 using (HttpClient client = new HttpClient(handler))
                 {
+                    client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
                     response = await client.PutAsync(uri, content).ConfigureAwait(false);
                 }
             }
