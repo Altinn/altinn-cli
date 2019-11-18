@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,13 @@ namespace AltinnCLI.Core
             return await GetWithUrl(uri);
         }
 
+        public async Task<HttpResponseMessage> GetCommand(string baseAddress, string command, AuthenticationHeaderValue headers = null)
+        {
+            Uri uri = new Uri(baseAddress + "/" + command);
+
+            return await GetWithUrl(uri, null, headers);
+        }
+
         /// <summary>
         /// Performs a request based on the Uri received as input. The content type is set if 
         /// supported in the content type parameter
@@ -41,7 +49,7 @@ namespace AltinnCLI.Core
         /// <param name="uri">Uri with URL that is the request url to be used</param>
         /// <param name="contentType">Default paramter that shall be set if not null</param>
         /// <returns>respons data</returns>
-        public async Task<HttpResponseMessage> GetWithUrl(Uri uri, string contentType = null)
+        public async Task<HttpResponseMessage> GetWithUrl(Uri uri, string contentType = null, AuthenticationHeaderValue headers = null)
         {
             HttpResponseMessage response;
 
@@ -60,7 +68,15 @@ namespace AltinnCLI.Core
                         message.Headers.Add("ContentType", contentType);
                     }
 
-                    client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                    if (headers != null )
+                    {
+                        client.DefaultRequestHeaders.Authorization = headers;
+                    }
+                    else
+                    {
+                        client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                    }
+                    
                     message.RequestUri = uri;
                     _logger.LogInformation($"Get data with URL:{uri}\n");
                     response = await client.SendAsync(message).ConfigureAwait(false);
