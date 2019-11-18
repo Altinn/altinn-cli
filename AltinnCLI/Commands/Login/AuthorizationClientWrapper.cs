@@ -1,8 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AltinnCLI.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AltinnCLI.Commands.Login
 {
@@ -29,7 +33,21 @@ namespace AltinnCLI.Commands.Login
 
         public string ConvertToken(string token)
         {
-            return "";
+            string AuthAddress = ApplicationManager.ApplicationConfiguration.GetSection("AuthBaseAddress").Get<string>();
+            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+
+            string cmd = "convert";
+            AuthenticationHeaderValue headers = new AuthenticationHeaderValue("Bearer", token);
+            Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(AuthAddress, cmd, headers);
+
+            if (response.Result.IsSuccessStatusCode)
+            {
+                return response.Result.Content.ReadAsStringAsync().Result;
+            }
+            else
+            {
+                return $@"Could not retrieve Altinn Token";
+            }
         }
     }
 }

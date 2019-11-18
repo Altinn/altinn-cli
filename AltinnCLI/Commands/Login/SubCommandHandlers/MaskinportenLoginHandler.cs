@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,6 +18,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
     public class MaskinportenLoginHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {       
         private MaskinportenClientWrapper ClientWrapper = null;
+        private IAutorizationClientWrapper AutorizationClient = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
@@ -23,14 +26,15 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
         public MaskinportenLoginHandler(ILogger<MaskinportenLoginHandler> logger) : base(logger)
         {
-
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
                 ClientWrapper = new MaskinportenClientWrapper(_logger);
+                AutorizationClient = new AuthorizationClientWrapper(_logger);
             }
             else
             {
                 ClientWrapper = new MaskinportenClientWrapper(_logger);
+                AutorizationClient = new AuthorizationClientFileWrapper();
             }
         }
 
@@ -108,10 +112,16 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
 
                     if(!string.IsNullOrEmpty(token))
                     {
+                        var accessTokenObject = JsonConvert.DeserializeObject<JObject>(token);
+
+                        token = AutorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString());
+
                         ApplicationManager.IsLoggedIn = true;
                         ApplicationManager.MaskinportenToken = token;
 
                         _logger.LogInformation("Sucessfully validated against Maskinporten");
+
+                        
                         return true;
                     }
 
