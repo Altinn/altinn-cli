@@ -57,11 +57,11 @@ namespace AltinnCLI.Commands
                     Console.WriteLine(service.Name);
                     Console.ResetColor();
 
-                    Console.WriteLine("\nDESCRIPTION\t{0}", service.Description);
+                    Console.WriteLine($"\nDESCRIPTION\t{service.Description}");
 
-                    Console.WriteLine("\nUSAGE\t{0}\n", service.Usage);
+                    Console.WriteLine($"\nUSAGE\t{service.Usage}\n");
 
-                    Console.WriteLine("Commands\n");
+                    Console.WriteLine($"Commands\n");
 
                     List<ISubCommandHandler> items;
 
@@ -70,16 +70,23 @@ namespace AltinnCLI.Commands
                         items = ServiceProvider.GetServices<ISubCommandHandler>()
                                 .Where(x => (x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
                                             string.Equals(x.Name, input.Keys.ElementAt<string>(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
-                        Console.ForegroundColor = ConsoleColor.Yellow;
+//                        Console.ForegroundColor = ConsoleColor.Yellow;
 
-                        foreach (IHelp handler in items)
+                        if (items != null && items.Count > 0)
                         {
-                            ((ISubCommandHandler)handler).BuildSelectableCommands();
-                            Console.Write(handler.Name);
-                            Console.ResetColor();
+                            foreach (IHelp handler in items)
+                            {
+                                ((ISubCommandHandler)handler).BuildSelectableCommands();
+                                Console.Write(handler.Name);
+                                Console.ResetColor();
 
-                            Console.Write("\t{0}\n", handler.Description);
-                            Console.Write("\t{0}\n", handler.Usage);
+                                Console.Write($"\t{handler.Description}\n");
+                                Console.Write($"\t{handler.Usage}\n");
+                            }
+                         }
+                        else
+                        {
+                            Console.Write($"No help for specified options\n");
                         }
                     }
                     else
@@ -93,7 +100,7 @@ namespace AltinnCLI.Commands
                             Console.Write(handler.Name);
                             Console.ResetColor();
 
-                            Console.Write("\t{0}\n", handler.Description);
+                            Console.Write($"\t{handler.Description}\n");
                         }
                     }
                 }
