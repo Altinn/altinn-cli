@@ -120,8 +120,8 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                         ApplicationManager.MaskinportenToken = token;
 
                         _logger.LogInformation("Sucessfully validated against Maskinporten");
+                        _logger.LogInformation($@"Altinn Security Token: {token}");
 
-                        
                         return true;
                     }
 
