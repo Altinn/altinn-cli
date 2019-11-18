@@ -219,7 +219,7 @@
             },
             {
               "Name": "thumbprint",
-              "type": "string",
+              "type": "thumbprint",
               "valuerangeange": "",
               "description": "name with full path to the local key",
               "apiname": "thumbprint"

@@ -155,22 +155,23 @@ namespace AltinnCLI.Core
 
             switch (lowerCaseType)
             {
-                case "bool":    systemType = "System.Boolean";      baseType = typeof(NumberOption<>); break;
-                case "byte":    systemType = "System.Byte";         baseType = typeof(NumberOption<>); break;
-                case "sbyte":   systemType = "System.Decimal";      baseType = typeof(NumberOption<>); break;
-                case "double":  systemType = "System.Double";       baseType = typeof(NumberOption<>); break;
-                case "float":   systemType = "System.Single";       baseType = typeof(NumberOption<>); break;
-                case "int":     systemType = "System.Int32";        baseType = typeof(NumberOption<>); break;
-                case "uint":    systemType = "System.UInt32";       baseType = typeof(NumberOption<>); break;
-                case "long":    systemType = "System.Int64";        baseType = typeof(NumberOption<>); break;
-                case "ulong":   systemType = "System.UInt64";       baseType = typeof(NumberOption<>); break;
-                case "object":  systemType = "System.Object";       baseType = typeof(NumberOption<>); break;
-                case "short":   systemType = "System.Int16";        baseType = typeof(NumberOption<>); break;
-                case "ushort":  systemType = "System.UInt16";       baseType = typeof(NumberOption<>); break;
-                case "string":  systemType = "System.String";       baseType = typeof(NumberOption<>); break;
-                case "datetime":systemType = "System.DateTime";     baseType = typeof(NumberOption<>); break;
-                case "guid":    systemType = "System.Guid";         baseType = typeof(NumberOption<>); break;
-                case "file":    systemType = "System.IO.FileStream";baseType = typeof(FileOption<>);   break;
+                case "bool":        systemType = "System.Boolean";      baseType = typeof(NumberOption<>); break;
+                case "byte":        systemType = "System.Byte";         baseType = typeof(NumberOption<>); break;
+                case "sbyte":       systemType = "System.Decimal";      baseType = typeof(NumberOption<>); break;
+                case "double":      systemType = "System.Double";       baseType = typeof(NumberOption<>); break;
+                case "float":       systemType = "System.Single";       baseType = typeof(NumberOption<>); break;
+                case "int":         systemType = "System.Int32";        baseType = typeof(NumberOption<>); break;
+                case "uint":        systemType = "System.UInt32";       baseType = typeof(NumberOption<>); break;
+                case "long":        systemType = "System.Int64";        baseType = typeof(NumberOption<>); break;
+                case "ulong":       systemType = "System.UInt64";       baseType = typeof(NumberOption<>); break;
+                case "object":      systemType = "System.Object";       baseType = typeof(NumberOption<>); break;
+                case "short":       systemType = "System.Int16";        baseType = typeof(NumberOption<>); break;
+                case "ushort":      systemType = "System.UInt16";       baseType = typeof(NumberOption<>); break;
+                case "string":      systemType = "System.String";       baseType = typeof(NumberOption<>); break;
+                case "datetime":    systemType = "System.DateTime";     baseType = typeof(NumberOption<>); break;
+                case "guid":        systemType = "System.Guid";         baseType = typeof(NumberOption<>); break;
+                case "file":        systemType = "System.IO.FileStream";baseType = typeof(FileOption<>);   break;
+                case "thumbprint":  systemType = "System.String";       baseType = typeof(ThumbPrintOption<>); break;
             }
 
             return Type.GetType(systemType);

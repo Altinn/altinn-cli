@@ -196,12 +196,14 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         {
             if (base.Validate())
             {
-                if (GetOptionValue("clientId") == null)
+                if (GetOption("clientId").IsAssigned && GetOption("thumbprint").IsAssigned)
                 {
-                    ErrorMessage = ($"Command failed, the clientId must be specifiec");
-                    return false;
+                    return true;
                 }
-                return true;
+
+                ErrorMessage = ($"Command failed, missing command parameters, must specify clientid and thumbprint");
+
+                return false;
             }
 
             return false;
