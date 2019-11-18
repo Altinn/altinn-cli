@@ -21,7 +21,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         private IAutorizationClientWrapper AutorizationClient = null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
+        /// Initializes a new instance of the <see cref="MaskinportenLoginHandler" /> class.
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
         public MaskinportenLoginHandler(ILogger<MaskinportenLoginHandler> logger) : base(logger)
@@ -67,7 +67,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         {
             get
             {
-                return "Logs in";
+                return "Logs in to the Marskinporten to be authenticated for accessing the Storage";
             }
         }
 
@@ -79,7 +79,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             get
             {
                 string usage = $"\n" +
-                $@"Login clientId=<client guid id> thumbprint=<c:\cerificat\fileName> \n" +
+                $@"Login clientId=<client guid id> thumbprint=<thumbprint id> \n" +
                 $"\n" +
                 $" Required parameters for the login command \n";
 
@@ -94,15 +94,13 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         }
         public string GetHelp()
         {
-            throw new NotImplementedException();
+            return Name;
         }
 
         public bool Run()
         {
             if (IsValid)
             {
-                IOption fileNameOption = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "file", StringComparison.OrdinalIgnoreCase));
-
                 string jwtAssertion = GetJwtAssertion();
 
                 if (!string.IsNullOrEmpty(jwtAssertion))

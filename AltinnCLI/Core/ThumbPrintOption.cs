@@ -26,7 +26,7 @@ namespace AltinnCLI.Core
                 }
             }
 
-            ErrorMessage = $"No ceriticate was found for the thumbprint:{Value} value";
+            ErrorMessage = $"No ceriticate was found for the thumbprint:{Value}";
             return false;
         }
 
