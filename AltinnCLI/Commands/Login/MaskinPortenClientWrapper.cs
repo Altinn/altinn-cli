@@ -34,7 +34,7 @@ namespace AltinnCLI.Commands.Login
         {
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
-            string cmd = "";
+            string cmd = "token";
 
             Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(BaseAddress, cmd, bearer);
 

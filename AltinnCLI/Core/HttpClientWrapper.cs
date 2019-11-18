@@ -125,20 +125,12 @@ namespace AltinnCLI.Core
             HttpResponseMessage response = null;
             try
             {
-                var cookieContainer = new CookieContainer();
-                using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer} )
-                using (HttpClient client = new HttpClient())
-                {
-                    client.Timeout = new TimeSpan(0, 0, 30);
 
-                    
-                    cookieContainer.Add(uri, new Cookie("AltinnStudioRuntime", "eyJhbGciOiJSUzI1NiIsImtpZCI6IjAwQTEyRDkyRTRDNEMxQTI5REZCOTU2QTAzMzQwNDYwRDYwNTlDMDkiLCJ4NXQiOiJBS0V0a3VURXdhS2QtNVZxQXpRRVlOWUZuQWsiLCJ0eXAiOiJKV1QifQ.eyJVc2VySUQiOiIyMDAwMjk0MyIsIlVzZXJOYW1lIjoiYXQyMXRlc3R1c2VyIiwiUGFydHlJRCI6NTAwMTIzNzMsIkF1dGhlbnRpY2F0ZU1ldGhvZCI6IlN0YXRpY1Bhc3N3b3JkIiwiQXV0aGVudGljYXRpb25MZXZlbCI6MSwibmJmIjoxNTcyOTUxMTk2LCJleHAiOjE1NzI5NTI5OTYsImlhdCI6MTU3Mjk1MTE5Nn0.OsJJM8jPEHE6yf5HhfaFgxL-WeWOQXt0_U8ApGWZUR6BDXPzfjVdKlvsEwT33X4G6BYJucZ3YaASuhn8fZkpx47raXtY7-lLtqnLpB-yOTtPoWqDEKJ0noLvhkVEaO1ZC0RezYVPOXu2iCXZerJlgXAlj52mQac0GW2VQ6QrSAOWa11H7Yui4Ee1HWVzmWmUawUeTSaHA29wfubYLuk1yo5BwloXdfOWEiUbxUg9doYbmY8pXoxyqFor04bP2Oa-yPAm8C_3vM4ab8nKUvhls-xVDbyTS-zdUOiYQV8INxzkcH-0oiMu7DEn7lUWTEW9tGm8GPJpdnoh4t0J5hcfbA; path=/; domain=.at21.altinn.cloud; HttpOnly;"));
-                    // cookieContainer.Add(uri, new Cookie("AltinnPartyId", "50012960"));
-                    cookieContainer.Add(uri, new Cookie(".ASPXAUTH", "FC148DD7A5CB06859FF1190D023F9CCA424A03637F53033B7837BF6F56E6CDE9A9945C3956BFDFA7F993CF116606FEE5600195DE67BBD5075F9C4BC9892B39BAB64D874E1A5C9FF0CF27351117B21A406D2E6E9141104831467B3C35C8AAED90C5F83B1EB7B9D4AF9EDAF656F4B8CAF85E5AFABBB99B083D5A2D410679B90D2C6558573CF2651B0CA66EA9D0805E95DF37EE7B7BFC733B9C0CAFD530E04A865BF56403F66B855804D3A451160E266222512BB0E170553FD7ADF6A34E41C32454E29DCDB778A8B494E99B10B1D6446202C6B3559BC4542A57374A0906BB63139CACCE88958222BFDE15FA1C82619058BD1FA8572F21408CD4456F89A58ED9156932079D4516908E68B3980B98E795DA77A67EC5AA9D49611BAADD349C68175D9AFBE996B5; path=/; domain=.at21.altinn.cloud; HttpOnly;"));
-                    
-
-                    response = await client.PostAsync(uri, content).ConfigureAwait(false);
-                }
+                HttpClient client = new HttpClient();
+                
+                client.Timeout = new TimeSpan(0, 0, 30);
+                response = await client.PostAsync(uri, content);
+                
             }
             catch (Exception ex)
             {

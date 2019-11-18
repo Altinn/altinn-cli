@@ -107,6 +107,13 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 {
                     FormUrlEncodedContent content = GetUrlEncodedContent(jwtAssertion);
                     string token = ClientWrapper.PostToken(content);
+
+                    if(!string.IsNullOrEmpty(token))
+                    {
+                        ApplicationManager.IsLoggedIn = true;
+                        ApplicationManager.MaskinportenToken = token;
+                    }
+                    
                 }
 
                 return true;
@@ -131,6 +138,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         {
             var dateTimeOffset = new DateTimeOffset(DateTime.UtcNow);
             string _certificateThumbPrint = (string)GetOptionValue("thumbprint");
+            Guid clientId = (Guid)GetOptionValue("clientid");
 
             var cert = GetCertificateFromKeyStore(_certificateThumbPrint, StoreName.My, StoreLocation.CurrentUser);
 
@@ -142,16 +150,17 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             header.Remove("typ");
             header.Remove("kid");
 
-            var payload = new JwtPayload();
-            //{
-            //    { "aud", _audience },
-            //    { "resource", _resource },
-            //    { "scope", _scopes },
-            //    { "iss", _issuer },
-            //    { "exp", dateTimeOffset.ToUnixTimeSeconds() + _tokenTtl },
-            //    { "iat", dateTimeOffset.ToUnixTimeSeconds() },
-            //    { "jti", Guid.NewGuid().ToString() },
-            //};
+
+            var payload = new JwtPayload
+            {
+                { "aud", "https://oidc-ver2.difi.no/idporten-oidc-provider/" },
+                { "resource", "https://tt02.altinn.no/maskinporten-api/" },
+                { "scope", "altinn:instances.read altinn:instances.write" },
+                { "iss",  clientId},
+                { "exp", dateTimeOffset.ToUnixTimeSeconds() + 10 },
+                { "iat", dateTimeOffset.ToUnixTimeSeconds() },
+                { "jti", Guid.NewGuid().ToString() },
+            };
 
             var securityToken = new JwtSecurityToken(header, payload);
             var handler = new JwtSecurityTokenHandler();
