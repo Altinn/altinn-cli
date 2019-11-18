@@ -95,13 +95,11 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
 
         public bool Run()
         {
-            FindAllCeriticates();
             if (IsValid)
             {
                 IOption fileNameOption = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "file", StringComparison.OrdinalIgnoreCase));
 
                 string jwtAssertion = GetJwtAssertion();
-
 
                 if (!string.IsNullOrEmpty(jwtAssertion))
                 {
@@ -112,15 +110,16 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                     {
                         ApplicationManager.IsLoggedIn = true;
                         ApplicationManager.MaskinportenToken = token;
-                    }
-                    
-                }
 
-                return true;
+                        _logger.LogInformation("Sucessfully validated against Maskinporten");
+                        return true;
+                    }
+
+                    return false;
+                }
             }
 
             return false;
-
         }
 
         public FormUrlEncodedContent GetUrlEncodedContent(string assertion)

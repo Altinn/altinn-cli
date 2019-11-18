@@ -127,14 +127,16 @@ namespace AltinnCLI.Core
             HttpResponseMessage response = null;
             try
             {
+                using (HttpClient client = new HttpClient())
+                {
 
-                HttpClient client = new HttpClient();
-                
-                client.Timeout = new TimeSpan(0, 0, 30);
-                client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                    client.Timeout = new TimeSpan(0, 0, 30);
+                    if (!string.IsNullOrEmpty(ApplicationManager.MaskinportenToken))
+                    {
+                        client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                    }
 
-                response = await client.PostAsync(uri, content);
-                
+                    response = await client.PostAsync(uri, content);
                 }
             }
             catch (Exception ex)
@@ -142,14 +144,11 @@ namespace AltinnCLI.Core
                 _logger.LogError($"Error getting data from ALtinn on command:\n {uri}. \nError: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n Exception: {ex} \n");
             }
 
-            if (response.StatusCode != HttpStatusCode.Created)
+            if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Error respons from Altinn.error: HTTP {response.StatusCode}. Reason: {response.ReasonPhrase} \n");
             }
-            else
-            {
-                _logger.LogInformation($"Successfully uploaded file. Url:{uri} \n");
-            }
+
             return response;
         }
 
