@@ -46,29 +46,38 @@ namespace AltinnCLI
 
                 if (service != null)
                 {
-                    if (IsLoggedIn
-                        || (string.Equals(service.Name, "Login", StringComparison.OrdinalIgnoreCase)) 
-                        || (string.Equals(service.Name, "Help", StringComparison.OrdinalIgnoreCase)))
+                    if (string.Equals(service.Name, "Help", StringComparison.OrdinalIgnoreCase))
+                    {
+                       service.Run(ParseArguments(input));
+                    }
+                    else if (IsLoggedIn || (string.Equals(service.Name, "Login", StringComparison.OrdinalIgnoreCase)))
                     {
 
                         if (input.Length > 1)
                         {
                             ISubCommandHandler commandHandler = processArgs(input);
 
-                            if (commandHandler.IsValid)
+                            if (commandHandler != null)
                             {
-                                if (commandHandler != null && commandHandler.IsValid)
+                                if (commandHandler.IsValid)
                                 {
-                                    service.Run(commandHandler);
+                                    if (commandHandler != null && commandHandler.IsValid)
+                                    {
+                                        service.Run(commandHandler);
+                                    }
+                                    else if (commandHandler.IsValid)
+                                    {
+                                        service.Run(ParseArguments(input));
+                                    }
                                 }
-                                else if (commandHandler.IsValid)
+                                else
                                 {
-                                    service.Run(ParseArguments(input));
+                                    _logger.LogError($"Command error: {commandHandler.ErrorMessage}");
                                 }
                             }
                             else
                             {
-                                _logger.LogError($"Command error: {commandHandler.ErrorMessage}");
+                                service.Run();
                             }
                         }
                         else
