@@ -88,6 +88,16 @@ namespace AltinnCLI.Core
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected IOption GetOption(string key)
+        {
+            return SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, key, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         ///  saves a file to disk
         /// </summary>
         /// <param name="filePath">the path excluded a base path for where the file shall be saved</param>

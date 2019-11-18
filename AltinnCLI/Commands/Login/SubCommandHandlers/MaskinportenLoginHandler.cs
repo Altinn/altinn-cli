@@ -192,6 +192,23 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             return cert;
         }
 
+        public override bool Validate()
+        {
+            if (base.Validate())
+            {
+                if (GetOption("clientId").IsAssigned && GetOption("thumbprint").IsAssigned)
+                {
+                    return true;
+                }
+
+                ErrorMessage = ($"Command failed, missing command parameters, must specify clientid and thumbprint");
+
+                return false;
+            }
+
+            return false;
+        }
+
         private void FindAllCeriticates()
         {
             var store = new X509Store(StoreName.My, StoreLocation.CurrentUser); // StoreLocation.CurrentUser); //StoreLocation.LocalMachine fails too
