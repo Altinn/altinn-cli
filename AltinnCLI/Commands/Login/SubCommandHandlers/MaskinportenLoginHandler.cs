@@ -182,6 +182,21 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             return cert;
         }
 
+        public override bool Validate()
+        {
+            if (base.Validate())
+            {
+                if (GetOptionValue("clientId") == null)
+                {
+                    ErrorMessage = ($"Command failed, the clientId must be specifiec");
+                    return false;
+                }
+                return true;
+            }
+
+            return false;
+        }
+
         private void FindAllCeriticates()
         {
             var store = new X509Store(StoreName.My, StoreLocation.CurrentUser); // StoreLocation.CurrentUser); //StoreLocation.LocalMachine fails too
