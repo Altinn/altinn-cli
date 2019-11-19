@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using AltinnCLI.Core.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AltinnCLI
 {
@@ -30,6 +31,18 @@ namespace AltinnCLI
         public ApplicationManager(ILogger<ApplicationManager> logger = null)
         {
             _logger = logger;
+        }
+
+        public ApplicationManager(NullLogger<Microsoft.Extensions.Logging.ILogger> logger  = null)
+        {
+            _logger = logger;
+        }
+
+
+        public void SetEnvironment(IConfigurationRoot applicationConfiguration, IServiceProvider serviceProvider)
+        {
+            ApplicationConfiguration = applicationConfiguration;
+            ServiceProvider = serviceProvider;
         }
 
         /// <summary>

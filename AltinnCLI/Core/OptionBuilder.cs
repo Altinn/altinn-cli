@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace AltinnCLI.Core
@@ -16,7 +17,6 @@ namespace AltinnCLI.Core
     public sealed class OptionBuilder
     {
         private static OptionBuilder instance = null;
-        private static CfgCommandList cfgCommands = null;
         private static ILogger _logger;
 
         /// <summary>
@@ -39,8 +39,6 @@ namespace AltinnCLI.Core
             if (instance == null)
             {
                 instance = new OptionBuilder(logger);
-                        
-                LoadCommandFile();
             }
 
             return instance;
@@ -49,22 +47,31 @@ namespace AltinnCLI.Core
         /// <summary>
         /// Reads the command file from disk
         /// </summary>
-        private static void LoadCommandFile()
+        private void LoadCommandFile()
         {
             string fileName = (ApplicationManager.ApplicationConfiguration.GetSection("CommandDefinitionFile").Get<string>());
 
             List<IOption> subCommandOptions = new List<IOption>();
             List<CfgOption> cfgOptions = new List<CfgOption>();
+            string commandDefinitions = string.Empty;
 
             if (File.Exists(fileName))
             {
-                string commandDefinitions = File.ReadAllText(fileName);
+                commandDefinitions = File.ReadAllText(fileName);
 
-                if (!string.IsNullOrEmpty(commandDefinitions))
-                {
-                    cfgCommands = JsonConvert.DeserializeObject<CfgCommandList>(commandDefinitions);
-                }
             }
+            else
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                StreamReader textStreamReader = new StreamReader(assembly.GetManifestResourceStream("AltinnCLI.Commands.DefinitionFiles.Commands.json"));
+                commandDefinitions = textStreamReader.ReadToEnd();
+            }
+
+            if (!string.IsNullOrEmpty(commandDefinitions))
+            {
+                instance.CfgCommands = JsonConvert.DeserializeObject<CfgCommandList>(commandDefinitions);
+            }
+
         }
 
         /// <summary>
@@ -72,49 +79,65 @@ namespace AltinnCLI.Core
         /// </summary>
         /// <param name="commandHandler">The SubCommand for which the paramters are build</param>
         /// <returns>List of subcommand paramters</returns>
-        public  List<IOption> BuildAvailableOptions(ISubCommandHandler commandHandler)
+        public List<IOption> BuildAvailableOptions(ISubCommandHandler commandHandler)
         {
-            string fileName = (ApplicationManager.ApplicationConfiguration.GetSection("CommandDefinitionFile").Get<string>());
-
             List<IOption> subCommandOptions = new List<IOption>();
             List<CfgOption> cfgOptions = new List<CfgOption>();
 
-            if (File.Exists(fileName))
+            if (instance.CfgCommands == null)
             {
-                string commandDefinitions = File.ReadAllText(fileName);
+                instance.LoadCommandFile();
+            }
 
-                if (!string.IsNullOrEmpty(commandDefinitions))
+            if (CfgCommands.Commands == null || CfgCommands.Commands.Count == 0)
+            {
+                _logger.LogError("There is not define any cli commands, check command definition file");
+            }
+            else
+            {
+                CfgSubCommand cfgCubCommand = CfgCommands.Commands.FirstOrDefault(x => x.Name == commandHandler.CommandProvider)?
+                                                .SubCommands.FirstOrDefault(y => y.Name == commandHandler.Name);
+
+                if (cfgCubCommand != null && cfgCubCommand.Options != null)
                 {
-                    CfgCommandList cfgCommands = JsonConvert.DeserializeObject<CfgCommandList>(commandDefinitions);
+                    cfgOptions = cfgCubCommand.Options;
 
-                    CgSubCommand cfgCubCommand = cfgCommands.Commands.FirstOrDefault(x => x.Name == commandHandler.CommandProvider)?
-                                                    .SubCommands.FirstOrDefault(y => y.Name == commandHandler.Name);
-
-                    if ( cfgCubCommand != null && cfgCubCommand.Options != null)
+                    foreach (CfgOption cfgOption in cfgOptions)
                     {
-                        cfgOptions = cfgCubCommand.Options;
-
-                        foreach (CfgOption cfgOption in cfgOptions)
+                        IOption option = CreateOption(cfgOption);
+                        if (option != null)
                         {
-                            Type baseType = null;
-
-                            Type t = GetSystemType(cfgOption.DataType, out baseType);
-
-                            var combinedType = baseType.MakeGenericType(t);
-                            IOption option = (IOption)Activator.CreateInstance(combinedType);
-
-                            option.Description = cfgOption.Description;
-                            option.Name = cfgOption.Name;
-                            option.IsAssigned = false;
-                            option.ApiName = cfgOption.Apiname;
-
-                            subCommandOptions.Add(option);
+                            subCommandOptions.Add(CreateOption(cfgOption));
                         }
                     }
                 }
             }
 
             return subCommandOptions;
+        }
+
+        private static IOption CreateOption(CfgOption cfgOption)
+        {
+            Type baseType = null;
+
+            Type t = GetSystemType(cfgOption.DataType, out baseType);
+
+            if (t != null)
+            {
+                var combinedType = baseType.MakeGenericType(t);
+                IOption option = (IOption)Activator.CreateInstance(combinedType);
+
+                option.Description = cfgOption.Description;
+                option.Name = cfgOption.Name;
+                option.IsAssigned = false;
+                option.ApiName = cfgOption.Apiname;
+                return option;
+            }
+            else
+            { 
+                _logger.LogError($"The defined data type: {cfgOption.DataType} for option: {cfgOption.Name} is not valid");
+                return null;
+            }
         }
 
 
@@ -125,7 +148,7 @@ namespace AltinnCLI.Core
         /// <returns>Status of assignments which includes validation of paramters</returns>
         public bool AssignValueToCliOptions(ISubCommandHandler commandHandler)
         {
-            bool hasError = false;
+            bool isvalid = false; ;
             foreach (IOption option in commandHandler.SelectableCliOptions)
             {
                 KeyValuePair<string, string> valuePair = commandHandler.DictOptions.FirstOrDefault(x => string.Equals(x.Key, option.Name, StringComparison.OrdinalIgnoreCase));
@@ -133,13 +156,20 @@ namespace AltinnCLI.Core
                 if (valuePair.Value != null)
                 {
                     option.Value = valuePair.Value;
-                    option.IsAssigned = true;
-                    option.Validate();
+                    isvalid = option.Validate();
+
+                    if (isvalid)
+                    {
+                        option.IsAssigned = true;
+                    }
                 }
             }
 
-            return hasError;
+            return isvalid;
         }
+
+        public CfgCommandList CfgCommands{ get; set; }
+
 
         /// <summary>
         ///  Gets the System.Type for a typefind type. Is the type specified as type in the command definition file
@@ -147,7 +177,7 @@ namespace AltinnCLI.Core
         /// <param name="type">The string that represents a Type</param>
         /// <param name="baseType">The base class that represents the Type</param>
         /// <returns></returns>
-        private static Type GetSystemType(string type, out Type baseType)
+        public static Type GetSystemType(string type, out Type baseType)
         {
             string lowerCaseType = type.ToLower();
             string systemType = string.Empty;

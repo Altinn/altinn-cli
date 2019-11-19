@@ -5,6 +5,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AltinnCLI.Core
 {
@@ -26,6 +27,17 @@ namespace AltinnCLI.Core
         /// </summary>
         /// <param name="logger">Application logger to be used for logging</param>
         public SubCommandHandlerBase(ILogger<SubCommandHandlerBase> logger)
+        {
+            _logger = logger;
+            isValid = null;
+            CliOptions = new List<IOption>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
+        /// </summary>
+        /// <param name="logger">Application logger to be used for logging</param>
+        public SubCommandHandlerBase(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null)
         {
             _logger = logger;
             isValid = null;

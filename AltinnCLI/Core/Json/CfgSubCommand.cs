@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AltinnCLI.Core.Json
 {
-    public class CgSubCommand
+    public class CfgSubCommand
     {
         [JsonProperty("Name")]
         public string Name { get; set; }

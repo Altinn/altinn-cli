@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AltinnCLI.Core.Json
 {
-    class CfgCommandList
+    public class CfgCommandList
     {
         [JsonProperty("Commands")]
         public List<CfgCommand> Commands { get; set; }

@@ -34,9 +34,7 @@ namespace AltinnCLI
             IConfigurationRoot configuration = BuildConfiguration();
 
             var app = serviceProvider.GetService<ApplicationManager>();
-
-            ApplicationManager.ServiceProvider = serviceProvider;
-            ApplicationManager.ApplicationConfiguration = configuration;
+            app.SetEnvironment(configuration, serviceProvider);
           
             string args;            
 

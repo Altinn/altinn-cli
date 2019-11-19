@@ -11,6 +11,6 @@ namespace AltinnCLI.Core.Json
         public string Name { get; set; }
 
         [JsonProperty("SubCommands")]
-        public List<CgSubCommand> SubCommands { get; set; }
+        public List<CfgSubCommand> SubCommands { get; set; }
     }
 }
