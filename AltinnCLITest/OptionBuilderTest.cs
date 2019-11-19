@@ -23,7 +23,7 @@ namespace AltinnCLITest
         [TestMethod]
         public void OptionBuilder_CreateOption_No_Commands()
         {
-            int expectedNumberOfOptions = 1;
+            int expectedNumberOfOptions = 0;
 
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
@@ -48,7 +48,7 @@ namespace AltinnCLITest
         public void OptionBuilder_Command_Not_Found()
         {
             string expectedCommand = "NotDefinedCommand";
-            int expectedNumberOfOptions = 1;
+            int expectedNumberOfOptions = 0;
 
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
@@ -287,9 +287,9 @@ namespace AltinnCLITest
                 DictOptions = cliOptions
             };
 
-            bool isError = builder.AssignValueToCliOptions(subCommandHandler);
+            bool IsValid = builder.AssignValueToCliOptions(subCommandHandler);
 
-            Assert.IsFalse(isError);
+            Assert.IsTrue(IsValid);
             Assert.AreEqual(expectedNumberOfOptions, subCommandHandler.SelectableCliOptions.Count);
             IOption selectableoption = subCommandHandler.SelectableCliOptions[0];
 
