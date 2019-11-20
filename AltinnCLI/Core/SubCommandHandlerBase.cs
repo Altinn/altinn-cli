@@ -33,16 +33,16 @@ namespace AltinnCLI.Core
             CliOptions = new List<IOption>();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
-        /// </summary>
-        /// <param name="logger">Application logger to be used for logging</param>
-        public SubCommandHandlerBase(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null)
-        {
-            _logger = logger;
-            isValid = null;
-            CliOptions = new List<IOption>();
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
+        ///// </summary>
+        ///// <param name="logger">Application logger to be used for logging</param>
+        //public SubCommandHandlerBase(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null)
+        //{
+        //    _logger = logger;
+        //    isValid = null;
+        //    CliOptions = new List<IOption>();
+        //}
 
         /// <summary>
         /// Gets or set the dictionary with the command line arguments

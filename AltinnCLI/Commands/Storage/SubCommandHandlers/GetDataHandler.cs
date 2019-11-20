@@ -37,22 +37,22 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetDocumentHandler" This constructor is for test purpose/> class.
-        /// </summary>
-        /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
-        public GetDataHandler(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null) : base(logger)
-        {
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="GetDocumentHandler" This constructor is for test purpose/> class.
+        ///// </summary>
+        ///// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
+        //public GetDataHandler(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null) : base(logger)
+        //{
 
-            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
-            {
-                ClientWrapper = new StorageClientWrapper(_logger);
-            }
-            else
-            {
-                ClientWrapper = new StorageClientFileWrapper(_logger);
-            }
-        }
+        //    if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
+        //    {
+        //        ClientWrapper = new StorageClientWrapper(_logger);
+        //    }
+        //    else
+        //    {
+        //        ClientWrapper = new StorageClientFileWrapper(_logger);
+        //    }
+        //}
 
         /// <summary>
         /// Gets the name of of the command
