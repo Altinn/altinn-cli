@@ -2,6 +2,7 @@
 using AltinnCLI.Commands.Storage;
 using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
@@ -19,7 +20,7 @@ namespace AltinnCLITest
     {
 
         [TestMethod]
-        public void Storage_GetData_()
+        public void Storage_GetData_Wrong_Option_Combination()
         {
             string expectedOption = "TestOption";
             string expectedDataType = "string";
@@ -32,7 +33,7 @@ namespace AltinnCLITest
 
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
-            NullLogger<GetDataHandler> logger = new NullLogger<GetDataHandler>();
+            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
@@ -50,17 +51,18 @@ namespace AltinnCLITest
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(GetDataHandler));
-            
-            //ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            //ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
-            //applicationManager.SetEnvironment(appConfig, serviceProvider);
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            ISubCommandHandler subCommandHandler = new GetDataHandler(logger)
-            {
-                SelectableCliOptions = selectableOptions,
-                DictOptions = cliOptions
-            };
+
+            ISubCommandHandler commandHandler = serviceProvider.GetServices<ISubCommandHandler>()
+             .FirstOrDefault(s => string.Equals(s.Name, "GetData", StringComparison.OrdinalIgnoreCase));
+
+
+
+            ISubCommandHandler subCommandHandler = serviceProvider.GetService<GetDataHandler>();
+            subCommandHandler.SelectableCliOptions = selectableOptions;
+            subCommandHandler.DictOptions = cliOptions;
 
             builder.AssignValueToCliOptions(subCommandHandler);
 

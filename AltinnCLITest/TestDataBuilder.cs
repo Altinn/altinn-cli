@@ -1,4 +1,5 @@
 ﻿using AltinnCLI;
+using AltinnCLI.Commands.Storage;
 using AltinnCLI.Core;
 using AltinnCLI.Core.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +76,13 @@ namespace AltinnCLITest
                 configure.ClearProviders();
                 configure.AddProvider(new SerilogLoggerProvider(logger));
             }).AddTransient<ApplicationManager>();
+
+
+            services.AddLogging(configure =>
+            {
+                configure.ClearProviders();
+                configure.AddProvider(new SerilogLoggerProvider(logger));
+            }).AddTransient<GetDataHandler>();
 
 
             availableCommandTypes.ForEach((t) =>

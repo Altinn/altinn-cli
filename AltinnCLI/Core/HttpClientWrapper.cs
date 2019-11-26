@@ -74,7 +74,7 @@ namespace AltinnCLI.Core
                     }
                     else
                     {
-                        client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApplicationManager.MaskinportenToken);
                     }
                     
                     message.RequestUri = uri;
