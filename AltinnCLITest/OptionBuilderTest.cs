@@ -29,7 +29,8 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+
+            BuildEnvironment(envirnonmentSetting);
 
             // Not commands in the Log
             CfgCommandList commandList = new CfgCommandList();
@@ -54,7 +55,7 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
 
@@ -84,7 +85,7 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
 
@@ -115,7 +116,7 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -148,7 +149,7 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -185,7 +186,7 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -233,7 +234,7 @@ namespace AltinnCLITest
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -270,9 +271,9 @@ namespace AltinnCLITest
 
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<GetDataHandler> logger = new NullLogger<GetDataHandler>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             List<IOption> selectableOptions = new List<IOption>();
@@ -315,9 +316,9 @@ namespace AltinnCLITest
 
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<GetDataHandler> logger = new NullLogger<GetDataHandler>();
 
-            BuildEnvironment(envirnonmentSetting, logger);
+            BuildEnvironment(envirnonmentSetting);
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             List<IOption> selectableOptions = new List<IOption>();
@@ -345,7 +346,7 @@ namespace AltinnCLITest
             Assert.IsFalse(string.IsNullOrEmpty(selectableoption.ErrorMessage));
         }
 
-        private static void BuildEnvironment(string envirnonmentSetting, NullLogger<Microsoft.Extensions.Logging.ILogger> logger)
+        private static void BuildEnvironment(string envirnonmentSetting)
         {
             byte[] data = Encoding.ASCII.GetBytes(envirnonmentSetting);
             MemoryStream stream = new MemoryStream(data);
@@ -354,8 +355,22 @@ namespace AltinnCLITest
                 .AddJsonStream(stream);
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
+            ConfigureLogging();
+
+            NullLogger<ApplicationManager> logger = new NullLogger<ApplicationManager>();
             ApplicationManager applicationManager = new ApplicationManager(logger);
             applicationManager.SetEnvironment(configurationRoot, null);
+
+        }
+
+
+        private static void ConfigureLogging()
+        {
+            Log.Logger = new LoggerConfiguration()
+               .MinimumLevel.Debug()
+               .WriteTo.File("log.txt", LogEventLevel.Information)
+               .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+               .CreateLogger();
         }
     }
 }

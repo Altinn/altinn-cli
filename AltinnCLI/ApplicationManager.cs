@@ -33,10 +33,10 @@ namespace AltinnCLI
             _logger = logger;
         }
 
-        public ApplicationManager(NullLogger<Microsoft.Extensions.Logging.ILogger> logger  = null)
-        {
-            _logger = logger;
-        }
+        //public ApplicationManager(NullLogger<Microsoft.Extensions.Logging.ILogger> logger  = null)
+        //{
+        //    _logger = logger;
+        //}
 
 
         public void SetEnvironment(IConfigurationRoot applicationConfiguration, IServiceProvider serviceProvider)
@@ -51,6 +51,7 @@ namespace AltinnCLI
         /// <param name="args">User input from command line arguments</param>
         public void Execute(string args)
         {
+            IsLoggedIn = true;
             if (!string.IsNullOrEmpty(args))
             {
                 string[] input = args.ToLower().Split(" ");
@@ -105,7 +106,13 @@ namespace AltinnCLI
                 }
                 else
                 {
-                    ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
+                    IHelp helpService = (IHelp)ServiceProvider.GetService<IHelp>();
+                    if (service != null)
+                    {
+                        helpService.GetHelp();
+                    }
+
+                    _logger.LogError($"No commands found");
                 }
             }
         }
@@ -144,7 +151,7 @@ namespace AltinnCLI
         /// </summary>
         /// <param name="args">Input parameters split into list of parameter names and values.</param>
         /// <returns></returns>
-        protected Dictionary<string, string> ParseArguments(string[] args)
+        private Dictionary<string, string> ParseArguments(string[] args)
         {
             Dictionary<string, string> commandKeysAndValues = new Dictionary<string, string>();
 
