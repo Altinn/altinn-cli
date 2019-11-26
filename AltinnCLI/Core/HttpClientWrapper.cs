@@ -149,7 +149,8 @@ namespace AltinnCLI.Core
                     client.Timeout = new TimeSpan(0, 0, 30);
                     if (!string.IsNullOrEmpty(ApplicationManager.MaskinportenToken))
                     {
-                        client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApplicationManager.MaskinportenToken);
+                        // client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
                     }
 
                     response = await client.PostAsync(uri, content);
