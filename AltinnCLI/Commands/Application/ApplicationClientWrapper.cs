@@ -39,6 +39,7 @@ namespace AltinnCLI.Commands.Application
 
             Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
 
+
             if (response.Result.IsSuccessStatusCode)
             {
                 return response.Result.Content.ReadAsStringAsync().Result;
