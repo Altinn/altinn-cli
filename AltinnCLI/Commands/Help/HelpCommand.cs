@@ -1,5 +1,6 @@
 ﻿using AltinnCLI.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,12 @@ namespace AltinnCLI.Commands
     {
         private IServiceProvider ServiceProvider;
 
-        public HelpCommand()
+        /// <summary>
+        /// Application logger 
+        /// </summary>
+        private static ILogger _logger;
+
+        public HelpCommand(ILogger<HelpCommand> logger)
         {
             ServiceProvider = ApplicationManager.ServiceProvider;
         }

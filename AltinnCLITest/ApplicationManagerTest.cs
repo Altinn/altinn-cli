@@ -25,7 +25,7 @@ namespace AltinnCLITest
         public void ApplicationManager_Execute_NoDefined_Commands()
         {
             int expectedLogEntires = 1;
-            
+            string expectedLogMessage = "No commands found";
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
  
@@ -37,18 +37,18 @@ namespace AltinnCLITest
             List<Type> availableCommandTypes = new List<Type>();
             List<Type> availableSubCommands = new List<Type>();
 
-            ServiceProvider serviceProvider = BuildServiceProvider(availableCommandTypes, availableSubCommands);
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
             ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
             applicationManager.SetEnvironment(appConfig, serviceProvider);
 
-            string args = $"storage appId=tdd/apptest processIsComplete=true";
+            string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
 
             applicationManager.Execute(args);
 
             List<string> logEntries = GetLogEntries(textWriter);
             Assert.AreEqual(expectedLogEntires, logEntries.Count);
-            string noCommandsFound = logEntries.FirstOrDefault(x => x.Contains("No commands found"));
+            string noCommandsFound = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
 
             Assert.IsFalse(string.IsNullOrEmpty(noCommandsFound));
 
@@ -57,8 +57,14 @@ namespace AltinnCLITest
         [TestMethod]
         public void ApplicationManager_Execute_Defined_Command_No_Sub_Command()
         {
+            int expectedLogEntires = 2;
+            string expectedLogMessage = "Missing sub command";
+            string expectedLogMissingHelp = "Help is not found";
             //Build environment, 
             string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
+
+            TextWriter textWriter = new StringWriter();
+            ConfigureLogging(textWriter);
 
             IConfigurationRoot appConfig = BuildEnvironment(envirnonmentSetting);
 
@@ -67,24 +73,38 @@ namespace AltinnCLITest
 
             List<Type> availableSubCommands = new List<Type>();
 
-            ServiceProvider serviceProvider = BuildServiceProvider(availableCommandTypes, availableSubCommands);
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
             ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
             applicationManager.SetEnvironment(appConfig, serviceProvider);
 
-            string args = $"storage appId=tdd/apptest processIsComplete=true";
+            string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
 
             applicationManager.Execute(args);
 
+            List<string> logEntries = GetLogEntries(textWriter);
+            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+
+            string missingHelp = logEntries.FirstOrDefault(x => x.Contains(expectedLogMissingHelp));
+            Assert.IsFalse(string.IsNullOrEmpty(missingHelp));
+
+            string missingSubCommand = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
+            Assert.IsFalse(string.IsNullOrEmpty(missingSubCommand));
         }
 
 
         [TestMethod]
-        public void ApplicationManager_Execute_Defined_Command()
+        public void ApplicationManager_Execute_No_Respons_Data()
         {
+            int expectedLogEntires = 1;
+            string expectedLogMessage = "No data available";
+
             //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
- 
+            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+
+            TextWriter textWriter = new StringWriter();
+            ConfigureLogging(textWriter);
+
             IConfigurationRoot appConfig = BuildEnvironment(envirnonmentSetting);
 
             List<Type> availableCommandTypes = new List<Type>();
@@ -93,14 +113,21 @@ namespace AltinnCLITest
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(GetDataHandler));
 
-            ServiceProvider serviceProvider = BuildServiceProvider(availableCommandTypes, availableSubCommands);
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
             ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
             applicationManager.SetEnvironment(appConfig, serviceProvider);
 
-            string args = $"storage appId=tdd/apptest processIsComplete=true";
+            string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
 
             applicationManager.Execute(args);
+
+
+            List<string> logEntries = GetLogEntries(textWriter);
+            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
+
+            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
         }
 
@@ -114,38 +141,6 @@ namespace AltinnCLITest
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
             return configurationRoot;
-        }
-
-        private static ServiceProvider BuildServiceProvider(List<Type> availableCommandTypes, List<Type> availableSubCommands)
-        { 
-
-
-            IServiceCollection services = new ServiceCollection();
-
-            services.AddLogging(configure =>
-            {
-                configure.ClearProviders();
-                configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
-            }).AddTransient<ApplicationManager>();
-
-
-            availableCommandTypes.ForEach((t) =>
-            {
-                services.AddTransient(typeof(ICommand), t);
-            });
-
-            availableSubCommands.ForEach((t) =>
-             {
-                 services.AddLogging(configure =>
-                 {
-                     configure.ClearProviders();
-                     configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
-                 }).AddTransient(typeof(ISubCommandHandler), t);
-             });
-
-            ServiceProvider provider = services.BuildServiceProvider();
-
-            return provider;
         }
 
         private static void ConfigureLogging(TextWriter textWriter)

@@ -20,7 +20,9 @@ namespace AltinnCLI.Commands.Storage
             _logger = logger;
         }
 
-        public string BaseAddress { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string BaseAddress { get; set; }
+
+        public static InstanceResponseMessage? InstanceResponse { get; set; }
 
         public Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
@@ -44,7 +46,7 @@ namespace AltinnCLI.Commands.Storage
 
         public InstanceResponseMessage GetInstanceMetaData(List<IOption> urlParams = null)
         {
-            throw new NotImplementedException();
+            return InstanceResponse;
         }
 
         public Stream GetInstances(int instanceOwnerOd, Guid instanceGuid)

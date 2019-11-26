@@ -1,6 +1,7 @@
 ﻿using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,8 +11,14 @@ namespace AltinnCLI.Commands.Storage
 {
     public class StorageCommand : ICommand, IHelp
     {
-        public StorageCommand()
+        /// <summary>
+        /// Application logger 
+        /// </summary>
+        private static ILogger _logger;
+
+        public StorageCommand(ILogger<StorageCommand> logger)
         {
+            _logger = logger;
         }
 
         /// <summary>
@@ -23,6 +30,10 @@ namespace AltinnCLI.Commands.Storage
             if (subCommandHandler != null)
             {
                 subCommandHandler.Run();
+            }
+            else
+            {
+                _logger.LogError($"Missing sub command, use help to find avilable sub commands.");
             }
         }
 

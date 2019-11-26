@@ -1,5 +1,9 @@
-﻿using AltinnCLI.Core;
+﻿using AltinnCLI;
+using AltinnCLI.Core;
 using AltinnCLI.Core.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,6 +61,39 @@ namespace AltinnCLITest
             option.IsAssigned = false;
             option.ApiName = apiName;
             return option;
+        }
+
+
+        public static ServiceProvider BuildServiceProvider(List<Type> availableCommandTypes, List<Type> availableSubCommands, Serilog.ILogger logger)
+        {
+
+
+            IServiceCollection services = new ServiceCollection();
+
+            services.AddLogging(configure =>
+            {
+                configure.ClearProviders();
+                configure.AddProvider(new SerilogLoggerProvider(logger));
+            }).AddTransient<ApplicationManager>();
+
+
+            availableCommandTypes.ForEach((t) =>
+            {
+                services.AddTransient(typeof(ICommand), t);
+            });
+
+            availableSubCommands.ForEach((t) =>
+            {
+                services.AddLogging(configure =>
+                {
+                    configure.ClearProviders();
+                    configure.AddProvider(new SerilogLoggerProvider(logger));
+                }).AddTransient(typeof(ISubCommandHandler), t);
+            });
+
+            ServiceProvider provider = services.BuildServiceProvider();
+
+            return provider;
         }
     }
 }

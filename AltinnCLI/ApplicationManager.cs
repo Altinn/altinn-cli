@@ -140,7 +140,16 @@ namespace AltinnCLI
             }
             else
             {
-                ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
+                // No command found, find help command to display help.
+                IHelp helpService = ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault();
+                if (helpService != null)
+                {
+                    ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
+                }
+                else
+                {
+                    _logger.LogError("Help is not found");
+                }
             }
 
             return null;

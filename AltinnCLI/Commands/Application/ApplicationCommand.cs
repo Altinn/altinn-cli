@@ -1,4 +1,5 @@
 ﻿using AltinnCLI.Core;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,8 +8,14 @@ namespace AltinnCLI.Commands.Application
 {
     class ApplicationCommand : ICommand, IHelp
     {
-        public ApplicationCommand()
+        /// <summary>
+        /// Application logger 
+        /// </summary>
+        private static ILogger _logger;
+
+        public ApplicationCommand(ILogger<ApplicationCommand> logger)
         {
+            _logger = logger;
         }
 
         public string Name

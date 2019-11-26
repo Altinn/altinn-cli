@@ -185,6 +185,11 @@ namespace AltinnCLI.Commands.Storage
             {
                 responsMessage = ClientWrapper.GetInstanceMetaData(ownerId, instanceId);
             }
+            else
+            {
+                _logger.LogError($"No valid combination of command options, please use help to find available combintations");
+                return;
+            }
 
             if (responsMessage != null)
             {
@@ -192,6 +197,10 @@ namespace AltinnCLI.Commands.Storage
 
                 Instance[] instances = responsMessage.Instances;
                 FetchAndSaveData(instances, responsMessage.Next, updateInstances);
+            }
+            else
+            {
+                _logger.LogInformation($"No data available for instance");
             }
 
         }

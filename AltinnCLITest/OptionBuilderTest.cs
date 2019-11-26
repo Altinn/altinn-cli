@@ -363,7 +363,7 @@ namespace AltinnCLITest
 
         }
 
-
+   
         private static void ConfigureLogging()
         {
             Log.Logger = new LoggerConfiguration()

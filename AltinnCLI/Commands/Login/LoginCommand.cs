@@ -1,4 +1,5 @@
 ﻿using AltinnCLI.Core;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -9,13 +10,18 @@ namespace AltinnCLI.Commands
     class LoginCommand : ICommand, IHelp
     {
         private IServiceProvider ServiceProvider;
+        /// <summary>
+        /// Application logger 
+        /// </summary>
+        private static ILogger _logger;
 
         /// <summary>
         /// 
         /// </summary>
-        public LoginCommand()
+        public LoginCommand(ILogger<LoginCommand> logger)
         {
             ServiceProvider = ApplicationManager.ServiceProvider;
+            _logger = logger;
         }
 
         /// <summary>

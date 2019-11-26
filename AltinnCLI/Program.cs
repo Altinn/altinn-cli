@@ -67,7 +67,11 @@ namespace AltinnCLI
             // that contains a name property that is used to select the properiate class according to cli command type, args[0]
             Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommand>().ForEach((t) =>
             {
-                services.AddTransient(typeof(ICommand), t);
+                services.AddLogging(configure =>
+                {
+                    configure.ClearProviders();
+                    configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
+                }).AddTransient(typeof(ICommand), t);
             });
 
             // register all Commands that can be accessed from commandline, they all implements the IHelp interface
