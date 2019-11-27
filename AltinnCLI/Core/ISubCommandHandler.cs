@@ -41,6 +41,11 @@ namespace AltinnCLI.Core
         List<IOption> CliOptions { get; set; }
 
         /// <summary>
+        /// Dictionary with cli input options
+        /// </summary>
+        IFileWrapper CliFileWrapper { get; set; }
+
+        /// <summary>
         /// Builds the options that can control the command.
         /// </summary>
         void BuildSelectableCommands();

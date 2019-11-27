@@ -1,4 +1,5 @@
-﻿using AltinnCLI;
+﻿using Altinn.Platform.Storage.Interface.Models;
+using AltinnCLI;
 using AltinnCLI.Commands.Storage;
 using AltinnCLI.Core;
 using AltinnCLI.Core.Json;
@@ -102,6 +103,42 @@ namespace AltinnCLITest
             ServiceProvider provider = services.BuildServiceProvider();
 
             return provider;
+        }
+
+        internal static InstanceResponseMessage CreateInstanceResponse(int numberOfInstances)
+        {
+            InstanceResponseMessage response = new InstanceResponseMessage();
+            response.Instances = new Instance[numberOfInstances];
+
+            DataElement dataElement = new DataElement()
+            {
+                DataType = "Kvittering",
+                SelfLinks = new ResourceLinks()
+            };
+
+            List<DataElement> dataElementList = new List<DataElement>();
+            dataElementList.Add(dataElement);
+
+            for (int i = 0; i < numberOfInstances; i++)
+            {
+                Instance instance = new Instance()
+                {
+                    Id = $"100/2e130fad-c156-4424-8579-6537a1bf484f",
+                    InstanceOwner = new InstanceOwner()
+                    {
+                        PartyId = $"33445{i.ToString()}",
+                        PersonNumber = $"1234567890{i.ToString()}",
+                        OrganisationNumber = $"9844566{i.ToString()}"
+                    },
+                    AppId = "AppId",
+                    Org = $"9844566{i.ToString()}",
+                    Data = dataElementList,
+                };
+
+                response.Instances[i] = instance;
+            }
+
+            return response;
         }
     }
 }

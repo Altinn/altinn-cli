@@ -106,13 +106,9 @@ namespace AltinnCLI.Commands.Storage
             {
                 IOption fileNameOption = SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, "file", StringComparison.OrdinalIgnoreCase));
 
-                FileStream stream = new FileStream(fileNameOption.Value, FileMode.Open);
-                MemoryStream memstr = new MemoryStream(new byte[stream.Length]);
-                stream.CopyTo(memstr);
-                memstr.Position = 0;
-                stream.Close();
+                MemoryStream memoryStream = CliFileWrapper.GetFile(fileNameOption.Value);
 
-                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(SelectableCliOptions, memstr, fileNameOption.Value);
+                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(SelectableCliOptions, memoryStream, fileNameOption.Value);
             }
 
             return true;

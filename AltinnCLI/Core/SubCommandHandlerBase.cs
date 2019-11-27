@@ -15,34 +15,29 @@ namespace AltinnCLI.Core
     public abstract class SubCommandHandlerBase : IValidate
     {
         private string errorMessage;
-        private bool? isValid; 
+        private bool? isValid;
 
         /// <summary>
         /// Application logger 
         /// </summary>
         protected static ILogger _logger;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
         /// </summary>
         /// <param name="logger">Application logger to be used for logging</param>
-        public SubCommandHandlerBase(ILogger<SubCommandHandlerBase> logger)
+        public SubCommandHandlerBase(ILogger<SubCommandHandlerBase> logger) : this(new FileWrapper(logger))
         {
             _logger = logger;
             isValid = null;
             CliOptions = new List<IOption>();
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="CommandHandlerBase" /> class.
-        ///// </summary>
-        ///// <param name="logger">Application logger to be used for logging</param>
-        //public SubCommandHandlerBase(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null)
-        //{
-        //    _logger = logger;
-        //    isValid = null;
-        //    CliOptions = new List<IOption>();
-        //}
+        public SubCommandHandlerBase(FileWrapper fileWrapper)
+        {
+            CliFileWrapper = fileWrapper;
+        }
 
         /// <summary>
         /// Gets or set the dictionary with the command line arguments
@@ -58,6 +53,11 @@ namespace AltinnCLI.Core
         /// 
         /// </summary>
         public List<IOption> CliOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file wrapper 
+        /// </summary>
+        public IFileWrapper CliFileWrapper { get; set; }
 
         /// <summary>
         /// Verifies if the command parameters contain a specific key and that it has a value
@@ -109,33 +109,7 @@ namespace AltinnCLI.Core
             return SelectableCliOptions.FirstOrDefault(x => string.Equals(x.Name, key, StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>
-        ///  saves a file to disk
-        /// </summary>
-        /// <param name="filePath">the path excluded a base path for where the file shall be saved</param>
-        /// <param name="fileName">filname to be used on the saved file</param>
-        /// <param name="stream">the fiel content</param>
-        protected void SaveToFile(string filePath, string fileName, Stream stream)
-        {
-            string baseFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
-            string fileFolder = $@"{baseFolder}\{filePath}";
-
-            // chekc if file folder exists, if not create it
-            if (!Directory.Exists(fileFolder))
-            {
-                Directory.CreateDirectory(fileFolder);
-
-            }
-
-            using (FileStream outputFile = new FileStream(Path.Combine(fileFolder, fileName), FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                stream.CopyTo(outputFile);
-            }
-
-            _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
-        }
-
-        public void BuildSelectableCommands()
+         public void BuildSelectableCommands()
         {
             SelectableCliOptions = OptionBuilder.Instance(_logger).BuildAvailableOptions((ISubCommandHandler)this);
         }

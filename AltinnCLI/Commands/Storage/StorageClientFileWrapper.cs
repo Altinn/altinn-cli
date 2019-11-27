@@ -24,6 +24,8 @@ namespace AltinnCLI.Commands.Storage
 
         public static InstanceResponseMessage? InstanceResponse { get; set; }
 
+        public static MemoryStream DataContent { get; set; }
+
         public Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
             throw new NotImplementedException();
@@ -31,7 +33,7 @@ namespace AltinnCLI.Commands.Storage
 
         public Stream GetData(string command, string contentType = null)
         {
-            throw new NotImplementedException();
+            return DataContent;
         }
 
         public InstanceResponseMessage GetInstanceMetaData(int? instanceOwnerId = null, Guid? instanceGuid = null)

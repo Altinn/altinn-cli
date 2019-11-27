@@ -37,23 +37,6 @@ namespace AltinnCLI.Commands.Storage
             }
         }
 
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="GetDocumentHandler" This constructor is for test purpose/> class.
-        ///// </summary>
-        ///// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
-        //public GetDataHandler(NullLogger<Microsoft.Extensions.Logging.ILogger> logger = null) : base(logger)
-        //{
-
-        //    if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
-        //    {
-        //        ClientWrapper = new StorageClientWrapper(_logger);
-        //    }
-        //    else
-        //    {
-        //        ClientWrapper = new StorageClientFileWrapper(_logger);
-        //    }
-        //}
-
         /// <summary>
         /// Gets the name of of the command
         /// </summary>
@@ -142,7 +125,7 @@ namespace AltinnCLI.Commands.Storage
                     {
                         string fileFolder = $@"{ownerId}\{instanceId}";
 
-                        SaveToFile(fileFolder, ((Guid)dataId).ToString(), stream);
+                        CliFileWrapper.SaveToFile(fileFolder, ((Guid)dataId).ToString(), stream);
                     }
                 }
                 else
@@ -216,6 +199,7 @@ namespace AltinnCLI.Commands.Storage
         {
             foreach (Instance instance in instances)
             {
+                int numberOfFiles = 0;
                 foreach (DataElement data in instance.Data)
                 { 
                     string url = data.SelfLinks.Platform;
@@ -228,8 +212,17 @@ namespace AltinnCLI.Commands.Storage
 
                         string fileFolder = $@"{instance.InstanceOwner.PartyId}\{instanceGuidId}";
 
-                        SaveToFile(fileFolder, fileName, responsData);
+                        if ( CliFileWrapper.SaveToFile(fileFolder, fileName, responsData) )
+                        {
+                            _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
+                        }
+                        numberOfFiles++;
                     }
+                }
+
+                if(numberOfFiles == 0)
+                {
+                    _logger.LogInformation($"No files received for instance:{instance.Id}");
                 }
             }
 

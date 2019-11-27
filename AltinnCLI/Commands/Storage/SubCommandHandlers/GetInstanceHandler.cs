@@ -108,7 +108,7 @@ namespace AltinnCLI.Commands.Storage
 
                         }                      
 
-                        SaveToFile(fileFolder, fileName, response);
+                        CliFileWrapper.SaveToFile(fileFolder, fileName, response);
                         
                     }
                 }
