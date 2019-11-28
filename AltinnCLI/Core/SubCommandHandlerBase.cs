@@ -132,12 +132,15 @@ namespace AltinnCLI.Core
         public string GetParameterErrors()
         {
             string errorMessage = string.Empty;
-            foreach (IOption option in SelectableCliOptions.Where(x => x.IsAssigned))
+            List<IOption> optionsWithError = SelectableCliOptions.Where(x => !string.IsNullOrEmpty(x.ErrorMessage)).ToList();
+            int i = 0;
+            foreach (IOption option in optionsWithError)
             {
                 if (!option.IsValid)
                 {
-                    errorMessage += $"{option.ErrorMessage} \n";
+                    errorMessage += $"{option.ErrorMessage}";
                 }
+                errorMessage += (i < optionsWithError.Count - 1) ? errorMessage += $"\n" : string.Empty;
             }
 
             return errorMessage;

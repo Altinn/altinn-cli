@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using AltinnCLI.Core;
 using Microsoft.Extensions.Logging;
 
@@ -25,6 +26,8 @@ namespace AltinnCLI.Commands.Storage
         public static InstanceResponseMessage? InstanceResponse { get; set; }
 
         public static MemoryStream DataContent { get; set; }
+
+        public static bool IsSuccessStatusCode;
 
         public Stream GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
@@ -58,7 +61,17 @@ namespace AltinnCLI.Commands.Storage
 
         public InstanceResponseMessage UploadDataElement(List<IOption> urlParams, Stream data, string fileName)
         {
-            throw new NotImplementedException();
+
+            if (IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"The file: {fileName} was successfully uploaded");
+            }
+            else
+            {
+                _logger.LogError($"Failed to upload the file: {fileName}");
+            }
+
+            return null;
         }
     }
 }

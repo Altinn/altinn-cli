@@ -113,5 +113,23 @@ namespace AltinnCLI.Commands.Storage
 
             return true;
         }
+
+        public override bool Validate()
+        {
+            // validate options, UploadData requires that ownerid, instanceGuid, dataType and file name is specified and valid
+            // the values for the properties set is validate and found valid so this validation verifies that all the required is set
+
+            if (GetOption("ownerid").IsAssigned && GetOption("instanceId").IsAssigned && 
+                GetOption("elementType").IsAssigned && GetOption("file").IsAssigned)
+            {
+                return true;
+            }
+
+            _logger.LogError("No valid combination of options, see Help for correct and required option");
+            _logger.LogInformation(GetParameterErrors());
+
+            return false;
+        }
+
     }
 }

@@ -12,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AltinnCLITest
 {
@@ -277,6 +279,311 @@ namespace AltinnCLITest
             string saveMessage = logEntries.FirstOrDefault(x => x.Contains(expectedSaveMessage));
             Assert.IsFalse(string.IsNullOrEmpty(saveMessage));
 
+        }
+
+        [TestMethod]
+        public void Storage_UploadData_Wrong_Option_Combination()
+        {
+            string expectedOption = "ownerId";
+            string expectedValue = "50013748";
+
+            string expectedLogMessage = "No valid combination";
+            int expectedLogEntires = 1;
+
+            //Build environment, 
+            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+
+            // Configure logger which is set on registred classes/objects
+            TextWriter textWriter = new StringWriter();
+            ConfigureLogging(textWriter);
+
+            BuildEnvironment(envirnonmentSetting);
+
+            // Build command options
+            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            cliOptions.Add(expectedOption, expectedValue);
+
+            // define which command and subcommand that shall be registred in serviceprovider
+            List<Type> availableCommandTypes = new List<Type>();
+            availableCommandTypes.Add(typeof(StorageCommand));
+
+            List<Type> availableSubCommands = new List<Type>();
+            availableSubCommands.Add(typeof(UploadData));
+
+            // register commands and subcommands
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
+
+            // fetch GetDataHandler subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // the Command resource file defined in the Cli project
+            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            OptionBuilder builder = OptionBuilder.Instance(logger);
+            subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+            subCommandHandler.DictOptions = cliOptions;
+
+            // assign option values to the subcommand
+            builder.AssignValueToCliOptions(subCommandHandler);
+
+            // run the command
+            subCommandHandler.Run();
+
+            // verify that the log contain expected result
+            List<string> logEntries = GetLogEntries(textWriter);
+            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
+
+            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
+
+        }
+
+        [TestMethod]
+        public void Storage_UploadData_No_File()
+        {
+            string expectedOwnerId = "ownerId";
+            string expectedOwnerIdValue = "50013748";
+
+            string expectedInstanceId = "instanceId";
+            string expectedInstanceIdValue = "bd5d5066-5ae4-42eb-8d5d-076a600acdd5";
+
+            string expectedElementType = "elementType";
+            string expectedElementTypeValue = "kvittering";
+
+            string expectedFile = "file";
+            string expectedFileValue = $@"c:\Temp\test.xml";
+
+            string expectedLogMessage = "No valid combination";
+            int expectedLogEntires = 2;
+
+            string expectedfileNotFoundErrorMessage = "Invalid value for parameter";
+
+            //Build environment, 
+            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+
+            // Configure logger which is set on registred classes/objects
+            TextWriter textWriter = new StringWriter();
+            ConfigureLogging(textWriter);
+
+            BuildEnvironment(envirnonmentSetting);
+
+            // Build command options
+            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
+            cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
+            cliOptions.Add(expectedElementType, expectedElementTypeValue);
+            cliOptions.Add(expectedFile, expectedFileValue);
+
+            // define which command and subcommand that shall be registred in serviceprovider
+            List<Type> availableCommandTypes = new List<Type>();
+            availableCommandTypes.Add(typeof(StorageCommand));
+
+            List<Type> availableSubCommands = new List<Type>();
+            availableSubCommands.Add(typeof(UploadData));
+
+            // register commands and subcommands
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
+
+            // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // the Command resource file defined in the Cli project
+            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            OptionBuilder builder = OptionBuilder.Instance(logger);
+            subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+
+            // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
+            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == false && x.ErrorMessage == expectedfileNotFoundErrorMessage);
+            ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
+
+            // assing the input options to the subCommand
+            subCommandHandler.DictOptions = cliOptions;
+
+            // assign and validate the input options to the selectable options
+            builder.AssignValueToCliOptions(subCommandHandler);
+
+            // run the command
+            subCommandHandler.Run();
+
+            // verify that the log contain expected result
+            List<string> logEntries = GetLogEntries(textWriter);
+            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
+            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
+
+            string fileNotFoundMesage = logEntries.FirstOrDefault(x => x.Contains(expectedfileNotFoundErrorMessage));
+            Assert.IsFalse(string.IsNullOrEmpty(fileNotFoundMesage));
+
+        }
+
+        [TestMethod]
+        public void Storage_UploadData__File_Exits_FailedTo_Upload()
+        {
+            string expectedOwnerId = "ownerId";
+            string expectedOwnerIdValue = "50013748";
+
+            string expectedInstanceId = "instanceId";
+            string expectedInstanceIdValue = "bd5d5066-5ae4-42eb-8d5d-076a600acdd5";
+
+            string expectedElementType = "elementType";
+            string expectedElementTypeValue = "kvittering";
+
+            string expectedFile = "file";
+            string expectedFileValue = $@"c:\Temp\test.xml";
+
+            int expectedLogEntires = 1;
+
+            string expectededUploadFailedMessage = "Failed to upload";
+
+            //Build environment, 
+            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+
+            // Configure logger which is set on registred classes/objects
+            TextWriter textWriter = new StringWriter();
+            ConfigureLogging(textWriter);
+
+            BuildEnvironment(envirnonmentSetting);
+
+            // Build command options
+            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
+            cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
+            cliOptions.Add(expectedElementType, expectedElementTypeValue);
+            cliOptions.Add(expectedFile, expectedFileValue);
+
+            // define which command and subcommand that shall be registred in serviceprovider
+            List<Type> availableCommandTypes = new List<Type>();
+            availableCommandTypes.Add(typeof(StorageCommand));
+
+            List<Type> availableSubCommands = new List<Type>();
+            availableSubCommands.Add(typeof(UploadData));
+
+            // register commands and subcommands
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
+
+            // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // the Command resource file defined in the Cli project
+            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            OptionBuilder builder = OptionBuilder.Instance(logger);
+            subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+
+            // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
+            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == true);
+            ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
+
+            // Mock the file wrapper
+            Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
+            mockedWrapper.Setup(x => x.GetFile(It.IsAny<string>())).Returns(new MemoryStream());
+            subCommandHandler.CliFileWrapper = (IFileWrapper)mockedWrapper.Object;
+
+            // set respons from ClientWrapper
+            StorageClientFileWrapper.IsSuccessStatusCode = false;
+
+            // assing the input options to the subCommand
+            subCommandHandler.DictOptions = cliOptions;
+
+            // assign and validate the input options to the selectable options
+            builder.AssignValueToCliOptions(subCommandHandler);
+
+            // run the command
+            subCommandHandler.Run();
+
+            // verify that the log contain expected result
+            List<string> logEntries = GetLogEntries(textWriter);
+            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectededUploadFailedMessage));
+            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
+        }
+
+        [TestMethod]
+        public void Storage_UploadData__File_Exits_File_Uploaded()
+        {
+            string expectedOwnerId = "ownerId";
+            string expectedOwnerIdValue = "50013748";
+
+            string expectedInstanceId = "instanceId";
+            string expectedInstanceIdValue = "bd5d5066-5ae4-42eb-8d5d-076a600acdd5";
+
+            string expectedElementType = "elementType";
+            string expectedElementTypeValue = "kvittering";
+
+            string expectedFile = "file";
+            string expectedFileValue = $@"c:\Temp\test.xml";
+
+            int expectedLogEntires = 1;
+
+            string expectededFileUploadedMessage = "was successfully uploaded";
+
+            //Build environment, 
+            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+
+            // Configure logger which is set on registred classes/objects
+            TextWriter textWriter = new StringWriter();
+            ConfigureLogging(textWriter);
+
+            BuildEnvironment(envirnonmentSetting);
+
+            // Build command options
+            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
+            cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
+            cliOptions.Add(expectedElementType, expectedElementTypeValue);
+            cliOptions.Add(expectedFile, expectedFileValue);
+
+            // define which command and subcommand that shall be registred in serviceprovider
+            List<Type> availableCommandTypes = new List<Type>();
+            availableCommandTypes.Add(typeof(StorageCommand));
+
+            List<Type> availableSubCommands = new List<Type>();
+            availableSubCommands.Add(typeof(UploadData));
+
+            // register commands and subcommands
+            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
+
+            // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // the Command resource file defined in the Cli project
+            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            OptionBuilder builder = OptionBuilder.Instance(logger);
+            subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+
+            // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
+            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == true);
+            ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
+
+            // Mock the file wrapper
+            Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
+            mockedWrapper.Setup(x => x.GetFile(It.IsAny<string>())).Returns(new MemoryStream());
+            subCommandHandler.CliFileWrapper = (IFileWrapper)mockedWrapper.Object;
+
+            // set respons from ClientWrapper
+            StorageClientFileWrapper.IsSuccessStatusCode = true;
+
+            // assing the input options to the subCommand
+            subCommandHandler.DictOptions = cliOptions;
+
+            // assign and validate the input options to the selectable options
+            builder.AssignValueToCliOptions(subCommandHandler);
+
+            // run the command
+            subCommandHandler.Run();
+
+            // verify that the log contain expected result
+            List<string> logEntries = GetLogEntries(textWriter);
+            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectededFileUploadedMessage));
+            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
+
+            Assert.IsTrue(logMessage.Contains(expectedFileValue));
+        }
+
+        private static void ReplaceSelectableOption(string replaceOptionName, FileOption<FileStream> newOption, List<IOption> selectableOptions)
+        {
+            IOption currentOption = selectableOptions.FirstOrDefault(x => x.Name == replaceOptionName);
+            newOption.ApiName = currentOption.ApiName;
+            newOption.IsAssigned = false;
+            newOption.Name = currentOption.Name;
+
+            selectableOptions.Remove(currentOption);
+            selectableOptions.Add(newOption);
         }
 
         private static void BuildEnvironment(string envirnonmentSetting)

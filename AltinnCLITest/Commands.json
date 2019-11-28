@@ -1,0 +1,233 @@
+{
+  "Commands": [
+    {
+      "Name": "Storage",
+      "SubCommands": [
+        {
+          "Name": "GetData",
+          "Options": [
+            {
+              "Name": "org",
+              "type": "int",
+              "valuerange": "0-99999999",
+              "description": "org",
+              "apiname": "org"
+            },
+            {
+              "Name": "appId",
+              "type": "string",
+              "valuerange": "0-99999999",
+              "description": "application id",
+              "apiname": "appId"
+            },
+            {
+              "Name": "currentTaskId",
+              "type": "int",
+              "valuerange": "running process current task id",
+              "description": "appid",
+              "apiname": "process.currentTask"
+            },
+            {
+              "Name": "processIsComplete",
+              "type": "bool",
+              "valuerange": "is process complete",
+              "description": "is process complete",
+              "apiname": "process.isComplete"
+            },
+            {
+              "Name": "processIsInError",
+              "type": "bool",
+              "valuerange": "is process in error",
+              "description": "is process in error",
+              "apiname": "process.isInError"
+            },
+            {
+              "Name": "processEndState",
+              "type": "bool",
+              "valuerange": "process end state",
+              "description": "process end state",
+              "apiname": "process.ended"
+            },
+            {
+              "Name": "labels",
+              "type": "string",
+              "valuerange": "labels",
+              "description": "labels",
+              "apiname": "appOwner.labels"
+            },
+            {
+              "Name": "lastChangedDateTime",
+              "type": "DateTime",
+              "valuerange": "last changed date",
+              "description": "last changed date",
+              "apiname": "lastChanged"
+            },
+            {
+              "Name": "createdDateTime",
+              "type": "DateTime",
+              "valuerange": "created time",
+              "description": "created time",
+              "apiname": "created"
+            },
+            {
+              "Name": "visibleDateTime",
+              "type": "DateTime",
+              "valuerange": "the visible date time",
+              "description": "the visible date time",
+              "apiname": "visibleAfter"
+            },
+            {
+              "Name": "dueDateTime",
+              "type": "DateTime",
+              "valuerange": "the due date time",
+              "description": "the due date time",
+              "apiname": "dueBefore"
+            },
+            {
+              "Name": "continuationToken",
+              "type": "string",
+              "valuerange": "continuation token",
+              "description": "continuation token",
+              "apiname": "continuationToken"
+            },
+            {
+              "Name": "size",
+              "type": "int",
+              "valuerange": "the page size",
+              "description": "the page size",
+              "apiname": "size"
+            },
+            {
+              "Name": "ownerId",
+              "type": "int",
+              "valuerange": "",
+              "description": "the id of the ownerpage size",
+              "apiname": "instanceOwner.partyId"
+            },
+            {
+              "Name": "instanceId",
+              "type": "guid",
+              "valuerange": "",
+              "description": "the id of the instance",
+              "apiname": "instanceGuid"
+            },
+            {
+              "Name": "dataId",
+              "type": "guid",
+              "valuerange": "",
+              "description": "the id of the data element",
+              "apiname": "dataId"
+            }
+          ]
+        },
+        {
+          "Name": "UploadData",
+          "Options": [
+            {
+              "Name": "ownerid",
+              "type": "int",
+              "valuerange": "0-99999999",
+              "description": "ownerid",
+              "apiname": "instanceOwner.partyId"
+            },
+            {
+              "Name": "instanceId",
+              "type": "Guid",
+              "valuerange": "0-99999999",
+              "description": "application instance id",
+              "apiname": "appId"
+            },
+            {
+              "Name": "elementType",
+              "type": "string",
+              "valuerange": "0-99999999",
+              "description": "type of data element to save",
+              "apiname": "dataType"
+            },
+            {
+              "Name": "file",
+              "type": "file",
+              "valuerange": "0-99999999",
+              "description": "name with full path to file to save",
+              "apiname": "file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Application",
+      "SubCommands": [
+        {
+          "Name": "CreateInstance",
+          "Options": [
+            {
+              "Name": "app",
+              "type": "string",
+              "valuerange": "",
+              "description": "String identifier for the Application",
+              "apiname": "app"
+            },
+            {
+              "Name": "org",
+              "type": "string",
+              "valuerange": "",
+              "description": "The letter identifier for the Application owner",
+              "apiname": "org"
+            },
+            {
+              "Name": "ownerId",
+              "type": "string",
+              "valuerange": "",
+              "description": "Unique identifier for the instanceowner",
+              "apiname": "instanceOwnerId"
+            },
+            {
+              "Name": "folder",
+              "type": "string",
+              "valuerange": "",
+              "description": "Path to local folder where instance data is stored"
+            },
+            {
+              "Name": "instanceTemplate",
+              "type": "string",
+              "valuerange": "",
+              "description": "Path to the file that defines the instance"
+            },
+            {
+              "Name": "instanceTemplate",
+              "type": "string",
+              "valuerange": "",
+              "description": "Path to the file that defines the instance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Login",
+      "SubCommands": [
+        {
+          "Name": "Maskinporten",
+          "Options": [
+            {
+              "Name": "clientId",
+              "type": "Guid",
+              "valuerange": "",
+              "description": "client guid id",
+              "apiname": "clientid"
+            },
+            {
+              "Name": "thumbprint",
+              "type": "thumbprint",
+              "valuerange": "",
+              "description": "name with full path to the local key",
+              "apiname": "thumbprint"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

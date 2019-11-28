@@ -86,6 +86,13 @@ namespace AltinnCLITest
             }).AddTransient<GetDataHandler>();
 
 
+            services.AddLogging(configure =>
+            {
+                configure.ClearProviders();
+                configure.AddProvider(new SerilogLoggerProvider(logger));
+            }).AddTransient<UploadData>();
+
+
             availableCommandTypes.ForEach((t) =>
             {
                 services.AddTransient(typeof(ICommand), t);

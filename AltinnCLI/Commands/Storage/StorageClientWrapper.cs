@@ -192,6 +192,15 @@ namespace AltinnCLI.Commands.Storage
             content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);
             Task<HttpResponseMessage> response = client.PostCommand(BaseAddress, cmd, content);
 
+            if (response.Result.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"The file: {fileName} was successfully uploaded");
+            }
+            else
+            {
+                _logger.LogError($"Failed to upload the file: {fileName}");
+            }
+            
             return null;
         }
     }

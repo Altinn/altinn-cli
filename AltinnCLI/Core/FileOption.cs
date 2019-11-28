@@ -19,6 +19,8 @@ namespace AltinnCLI.Core
             {
                 return true;
             }
+
+            ErrorMessage = $"Invalid value for parameter: {Name}, file: {Value} was not found";
             return false;
         }
     }
