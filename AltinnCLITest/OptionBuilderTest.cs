@@ -21,6 +21,7 @@ namespace AltinnCLITest
     public class OptionBuilderTest
     {
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_No_Commands()
         {
             int expectedNumberOfOptions = 0;
@@ -46,6 +47,7 @@ namespace AltinnCLITest
 
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_Command_Not_Found()
         {
             string expectedCommand = "NotDefinedCommand";
@@ -75,6 +77,7 @@ namespace AltinnCLITest
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_No_SubCommands()
         {
             string expectedCommand = "Storage";
@@ -105,6 +108,7 @@ namespace AltinnCLITest
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_Wrong_SubCommand()
         {
             string expectedCommand = "Storage";
@@ -138,6 +142,7 @@ namespace AltinnCLITest
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_No_Options()
         {
             string expectedCommand = "Storage";
@@ -171,6 +176,7 @@ namespace AltinnCLITest
         }
                
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_One_Option()
         {
             string expectedCommand = "Storage";
@@ -219,6 +225,7 @@ namespace AltinnCLITest
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_Wrong_Option_type()
         {
             string expectedCommand = "Storage";
@@ -259,6 +266,7 @@ namespace AltinnCLITest
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_One_Option_AssignValue()
         {
             string expectedOption = "TestOption";
@@ -304,6 +312,7 @@ namespace AltinnCLITest
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_One_Option_AssignValue_Wrong_Input_Value()
         {
             string expectedOption = "TestOption";

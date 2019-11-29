@@ -52,6 +52,8 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(noCommandsFound));
 
+            textWriter.Dispose();
+
         }
 
         [TestMethod]
@@ -90,6 +92,8 @@ namespace AltinnCLITest
 
             string missingSubCommand = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
             Assert.IsFalse(string.IsNullOrEmpty(missingSubCommand));
+
+            textWriter.Dispose();
         }
 
 
@@ -129,6 +133,7 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
+            textWriter.Dispose();
         }
 
         private static IConfigurationRoot BuildEnvironment(string envirnonmentSetting)

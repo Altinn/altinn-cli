@@ -21,7 +21,16 @@ namespace AltinnCLITest
     [TestClass]
     public class StorageTest
     {
+        [TestCleanup]
+        public void CleanUp()
+        {
+            StorageClientFileWrapper.InstanceResponse = null;
+            StorageClientFileWrapper.IsSuccessStatusCode = false;
+            StorageClientFileWrapper.DataContent = null;
+        }
+
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_GetData_Wrong_Option_Combination()
         {
             string expectedOption = "TestOption";
@@ -78,9 +87,14 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
+
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_GetData_No_Data()
         {
             string expectedOrgOption = "org";
@@ -137,10 +151,15 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
+
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_GetData_No_Data_For_Instance()
         {
             string expectedOrgOption = "org";
@@ -205,10 +224,14 @@ namespace AltinnCLITest
             string fileMessage = logEntries.FirstOrDefault(x => x.Contains(expectedFileMessage));
             Assert.IsFalse(string.IsNullOrEmpty(fileMessage));
 
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_GetData_Data_For_Instance()
         {
             string expectedOrgOption = "org";
@@ -279,9 +302,13 @@ namespace AltinnCLITest
             string saveMessage = logEntries.FirstOrDefault(x => x.Contains(expectedSaveMessage));
             Assert.IsFalse(string.IsNullOrEmpty(saveMessage));
 
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_UploadData_Wrong_Option_Combination()
         {
             string expectedOption = "ownerId";
@@ -334,9 +361,14 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
+
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_UploadData_No_File()
         {
             string expectedOwnerId = "ownerId";
@@ -411,9 +443,14 @@ namespace AltinnCLITest
             string fileNotFoundMesage = logEntries.FirstOrDefault(x => x.Contains(expectedfileNotFoundErrorMessage));
             Assert.IsFalse(string.IsNullOrEmpty(fileNotFoundMesage));
 
+
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_UploadData__File_Exits_FailedTo_Upload()
         {
             string expectedOwnerId = "ownerId";
@@ -491,9 +528,15 @@ namespace AltinnCLITest
             Assert.AreEqual(expectedLogEntires, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectededUploadFailedMessage));
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
+
+
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void Storage_UploadData__File_Exits_File_Uploaded()
         {
             string expectedOwnerId = "ownerId";
@@ -573,17 +616,24 @@ namespace AltinnCLITest
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
             Assert.IsTrue(logMessage.Contains(expectedFileValue));
+
+
+            textWriter.Dispose();
+            builder.CfgCommands = null;
+
         }
 
         private static void ReplaceSelectableOption(string replaceOptionName, FileOption<FileStream> newOption, List<IOption> selectableOptions)
         {
             IOption currentOption = selectableOptions.FirstOrDefault(x => x.Name == replaceOptionName);
-            newOption.ApiName = currentOption.ApiName;
-            newOption.IsAssigned = false;
-            newOption.Name = currentOption.Name;
-
-            selectableOptions.Remove(currentOption);
-            selectableOptions.Add(newOption);
+            if (currentOption != null)
+            {
+                newOption.ApiName = currentOption.ApiName;
+                newOption.IsAssigned = false;
+                newOption.Name = currentOption.Name;
+                selectableOptions.Remove(currentOption);
+                selectableOptions.Add(newOption);
+            }
         }
 
         private static void BuildEnvironment(string envirnonmentSetting)

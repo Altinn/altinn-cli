@@ -126,7 +126,13 @@ namespace AltinnCLI.Commands.Storage
             }
 
             _logger.LogError("No valid combination of options, see Help for correct and required option");
-            _logger.LogInformation(GetParameterErrors());
+
+            // fetch error messages from the parameters and add as info to log
+            string parameterError = GetParameterErrors();
+            if (!string.IsNullOrEmpty(parameterError))
+            {
+                _logger.LogInformation(GetParameterErrors());
+            }
 
             return false;
         }
