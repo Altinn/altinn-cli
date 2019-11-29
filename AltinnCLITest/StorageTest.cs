@@ -87,10 +87,8 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
-
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
         [TestMethod]
@@ -151,10 +149,8 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
-
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
 
@@ -226,7 +222,6 @@ namespace AltinnCLITest
 
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
 
@@ -304,7 +299,6 @@ namespace AltinnCLITest
 
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
         [TestMethod]
@@ -361,10 +355,8 @@ namespace AltinnCLITest
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
-
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
         [TestMethod]
@@ -443,10 +435,8 @@ namespace AltinnCLITest
             string fileNotFoundMesage = logEntries.FirstOrDefault(x => x.Contains(expectedfileNotFoundErrorMessage));
             Assert.IsFalse(string.IsNullOrEmpty(fileNotFoundMesage));
 
-
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
         [TestMethod]
@@ -528,11 +518,9 @@ namespace AltinnCLITest
             Assert.AreEqual(expectedLogEntires, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectededUploadFailedMessage));
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
-
-
+            
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
         [TestMethod]

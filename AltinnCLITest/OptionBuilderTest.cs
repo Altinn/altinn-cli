@@ -45,7 +45,6 @@ namespace AltinnCLITest
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
         }
 
-
         [TestMethod]
         [DoNotParallelize]
         public void OptionBuilder_Command_Not_Found()

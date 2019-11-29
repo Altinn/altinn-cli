@@ -68,8 +68,6 @@ namespace AltinnCLITest
 
         public static ServiceProvider BuildServiceProvider(List<Type> availableCommandTypes, List<Type> availableSubCommands, Serilog.ILogger logger)
         {
-
-
             IServiceCollection services = new ServiceCollection();
 
             services.AddLogging(configure =>
