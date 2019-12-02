@@ -152,9 +152,7 @@ namespace AltinnCLITest
         {
             Log.Logger = new LoggerConfiguration()
                .MinimumLevel.Debug()
-               .WriteTo.File("log.txt", LogEventLevel.Information)
-               .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-               .WriteTo.TextWriter(textWriter, LogEventLevel.Information)
+                .WriteTo.TextWriter(textWriter, LogEventLevel.Information)
                .CreateLogger();
         }
 
