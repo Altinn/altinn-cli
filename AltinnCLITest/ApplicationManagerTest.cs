@@ -41,7 +41,7 @@ namespace AltinnCLITest
 
             ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
             applicationManager.SetEnvironment(appConfig, serviceProvider);
-
+            ApplicationManager.IsLoggedIn = true;
             string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
 
             applicationManager.Execute(args);
@@ -79,6 +79,7 @@ namespace AltinnCLITest
 
             ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
             applicationManager.SetEnvironment(appConfig, serviceProvider);
+            ApplicationManager.IsLoggedIn = true;
 
             string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
 
@@ -121,6 +122,7 @@ namespace AltinnCLITest
 
             ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
             applicationManager.SetEnvironment(appConfig, serviceProvider);
+            ApplicationManager.IsLoggedIn = true;
 
             string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
 
