@@ -7,6 +7,6 @@ namespace AltinnCLI.Commands.Login
 {
     public interface IMaskinPortenClientWrapper
     {
-        string PostToken(FormUrlEncodedContent bearer); 
+        bool PostToken(FormUrlEncodedContent bearer, out string token); 
     }
 }

@@ -106,21 +106,23 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 if (!string.IsNullOrEmpty(jwtAssertion))
                 {
                     FormUrlEncodedContent content = GetUrlEncodedContent(jwtAssertion);
-                    string token = ClientWrapper.PostToken(content);
-
-                    if(!string.IsNullOrEmpty(token))
+                    string token = string.Empty;
+                    if (ClientWrapper.PostToken(content, out token))
                     {
-                        var accessTokenObject = JsonConvert.DeserializeObject<JObject>(token);
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            var accessTokenObject = JsonConvert.DeserializeObject<JObject>(token);
 
-                        token = AutorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString());
+                            token = AutorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString());
 
-                        ApplicationManager.IsLoggedIn = true;
-                        ApplicationManager.MaskinportenToken = token;
+                            ApplicationManager.IsLoggedIn = true;
+                            ApplicationManager.MaskinportenToken = token;
 
-                        _logger.LogInformation("Sucessfully validated against Maskinporten");
-                        _logger.LogInformation($@"Altinn Security Token: {token}");
+                            _logger.LogInformation("Sucessfully validated against Maskinporten");
+                            _logger.LogInformation($@"Altinn Security Token: {token}");
 
-                        return true;
+                            return true;
+                        }
                     }
 
                     return false;

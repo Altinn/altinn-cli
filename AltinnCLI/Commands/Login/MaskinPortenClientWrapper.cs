@@ -30,22 +30,25 @@ namespace AltinnCLI.Commands.Login
         /// </summary>
         private string BaseAddress { get; set; }
 
-        public string PostToken(FormUrlEncodedContent bearer)
+        public bool PostToken(FormUrlEncodedContent bearer, out string token)
         {
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
-
+            token = string.Empty;
             string cmd = "token";
 
             Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(BaseAddress, cmd, bearer);
 
             if (response.Result.IsSuccessStatusCode)
             {
-                return response.Result.Content.ReadAsStringAsync().Result;
+                token = response.Result.Content.ReadAsStringAsync().Result;
+                return true;
             }
             else
             {
-                return $@"Could not retrieve Token";
+                _logger.LogError( @"Could not retrieve Token");
             }
+
+            return false;
             
         }
     }

@@ -9,6 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace AltinnCLI.Commands.Storage
 {
+    /// <summary>
+    /// This is a class that shall be used in unit test where access to external API's 
+    /// is not available. 
+    /// </summary>
     public class StorageClientFileWrapper : IStorageClientWrapper
     {
         /// <summary>
