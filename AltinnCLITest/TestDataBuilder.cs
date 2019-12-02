@@ -70,32 +70,20 @@ namespace AltinnCLITest
         {
             IServiceCollection services = new ServiceCollection();
 
+            // always register ApplicationManager
             services.AddLogging(configure =>
             {
                 configure.ClearProviders();
                 configure.AddProvider(new SerilogLoggerProvider(logger));
             }).AddTransient<ApplicationManager>();
 
-
-            services.AddLogging(configure =>
-            {
-                configure.ClearProviders();
-                configure.AddProvider(new SerilogLoggerProvider(logger));
-            }).AddTransient<GetDataHandler>();
-
-
-            services.AddLogging(configure =>
-            {
-                configure.ClearProviders();
-                configure.AddProvider(new SerilogLoggerProvider(logger));
-            }).AddTransient<UploadData>();
-
-
+            // register Commands
             availableCommandTypes.ForEach((t) =>
             {
                 services.AddTransient(typeof(ICommand), t);
             });
 
+            // register subcommands
             availableSubCommands.ForEach((t) =>
             {
                 services.AddLogging(configure =>

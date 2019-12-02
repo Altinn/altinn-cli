@@ -70,7 +70,9 @@ namespace AltinnCLITest
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
             // fetch GetDataHandler subCommand
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<GetDataHandler>();
+            // fetch GetDataHandler subCommand
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
@@ -132,7 +134,8 @@ namespace AltinnCLITest
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
             // fetch GetDataHandler subCommand
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<GetDataHandler>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
@@ -190,6 +193,7 @@ namespace AltinnCLITest
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
+            Type tt = typeof(GetDataHandler);
             availableSubCommands.Add(typeof(GetDataHandler));
 
             // register commands and subcommands
@@ -200,7 +204,8 @@ namespace AltinnCLITest
             StorageClientFileWrapper.InstanceResponse = respons;
 
             // fetch GetDataHandler subCommand
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<GetDataHandler>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
@@ -272,7 +277,8 @@ namespace AltinnCLITest
             StorageClientFileWrapper.DataContent = new MemoryStream();
 
             // fetch GetDataHandler subCommand
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<GetDataHandler>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
@@ -337,7 +343,8 @@ namespace AltinnCLITest
 
             // fetch GetDataHandler subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
             subCommandHandler.DictOptions = cliOptions;
@@ -409,9 +416,11 @@ namespace AltinnCLITest
 
             // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+            subCommandHandler.DictOptions = cliOptions;
 
             // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
             FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == false && x.ErrorMessage == expectedfileNotFoundErrorMessage);
@@ -488,9 +497,11 @@ namespace AltinnCLITest
 
             // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+            subCommandHandler.DictOptions = cliOptions;
 
             // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
             FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == true);
@@ -572,9 +583,11 @@ namespace AltinnCLITest
 
             // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
-            ISubCommandHandler subCommandHandler = serviceProvider.GetService<UploadData>();
+            var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
+            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
+            subCommandHandler.DictOptions = cliOptions;
 
             // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
             FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == true);
