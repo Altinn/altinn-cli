@@ -51,7 +51,6 @@ namespace AltinnCLI
         /// <param name="args">User input from command line arguments</param>
         public void Execute(string args)
         {
-            IsLoggedIn = true;
             if (!string.IsNullOrEmpty(args))
             {
                 string[] input = args.ToLower().Split(" ");
