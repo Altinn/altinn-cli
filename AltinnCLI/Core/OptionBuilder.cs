@@ -45,7 +45,7 @@ namespace AltinnCLI.Core
         }
 
         /// <summary>
-        /// Reads the command file from disk
+        /// Reads the command file from disk if existent otherwise use embedded definition file
         /// </summary>
         private void LoadCommandFile()
         {
@@ -62,6 +62,7 @@ namespace AltinnCLI.Core
             }
             else
             {
+                // Definition file was not found use, embedded defintion file
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 StreamReader textStreamReader = new StreamReader(assembly.GetManifestResourceStream("AltinnCLI.Commands.DefinitionFiles.Commands.json"));
                 commandDefinitions = textStreamReader.ReadToEnd();
@@ -84,6 +85,7 @@ namespace AltinnCLI.Core
             List<IOption> subCommandOptions = new List<IOption>();
             List<CfgOption> cfgOptions = new List<CfgOption>();
 
+            // the defintion file shall be only be read at startup
             if (instance.CfgCommands == null)
             {
                 instance.LoadCommandFile();
@@ -95,6 +97,7 @@ namespace AltinnCLI.Core
             }
             else
             {
+                // find defined subcommand with options and build an option list
                 CfgSubCommand cfgCubCommand = CfgCommands.Commands.FirstOrDefault(x => x.Name == commandHandler.CommandProvider)?
                                                 .SubCommands.FirstOrDefault(y => y.Name == commandHandler.Name);
 
@@ -122,6 +125,7 @@ namespace AltinnCLI.Core
 
             Type t = GetSystemType(cfgOption.DataType, out baseType);
 
+            // create option according to defined type 
             if (t != null)
             {
                 var combinedType = baseType.MakeGenericType(t);
@@ -148,26 +152,32 @@ namespace AltinnCLI.Core
         /// <returns>Status of assignments which includes validation of paramters</returns>
         public bool AssignValueToCliOptions(ISubCommandHandler commandHandler)
         {
-            bool isvalid = false; ;
+            bool isValid = true;
             foreach (IOption option in commandHandler.SelectableCliOptions)
             {
                 KeyValuePair<string, string> valuePair = commandHandler.DictOptions.FirstOrDefault(x => string.Equals(x.Key, option.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (valuePair.Value != null)
                 {
+                    // validate according to option type
                     option.Value = valuePair.Value;
-                    isvalid = option.Validate();
+                    option.IsValid = option.Validate();
+                    option.IsAssigned = true;
 
-                    if (isvalid)
+                    if (option.IsValid == false)
                     {
-                        option.IsAssigned = true;
+                        isValid = false;
                     }
                 }
             }
 
-            return isvalid;
+            return isValid;
         }
 
+        /// <summary>
+        /// Gets or sets the list of avilable commands that is obtained either from disk or from
+        /// embedded resource file
+        /// </summary>
         public CfgCommandList CfgCommands{ get; set; }
 
 

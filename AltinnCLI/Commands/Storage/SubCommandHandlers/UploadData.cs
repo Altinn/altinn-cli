@@ -119,20 +119,18 @@ namespace AltinnCLI.Commands.Storage
             // validate options, UploadData requires that ownerid, instanceGuid, dataType and file name is specified and valid
             // the values for the properties set is validate and found valid so this validation verifies that all the required is set
 
-            if (GetOption("ownerid").IsAssigned && GetOption("instanceId").IsAssigned && 
-                GetOption("elementType").IsAssigned && GetOption("file").IsAssigned)
+            if (GetOption("ownerid").IsAssigned && (GetOption("ownerid").IsValid && 
+                GetOption("instanceId").IsAssigned && GetOption("instanceId").IsValid &&
+                GetOption("elementType").IsAssigned  && GetOption("elementType").IsValid &&
+                GetOption("file").IsAssigned) && GetOption("file").IsValid )
             {
                 return true;
             }
 
-            _logger.LogError("No valid combination of options, see Help for correct and required option");
+            ErrorMessage = "No valid combination of options, see Help for correct and required option";
 
             // fetch error messages from the parameters and add as info to log
-            string parameterError = GetParameterErrors();
-            if (!string.IsNullOrEmpty(parameterError))
-            {
-                _logger.LogInformation(GetParameterErrors());
-            }
+            _logger.LogInformation(ErrorMessage);
 
             return false;
         }

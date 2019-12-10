@@ -350,7 +350,7 @@ namespace AltinnCLITest
             Assert.AreEqual(expectedOption, selectableoption.Name);
             Assert.AreEqual(expectedDescription, selectableoption.Description);
             Assert.AreEqual(expectedApiName, selectableoption.ApiName);
-            Assert.IsFalse(selectableoption.IsAssigned);
+            Assert.IsTrue(selectableoption.IsAssigned);
             Assert.IsFalse(string.IsNullOrEmpty(selectableoption.ErrorMessage));
         }
 

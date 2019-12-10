@@ -55,47 +55,24 @@ namespace AltinnCLI
             {
                 string[] input = args.ToLower().Split(" ");
 
-                ICommand service = ServiceProvider.GetServices<ICommand>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                ICommand command = ServiceProvider.GetServices<ICommand>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                if (service != null)
+                if (command != null)
                 {
-                    if (string.Equals(service.Name, "Help", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(command.Name, "Help", StringComparison.OrdinalIgnoreCase))
                     {
-                       service.Run(ParseArguments(input));
+                       command.Run(ParseArguments(input));
                     }
-                    else if (IsLoggedIn || (string.Equals(service.Name, "Login", StringComparison.OrdinalIgnoreCase)))
+                    else if (IsLoggedIn || (string.Equals(command.Name, "Login", StringComparison.OrdinalIgnoreCase)))
                     {
 
                         if (input.Length > 1)
                         {
-                            ISubCommandHandler commandHandler = processArgs(input);
-
-                            if (commandHandler != null)
-                            {
-                                if (commandHandler.IsValid)
-                                {
-                                    if (commandHandler != null && commandHandler.IsValid)
-                                    {
-                                        service.Run(commandHandler);
-                                    }
-                                    else if (commandHandler.IsValid)
-                                    {
-                                        service.Run(ParseArguments(input));
-                                    }
-                                }
-                                else
-                                {
-                                    _logger.LogError($"Command error: {commandHandler.ErrorMessage}");
-                                }
-                            }
-                            else
-                            {
-                                service.Run();
-                            }
+                            RunCommandWithParameters(input, command);
                         }
                         else
                         {
-                            service.Run();
+                            command.Run();
                         }
                     }
                     else
@@ -106,13 +83,41 @@ namespace AltinnCLI
                 else
                 {
                     IHelp helpService = (IHelp)ServiceProvider.GetService<IHelp>();
-                    if (service != null)
+                    if (command != null)
                     {
                         helpService.GetHelp();
                     }
 
                     _logger.LogError($"No commands found");
                 }
+            }
+        }
+
+        private void RunCommandWithParameters(string[] input, ICommand command)
+        {
+            ISubCommandHandler subCommandHandler = processArgs(input);
+
+            if (subCommandHandler != null)
+            {
+                if (subCommandHandler.IsValid)
+                {
+                    if (subCommandHandler != null && subCommandHandler.IsValid)
+                    {
+                        command.Run(subCommandHandler);
+                    }
+                    else if (subCommandHandler.IsValid)
+                    {
+                        command.Run(ParseArguments(input));
+                    }
+                }
+                else
+                {
+                    _logger.LogError($"Command error: {subCommandHandler.ErrorMessage}");
+                }
+            }
+            else
+            {
+                command.Run();
             }
         }
 
@@ -126,16 +131,16 @@ namespace AltinnCLI
         /// <returns>A commandHandler that can execute the command given by user input</returns>
         private ISubCommandHandler processArgs(string[] input)
         {
-            ISubCommandHandler commandHandler = ApplicationManager.ServiceProvider.GetServices<ISubCommandHandler>()
+            ISubCommandHandler subCommandHandler = ApplicationManager.ServiceProvider.GetServices<ISubCommandHandler>()
                 .FirstOrDefault(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(s.CommandProvider, input[0], StringComparison.OrdinalIgnoreCase));
 
-            if (commandHandler != null)
+            if (subCommandHandler != null)
             {
-                commandHandler.BuildSelectableCommands();
-                commandHandler.DictOptions = ParseArguments(input);
-                OptionBuilder.Instance(_logger).AssignValueToCliOptions(commandHandler);
-                return commandHandler;
+                subCommandHandler.BuildSelectableCommands();
+                subCommandHandler.DictOptions = ParseArguments(input);
+                OptionBuilder.Instance(_logger).AssignValueToCliOptions(subCommandHandler);
+                return subCommandHandler;
             }
             else
             {

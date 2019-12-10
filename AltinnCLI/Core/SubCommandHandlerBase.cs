@@ -128,25 +128,6 @@ namespace AltinnCLI.Core
             return false;
         }
 
-
-        public string GetParameterErrors()
-        {
-            string errorMessage = string.Empty;
-            List<IOption> optionsWithError = SelectableCliOptions.Where(x => !string.IsNullOrEmpty(x.ErrorMessage)).ToList();
-            int i = 0;
-            foreach (IOption option in optionsWithError)
-            {
-                if (!option.IsValid)
-                {
-                    errorMessage += $"{option.ErrorMessage}";
-                }
-                errorMessage += (i < optionsWithError.Count - 1) ? errorMessage += $"\n" : string.Empty;
-            }
-
-            return errorMessage;
-        }
-
-
         public bool IsValid
         {
             get
@@ -169,12 +150,19 @@ namespace AltinnCLI.Core
         {
             get 
             {
-                string message = $"{errorMessage} \n";
+                string message = $"{errorMessage}";
 
                 List<IOption> optionsWithError = SelectableCliOptions.Where(x => (x.IsAssigned == true) && (x.IsValid == false)).ToList();
+                int i = 0;
                 foreach (IOption option in optionsWithError)
                 {
-                    message += $"{option.ErrorMessage} \n";
+                    if (!option.IsValid && !string.IsNullOrEmpty(option.ErrorMessage))
+                    {
+                        message += $"\n";
+                        message += $"{option.ErrorMessage}";
+                    }
+//                    message += (i < optionsWithError.Count - 1) ? errorMessage += $"\n" : string.Empty;
+                    i++;
                 }
 
                 return message;

@@ -26,7 +26,7 @@ namespace AltinnCLI
         {
 
             ConfigureLogging();
-            IServiceCollection services = GetServices();
+            IServiceCollection services = GetAndRegisterServices();
 
             // Generate a Name
             ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -51,7 +51,7 @@ namespace AltinnCLI
         /// registers them to be avilable through the Applications CommandProvider. 
         /// </summary>
         /// <returns>List of registred services</returns>
-        private static IServiceCollection GetServices()
+        private static IServiceCollection GetAndRegisterServices()
         {
             IServiceCollection services = new ServiceCollection();
 

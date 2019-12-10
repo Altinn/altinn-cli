@@ -137,13 +137,8 @@ namespace AltinnCLI.Commands.Storage
             }
             else
             {
-                string error = "Error in command parameter(s)\n";
-                if (!string.IsNullOrEmpty(error))
-                {
-                    error += GetParameterErrors();
-                }
-
-                _logger.LogInformation(error);
+                ErrorMessage = "Error in command parameter(s)\n";
+                _logger.LogInformation(ErrorMessage);
             }
             return true;
         }
