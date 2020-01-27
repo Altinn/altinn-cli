@@ -30,6 +30,14 @@ namespace AltinnCLI.Commands.Application
         /// </summary>
         private string BaseAddress { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="org"></param>
+        /// <param name="app"></param>
+        /// <param name="instanceOwnerId"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public string CreateInstance(string org, string app, string instanceOwnerId, HttpContent content)
         {
             string AppBaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
@@ -51,9 +59,42 @@ namespace AltinnCLI.Commands.Application
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="instanceOwnerId"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public string CreateInstance(string appId, string instanceOwnerId, StringContent content)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="org"></param>
+        /// <returns></returns>
+        public string GetInstances(string app, string org)
+        {
+            string BaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string cmd = $@"instances?&appId={org}/{app}";
+
+            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+
+            Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(BaseAddress, cmd);
+
+
+            if (response.Result.IsSuccessStatusCode)
+            {
+                return response.Result.Content.ReadAsStringAsync().Result;
+            }
+            else
+            {
+                return $@"Could not create application instance. Error code: {response.Result.StatusCode} Error message: {response.Result.ReasonPhrase}";
+            }
         }
     }
 }

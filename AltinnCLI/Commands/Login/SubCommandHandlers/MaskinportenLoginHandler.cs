@@ -106,14 +106,14 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 if (!string.IsNullOrEmpty(jwtAssertion))
                 {
                     FormUrlEncodedContent content = GetUrlEncodedContent(jwtAssertion);
-                    string token = string.Empty;
-                    if (ClientWrapper.PostToken(content, out token))
+                    if (ClientWrapper.PostToken(content, out string token))
                     {
                         if (!string.IsNullOrEmpty(token))
                         {
                             var accessTokenObject = JsonConvert.DeserializeObject<JObject>(token);
 
-                            token = AutorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString());
+                            bool test = Convert.ToBoolean(GetOption("test").Value);
+                            token = AutorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString(), test).GetAwaiter().GetResult();
 
                             ApplicationManager.IsLoggedIn = true;
                             ApplicationManager.MaskinportenToken = token;
@@ -162,7 +162,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
 
             var payload = new JwtPayload
             {
-                { "aud", "https://oidc-ver2.difi.no/idporten-oidc-provider/" },
+                { "aud", "https://ver2.maskinporten.no/" },
                 { "resource", "https://tt02.altinn.no/maskinporten-api/" },
                 { "scope", "altinn:instances.read altinn:instances.write" },
                 { "iss",  clientId},
@@ -208,17 +208,5 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
 
             return false;
         }
-
-        private void FindAllCeriticates()
-        {
-            var store = new X509Store(StoreName.My, StoreLocation.CurrentUser); // StoreLocation.CurrentUser); //StoreLocation.LocalMachine fails too
-            store.Open(OpenFlags.ReadOnly);
-            var certificates = store.Certificates;
-            foreach (var certificate in certificates)
-            {
-                var friendlyName = certificate.FriendlyName;
-                Console.WriteLine(friendlyName);
-            }
-        }
-}
+    }
 }

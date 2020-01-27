@@ -10,7 +10,7 @@ namespace AltinnCLI.Core
         {
             try
             {
-                if (TryParse(Value) == default)
+                if (EqualityComparer<T>.Default.Equals(TryParse(Value)))
                 {
                     IsValid = false;
                     ErrorMessage = $"The value for Option :{Name} is not on correct format.\n";

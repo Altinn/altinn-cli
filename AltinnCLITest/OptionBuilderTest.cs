@@ -2,12 +2,9 @@
 using AltinnCLI.Commands.Storage;
 using AltinnCLI.Core;
 using AltinnCLI.Core.Json;
-using JsonFx.IO;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Serilog;
 using Serilog.Events;
 using System;

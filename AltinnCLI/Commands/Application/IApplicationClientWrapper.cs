@@ -25,5 +25,13 @@ namespace AltinnCLI.Commands.Application
         /// <param name="content"></param>
         /// <returns></returns>
         string CreateInstance(string appId, string instanceOwnerId, StringContent content);
+
+        /// <summary>
+        /// Gets a list of insances for an application
+        /// </summary>
+        /// <param name="app">name of the application</param>
+        /// <param name="org">Name of the application owner</param>
+        /// <returns></returns>
+        string GetInstances(string app, string org);
     }
 }

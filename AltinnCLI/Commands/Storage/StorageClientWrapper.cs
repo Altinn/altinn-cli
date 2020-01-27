@@ -160,7 +160,7 @@ namespace AltinnCLI.Commands.Storage
 
         public Stream GetInstances(int instanceOwnerId, Guid instanceGuid)
         {
-            string cmd = "instances";
+            string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}";
 
             HttpClientWrapper client = new HttpClientWrapper(_logger);
             Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);

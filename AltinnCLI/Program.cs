@@ -42,7 +42,14 @@ namespace AltinnCLI
             {
                 Console.Write(prompt);
                 args = Console.ReadLine();
-                app.Execute(args);
+                try
+                {
+                    app.Execute(args);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine($@"Error : {ex.Message}");
+                }
             }
         }
 

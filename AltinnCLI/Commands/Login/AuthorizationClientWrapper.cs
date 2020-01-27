@@ -1,11 +1,8 @@
 ﻿using AltinnCLI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AltinnCLI.Commands.Login
@@ -31,18 +28,18 @@ namespace AltinnCLI.Commands.Login
             _logger = logger;
         }
 
-        public string ConvertToken(string token)
+        public async Task<string> ConvertToken(string token, bool test=false)
         {
             string AuthAddress = ApplicationManager.ApplicationConfiguration.GetSection("AuthBaseAddress").Get<string>();
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
-            string cmd = "convert";
+            string cmd = $@"convert?test={test}";
             AuthenticationHeaderValue headers = new AuthenticationHeaderValue("Bearer", token);
-            Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(AuthAddress, cmd, headers);
+            HttpResponseMessage response = await httpClientWrapper.GetCommand(AuthAddress, cmd, headers);
 
-            if (response.Result.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                return response.Result.Content.ReadAsStringAsync().Result;
+                return await response.Content.ReadAsAsync<string>();
             }
             else
             {

@@ -137,7 +137,7 @@ namespace AltinnCLI
 
             if (subCommandHandler != null)
             {
-                subCommandHandler.BuildSelectableCommands();
+              subCommandHandler.BuildSelectableCommands();
                 subCommandHandler.DictOptions = ParseArguments(input);
                 OptionBuilder.Instance(_logger).AssignValueToCliOptions(subCommandHandler);
                 return subCommandHandler;
