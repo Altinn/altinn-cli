@@ -8,113 +8,113 @@
           "Options": [
             {
               "Name": "org",
-              "type": "int",
-              "valuerange": "0-99999999",
+              "type": "string",
+              "valuerangeange": "0-99999999",
               "description": "org",
               "apiname": "org"
             },
             {
               "Name": "appId",
               "type": "string",
-              "valuerange": "0-99999999",
+              "valuerangeange": "0-99999999",
               "description": "application id",
               "apiname": "appId"
             },
             {
               "Name": "currentTaskId",
               "type": "int",
-              "valuerange": "running process current task id",
+              "valuerangeange": "running process current task id",
               "description": "appid",
               "apiname": "process.currentTask"
             },
             {
               "Name": "processIsComplete",
               "type": "bool",
-              "valuerange": "is process complete",
+              "valuerangeange": "is process complete",
               "description": "is process complete",
               "apiname": "process.isComplete"
             },
             {
               "Name": "processIsInError",
               "type": "bool",
-              "valuerange": "is process in error",
+              "valuerangeange": "is process in error",
               "description": "is process in error",
               "apiname": "process.isInError"
             },
             {
               "Name": "processEndState",
               "type": "bool",
-              "valuerange": "process end state",
+              "valuerangeange": "process end state",
               "description": "process end state",
               "apiname": "process.ended"
             },
             {
               "Name": "labels",
               "type": "string",
-              "valuerange": "labels",
+              "valuerangeange": "labels",
               "description": "labels",
               "apiname": "appOwner.labels"
             },
             {
               "Name": "lastChangedDateTime",
               "type": "DateTime",
-              "valuerange": "last changed date",
+              "valuerangeange": "last changed date",
               "description": "last changed date",
               "apiname": "lastChanged"
             },
             {
               "Name": "createdDateTime",
               "type": "DateTime",
-              "valuerange": "created time",
+              "valuerangeange": "created time",
               "description": "created time",
               "apiname": "created"
             },
             {
               "Name": "visibleDateTime",
               "type": "DateTime",
-              "valuerange": "the visible date time",
+              "valuerangeange": "the visible date time",
               "description": "the visible date time",
               "apiname": "visibleAfter"
             },
             {
               "Name": "dueDateTime",
               "type": "DateTime",
-              "valuerange": "the due date time",
+              "valuerangeange": "the due date time",
               "description": "the due date time",
               "apiname": "dueBefore"
             },
             {
               "Name": "continuationToken",
               "type": "string",
-              "valuerange": "continuation token",
+              "valuerangeange": "continuation token",
               "description": "continuation token",
               "apiname": "continuationToken"
             },
             {
               "Name": "size",
               "type": "int",
-              "valuerange": "the page size",
+              "valuerangeange": "the page size",
               "description": "the page size",
               "apiname": "size"
             },
             {
               "Name": "ownerId",
               "type": "int",
-              "valuerange": "",
+              "valuerangeange": "",
               "description": "the id of the ownerpage size",
               "apiname": "instanceOwner.partyId"
             },
             {
               "Name": "instanceId",
               "type": "guid",
-              "valuerange": "",
+              "valuerangeange": "",
               "description": "the id of the instance",
               "apiname": "instanceGuid"
             },
             {
               "Name": "dataId",
               "type": "guid",
-              "valuerange": "",
+              "valuerangeange": "",
               "description": "the id of the data element",
               "apiname": "dataId"
             }
@@ -126,28 +126,28 @@
             {
               "Name": "ownerid",
               "type": "int",
-              "valuerange": "0-99999999",
+              "valuerangeange": "0-99999999",
               "description": "ownerid",
               "apiname": "instanceOwner.partyId"
             },
             {
               "Name": "instanceId",
               "type": "Guid",
-              "valuerange": "0-99999999",
+              "valuerangeange": "0-99999999",
               "description": "application instance id",
               "apiname": "appId"
             },
             {
               "Name": "elementType",
               "type": "string",
-              "valuerange": "0-99999999",
+              "valuerangeange": "0-99999999",
               "description": "type of data element to save",
               "apiname": "dataType"
             },
             {
               "Name": "file",
               "type": "file",
-              "valuerange": "0-99999999",
+              "valuerangeange": "0-99999999",
               "description": "name with full path to file to save",
               "apiname": "file"
             }
@@ -193,12 +193,25 @@
               "type": "string",
               "valuerange": "",
               "description": "Path to the file that defines the instance"
-            },
+            }
+          ]
+        },
+        {
+          "Name": "GetInstances",
+          "Options": [
             {
-              "Name": "instanceTemplate",
+              "Name": "app",
               "type": "string",
               "valuerange": "",
-              "description": "Path to the file that defines the instance"
+              "description": "String identifier for the Application",
+              "apiname": "app"
+            },
+            {
+              "Name": "org",
+              "type": "string",
+              "valuerange": "",
+              "description": "The letter identifier for the Application owner",
+              "apiname": "org"
             }
           ]
         }
@@ -213,16 +226,21 @@
             {
               "Name": "clientId",
               "type": "Guid",
-              "valuerange": "",
+              "valuerangeange": "",
               "description": "client guid id",
               "apiname": "clientid"
             },
             {
               "Name": "thumbprint",
-              "type": "thumbprint",
-              "valuerange": "",
+              "type": "string",
+              "valuerangeange": "",
               "description": "name with full path to the local key",
               "apiname": "thumbprint"
+            },
+            {
+              "Name": "test",
+              "Type": "Bool",
+              "description": "Flag to return a converted JWT token that represents 'Testdepartementet'. Only available for clients autenticahted as BRG"
             }
           ]
         }
@@ -230,4 +248,3 @@
     }
   ]
 }
-
