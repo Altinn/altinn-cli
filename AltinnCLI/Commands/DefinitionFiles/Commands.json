@@ -152,6 +152,32 @@
               "apiname": "file"
             }
           ]
+        },
+        {
+          "Name": "GetInstance",
+          "Options": [
+            {
+              "Name": "ownerid",
+              "type": "int",
+              "valuerangeange": "0-99999999",
+              "description": "ownerid",
+              "apiname": "instanceOwner.partyId"
+            },
+            {
+              "Name": "instanceId",
+              "type": "Guid",
+              "valuerangeange": "0-99999999",
+              "description": "application instance id",
+              "apiname": "instanceId"
+            },
+            {
+              "Name": "saveToFile",
+              "type": "string",
+              "valuerangeange": "0-99999999",
+              "description": "type of data element to save",
+              "apiname": "dataType"
+            }
+          ]
         }
       ]
     },

@@ -82,6 +82,7 @@ namespace AltinnCLI.Core
         /// <returns>List of subcommand paramters</returns>
         public List<IOption> BuildAvailableOptions(ISubCommandHandler commandHandler)
         {
+            
             List<IOption> subCommandOptions = new List<IOption>();
             List<CfgOption> cfgOptions = new List<CfgOption>();
 
