@@ -33,7 +33,7 @@ namespace AltinnCLI.Commands.Login
             string AuthAddress = ApplicationManager.ApplicationConfiguration.GetSection("AuthBaseAddress").Get<string>();
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
-            string cmd = $@"convert?test={test}";
+            string cmd = $@"exchange/maskinporten?test={test}";
             AuthenticationHeaderValue headers = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await httpClientWrapper.GetCommand(AuthAddress, cmd, headers);
 
