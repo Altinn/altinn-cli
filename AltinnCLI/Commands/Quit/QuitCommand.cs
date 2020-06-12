@@ -1,13 +1,24 @@
-﻿using AltinnCLI.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace AltinnCLI.Commands
+using AltinnCLI.Core;
+
+namespace AltinnCLI.Commands.Quit
 {
-    class QuitCommand : ICommand
+    class QuitCommand : ICommand, IHelp
     {
-        void ICommand.Run(ISubCommandHandler commandHandler)
+        public string Name => "Quit";
+
+        public string Description => "\tCommand for exiting Altinn CLI.";
+
+        public string Usage => "Quit";
+
+        public string GetHelp()
+        {
+            return "Quit";
+        }
+
+        public void Run(ISubCommandHandler commandHandler = null)
         {
             Environment.Exit(0);
         }
@@ -15,14 +26,6 @@ namespace AltinnCLI.Commands
         public void Run(Dictionary<string, string> input)
         {
             throw new NotImplementedException();
-        }
-
-        public string Name
-        {
-            get
-            {
-                return "Quit";
-            }
         }
     }
 }

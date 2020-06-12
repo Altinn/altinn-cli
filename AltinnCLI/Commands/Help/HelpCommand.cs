@@ -1,46 +1,36 @@
-﻿using AltinnCLI.Core;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace AltinnCLI.Commands
+using AltinnCLI.Core;
+
+using Microsoft.Extensions.DependencyInjection;
+
+namespace AltinnCLI.Commands.Help
 {
     class HelpCommand : ICommand, IHelp
     {
-        private IServiceProvider ServiceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
-        /// <summary>
-        /// Application logger 
-        /// </summary>
-        private static ILogger _logger;
-
-        public HelpCommand(ILogger<HelpCommand> logger)
+        public HelpCommand()
         {
-            ServiceProvider = ApplicationManager.ServiceProvider;
+            _serviceProvider = ApplicationManager.ServiceProvider;
         }
 
+        public string Name => "Help";
+
+        public string Description => "\tCommand for getting help on a command";
+
+        public string Usage => "Usage";
+
+        public string GetHelp()
+        {
+            return "Altinn CLI - A command line interface for managing your Altinn Applications\n\nCOMMANDS:\n";
+        }
 
         public void Run(ISubCommandHandler commandHandler = null)
         {
             AllCommandsHelp();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public List<IOption> CliOptions { get; set; }
-
-        public string GetHelp()
-        {
-            return "Altinn CLI - A command line interface for managing your Altinn Applications\n\nCOMMANDS:\n\n";
-        }
-
-        public bool Run()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -55,9 +45,10 @@ namespace AltinnCLI.Commands
             }
             else
             {
-                IHelp service = ServiceProvider.GetServices<IHelp>().Where(s => string.Equals(s.Name, input.Keys.ElementAt<string>(1), StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                IHelp service = _serviceProvider.GetServices<IHelp>()
+                    .FirstOrDefault(s => string.Equals(s.Name, input.Keys.ElementAt(1), StringComparison.OrdinalIgnoreCase));
 
-                if ((service != null) && (service is ICommand))
+                if (service is ICommand)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(service.Name);
@@ -67,18 +58,19 @@ namespace AltinnCLI.Commands
 
                     Console.WriteLine($"\nUSAGE\t{service.Usage}\n");
 
-                    Console.WriteLine($"Commands\n");
+                    Console.WriteLine($"Commands:\n");
 
                     List<ISubCommandHandler> items;
 
                     if (input.Count > 2)
                     {
-                        items = ServiceProvider.GetServices<ISubCommandHandler>()
-                                .Where(x => (x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)) &&
-                                            string.Equals(x.Name, input.Keys.ElementAt<string>(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
-//                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        items = _serviceProvider.GetServices<ISubCommandHandler>()
+                            .Where(x =>
+                                x is IHelp &&
+                                string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase) &&
+                                string.Equals(x.Name, input.Keys.ElementAt(2).Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
 
-                        if (items != null && items.Count > 0)
+                        if (items.Count > 0)
                         {
                             foreach (IHelp handler in items)
                             {
@@ -89,7 +81,7 @@ namespace AltinnCLI.Commands
                                 Console.Write($"\t{handler.Description}\n");
                                 Console.Write($"\t{handler.Usage}\n");
                             }
-                         }
+                        }
                         else
                         {
                             Console.Write($"No help for specified options\n");
@@ -97,8 +89,9 @@ namespace AltinnCLI.Commands
                     }
                     else
                     {
-                        items = ServiceProvider.GetServices<ISubCommandHandler>().
-                                Where(x => x is IHelp && string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                        items = _serviceProvider.GetServices<ISubCommandHandler>().Where(x =>
+                            x is IHelp && 
+                            string.Equals(x.CommandProvider, service.Name, StringComparison.OrdinalIgnoreCase)).ToList();
 
                         foreach (IHelp handler in items)
                         {
@@ -109,6 +102,8 @@ namespace AltinnCLI.Commands
                             Console.Write($"\t{handler.Description}\n");
                         }
                     }
+
+                    Console.WriteLine();
                 }
                 else
                 {
@@ -121,7 +116,7 @@ namespace AltinnCLI.Commands
         {
             Console.WriteLine(GetHelp());
 
-            List<IHelp> items = ServiceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(ICommand))).ToList();
+            List<IHelp> items = _serviceProvider.GetServices<IHelp>().Where(x => x.GetType().BaseType.IsAssignableFrom(typeof(ICommand))).ToList();
 
             foreach (IHelp item in items)
             {
@@ -130,33 +125,9 @@ namespace AltinnCLI.Commands
                 Console.ResetColor();
 
                 Console.Write($"\t{item.Description}\n");
-
             }
-        }
 
-        public string Name
-        {
-            get
-            {
-                return "Help";
-            }
+            Console.WriteLine();
         }
-
-        public string Description
-        {
-            get
-            {
-                return "\tCommands for getting help";
-            }
-        }
-
-        public string Usage
-        {
-            get
-            {
-                return "Usage";
-            }
-        }
-
     }
 }
