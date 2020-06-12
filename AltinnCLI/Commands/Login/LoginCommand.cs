@@ -20,9 +20,16 @@ namespace AltinnCLI.Commands.Login
 
         public void Run(ISubCommandHandler commandHandler = null)
         {
-            Console.WriteLine();
-            Console.WriteLine(Usage);
-            Console.WriteLine();
+            if (commandHandler == null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(Usage);
+                Console.WriteLine();
+            }
+            else
+            {
+                commandHandler.Run();
+            }
         }
 
         public void Run(Dictionary<string, string> input)

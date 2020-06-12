@@ -1,13 +1,15 @@
-﻿using AltinnCLI.Core.Json;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+
+using AltinnCLI.Core.Json;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json;
 
 namespace AltinnCLI.Core
 {
@@ -16,7 +18,7 @@ namespace AltinnCLI.Core
     /// </summary>
     public sealed class OptionBuilder
     {
-        private static OptionBuilder instance = null;
+        private static OptionBuilder _instance;
         private static ILogger _logger;
 
         /// <summary>
@@ -36,12 +38,12 @@ namespace AltinnCLI.Core
         public static OptionBuilder Instance(ILogger logger)
         {
 
-            if (instance == null)
+            if (_instance == null)
             {
-                instance = new OptionBuilder(logger);
+                _instance = new OptionBuilder(logger);
             }
 
-            return instance;
+            return _instance;
         }
 
         /// <summary>
@@ -51,9 +53,7 @@ namespace AltinnCLI.Core
         {
             string fileName = (ApplicationManager.ApplicationConfiguration.GetSection("CommandDefinitionFile").Get<string>());
 
-            List<IOption> subCommandOptions = new List<IOption>();
-            List<CfgOption> cfgOptions = new List<CfgOption>();
-            string commandDefinitions = string.Empty;
+            string commandDefinitions;
 
             if (File.Exists(fileName))
             {
@@ -62,7 +62,7 @@ namespace AltinnCLI.Core
             }
             else
             {
-                // Definition file was not found use, embedded defintion file
+                // Definition file was not found use, embedded definition file
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 StreamReader textStreamReader = new StreamReader(assembly.GetManifestResourceStream("AltinnCLI.Commands.DefinitionFiles.Commands.json"));
                 commandDefinitions = textStreamReader.ReadToEnd();
@@ -70,26 +70,23 @@ namespace AltinnCLI.Core
 
             if (!string.IsNullOrEmpty(commandDefinitions))
             {
-                instance.CfgCommands = JsonConvert.DeserializeObject<CfgCommandList>(commandDefinitions);
+                _instance.CfgCommands = JsonConvert.DeserializeObject<CfgCommandList>(commandDefinitions);
             }
-
         }
 
         /// <summary>
-        ///  Builds the paramters that can be used by a subcommand. 
+        ///  Builds the parameters that can be used by a sub command. 
         /// </summary>
-        /// <param name="commandHandler">The SubCommand for which the paramters are build</param>
-        /// <returns>List of subcommand paramters</returns>
+        /// <param name="commandHandler">The SubCommand for which the parameters are build</param>
+        /// <returns>List of sub command parameters</returns>
         public List<IOption> BuildAvailableOptions(ISubCommandHandler commandHandler)
         {
-            
             List<IOption> subCommandOptions = new List<IOption>();
-            List<CfgOption> cfgOptions = new List<CfgOption>();
 
             // the defintion file shall be only be read at startup
-            if (instance.CfgCommands == null)
+            if (_instance.CfgCommands == null)
             {
-                instance.LoadCommandFile();
+                _instance.LoadCommandFile();
             }
 
             if (CfgCommands.Commands == null || CfgCommands.Commands.Count == 0)
@@ -98,13 +95,13 @@ namespace AltinnCLI.Core
             }
             else
             {
-                // find defined subcommand with options and build an option list
+                // find defined sub command with options and build an option list
                 CfgSubCommand cfgCubCommand = CfgCommands.Commands.FirstOrDefault(x => x.Name == commandHandler.CommandProvider)?
-                                                .SubCommands.FirstOrDefault(y => y.Name == commandHandler.Name);
+                    .SubCommands.FirstOrDefault(y => y.Name == commandHandler.Name);
 
                 if (cfgCubCommand != null && cfgCubCommand.Options != null)
                 {
-                    cfgOptions = cfgCubCommand.Options;
+                    List<CfgOption> cfgOptions = cfgCubCommand.Options;
 
                     foreach (CfgOption cfgOption in cfgOptions)
                     {
@@ -122,9 +119,7 @@ namespace AltinnCLI.Core
 
         private static IOption CreateOption(CfgOption cfgOption)
         {
-            Type baseType = null;
-
-            Type t = GetSystemType(cfgOption.DataType, out baseType);
+            Type t = GetSystemType(cfgOption.DataType, out var baseType);
 
             // create option according to defined type 
             if (t != null)
@@ -147,10 +142,10 @@ namespace AltinnCLI.Core
 
 
         /// <summary>
-        /// Assigns value for the options defined as input paramters to selectable parameters.
+        /// Assigns value for the options defined as input parameters to selectable parameters.
         /// </summary>
         /// <param name="commandHandler"></param>
-        /// <returns>Status of assignments which includes validation of paramters</returns>
+        /// <returns>Status of assignments which includes validation of parameters</returns>
         public bool AssignValueToCliOptions(ISubCommandHandler commandHandler)
         {
             bool isValid = true;
@@ -176,14 +171,14 @@ namespace AltinnCLI.Core
         }
 
         /// <summary>
-        /// Gets or sets the list of avilable commands that is obtained either from disk or from
+        /// Gets or sets the list of available commands that is obtained either from disk or from
         /// embedded resource file
         /// </summary>
         public CfgCommandList CfgCommands{ get; set; }
 
 
         /// <summary>
-        ///  Gets the System.Type for a typefind type. Is the type specified as type in the command definition file
+        /// Gets the System.Type for a typefind type. Is the type specified as type in the command definition file
         /// </summary>
         /// <param name="type">The string that represents a Type</param>
         /// <param name="baseType">The base class that represents the Type</param>

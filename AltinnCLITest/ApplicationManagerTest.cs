@@ -1,20 +1,19 @@
-﻿using AltinnCLI;
-using AltinnCLI.Commands.Storage;
-using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Serilog;
-using Serilog.Events;
-using Serilog.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using AltinnCLI;
+using AltinnCLI.Commands.Storage;
+using AltinnCLI.Commands.Storage.SubCommandHandlers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Serilog;
+using Serilog.Events;
 
 namespace AltinnCLITest
 {
@@ -24,15 +23,14 @@ namespace AltinnCLITest
         [TestMethod]
         public void ApplicationManager_Execute_NoDefined_Commands()
         {
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
             string expectedLogMessage = "No commands found";
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
- 
+            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
+
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(envirnonmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
 
             List<Type> availableCommandTypes = new List<Type>();
             List<Type> availableSubCommands = new List<Type>();
@@ -47,28 +45,26 @@ namespace AltinnCLITest
             applicationManager.Execute(args);
 
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
             string noCommandsFound = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
 
             Assert.IsFalse(string.IsNullOrEmpty(noCommandsFound));
 
             textWriter.Dispose();
-
         }
 
         [TestMethod]
         public void ApplicationManager_Execute_Defined_Command_No_Sub_Command()
         {
-            int expectedLogEntires = 2;
+            int expectedLogEntries = 2;
             string expectedLogMessage = "Missing sub command";
             string expectedLogMissingHelp = "Help is not found";
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
+            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(envirnonmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
 
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
@@ -86,7 +82,7 @@ namespace AltinnCLITest
             applicationManager.Execute(args);
 
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
 
             string missingHelp = logEntries.FirstOrDefault(x => x.Contains(expectedLogMissingHelp));
             Assert.IsFalse(string.IsNullOrEmpty(missingHelp));
@@ -101,16 +97,14 @@ namespace AltinnCLITest
         [TestMethod]
         public void ApplicationManager_Execute_No_Respons_Data()
         {
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
             string expectedLogMessage = "No data available";
-
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(envirnonmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
 
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
@@ -128,9 +122,8 @@ namespace AltinnCLITest
 
             applicationManager.Execute(args);
 
-
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
@@ -153,16 +146,16 @@ namespace AltinnCLITest
         private static void ConfigureLogging(TextWriter textWriter)
         {
             Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
+                .MinimumLevel.Debug()
                 .WriteTo.TextWriter(textWriter, LogEventLevel.Information)
-               .CreateLogger();
+                .CreateLogger();
         }
 
         private static List<string> GetLogEntries(TextWriter textWriter)
         {
             List<string> logEntries = new List<string>();
             StringReader re = new StringReader(textWriter.ToString());
-            string input = null;
+            string input;
             while ((input = re.ReadLine()) != null)
             {
                 logEntries.Add(input);
@@ -170,6 +163,5 @@ namespace AltinnCLITest
 
             return logEntries;
         }
-
     }
 }

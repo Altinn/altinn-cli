@@ -1,39 +1,36 @@
-﻿using Altinn.Platform.Storage.Interface.Models;
+﻿using System;
+using System.IO;
+
+using Altinn.Platform.Storage.Interface.Models;
 using AltinnCLI.Core;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
-namespace AltinnCLI.Commands.Storage
+namespace AltinnCLI.Commands.Storage.SubCommandHandlers
 {
     /// <summary>
-    /// Commandhandler that is used to fetch documents from Altinn Blob storage.  
+    /// Command handler that is used to fetch documents from Altinn Blob storage.  
     /// </summary>
     public class GetDataHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
-        private IStorageClientWrapper ClientWrapper = null;
+        private readonly IStorageClientWrapper _clientWrapper;
 
-        private string updateInstances = string.Empty;
+        private readonly string _updateInstances = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
+        /// Initializes a new instance of the <see cref="GetDataHandler" /> class.
         /// </summary>
-        /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
+        /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information</param>
         public GetDataHandler(ILogger<GetDataHandler> logger) : base(logger)
         {
-
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                ClientWrapper = new StorageClientWrapper(_logger);
+                _clientWrapper = new StorageClientWrapper(_logger);
             }
             else
             {
-                ClientWrapper = new StorageClientFileWrapper(_logger);
+                _clientWrapper = new StorageClientFileWrapper(_logger);
             }
         }
 
@@ -79,7 +76,6 @@ namespace AltinnCLI.Commands.Storage
                     usage += $"\t{opt.Name}\t\t {opt.Description} \n";
                 }
 
-
                 return usage;
             }
         }
@@ -110,7 +106,6 @@ namespace AltinnCLI.Commands.Storage
         /// <returns></returns>
         public bool Run()
         {
-
             if (IsValid)
             {
                 int? ownerId = (int?)GetOptionValue("ownerId");
@@ -119,7 +114,7 @@ namespace AltinnCLI.Commands.Storage
 
                 if ((ownerId.HasValue) && (instanceId != null) && (dataId != null))
                 {
-                    Stream stream = ClientWrapper.GetData((int)ownerId, (Guid)instanceId, (Guid)dataId);
+                    Stream stream = _clientWrapper.GetData((int)ownerId, (Guid)instanceId, (Guid)dataId);
 
                     if (stream != null)
                     {
@@ -132,23 +127,19 @@ namespace AltinnCLI.Commands.Storage
                 {
                     GetDocumentFromInstances();
                 }
-
-
             }
             else
             {
                 ErrorMessage = "Error in command parameter(s)\n";
                 _logger.LogInformation(ErrorMessage);
             }
+
             return true;
         }
  
         /// <summary>
         /// Fetch instance data and call member method to fetch and save document on file
         /// </summary>
-        /// <param name="ownerId">The owner of the documents that shall be fetched</param>
-        /// <param name="instanceId">The application instance for which the documents shall be fetched</param>
-        /// <param name="updateInstances">Defines if the instances shall be marked to indicate that the documents is read </param>
         private void GetDocumentFromInstances()
         {
             InstanceResponseMessage responsMessage = null;
@@ -159,12 +150,12 @@ namespace AltinnCLI.Commands.Storage
 
             if (!string.IsNullOrEmpty(appId) || !string.IsNullOrEmpty(org))
             {
-                responsMessage = ClientWrapper.GetInstanceMetaData(this.SelectableCliOptions);
+                responsMessage = _clientWrapper.GetInstanceMetaData(this.SelectableCliOptions);
 
             }
             else if (ownerId != null)
             {
-                responsMessage = ClientWrapper.GetInstanceMetaData(ownerId, instanceId);
+                responsMessage = _clientWrapper.GetInstanceMetaData(ownerId, instanceId);
             }
             else
             {
@@ -177,13 +168,12 @@ namespace AltinnCLI.Commands.Storage
                 _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
                 Instance[] instances = responsMessage.Instances;
-                FetchAndSaveData(instances, responsMessage.Next, updateInstances);
+                FetchAndSaveData(instances, responsMessage.Next, _updateInstances);
             }
             else
             {
                 _logger.LogInformation($"No data available for instance");
             }
-
         }
 
 
@@ -201,16 +191,16 @@ namespace AltinnCLI.Commands.Storage
                 foreach (DataElement data in instance.Data)
                 { 
                     string url = data.SelfLinks.Platform;
-                    Stream responsData = ClientWrapper.GetData(url, data.ContentType);
+                    Stream responseData = _clientWrapper.GetData(url, data.ContentType);
 
-                    if (responsData != null)
+                    if (responseData != null)
                     {
                         string instanceGuidId = instance.Id.Split('/')[1];
                         string fileName = $"{data.DataType.ToString()}_{((string.IsNullOrEmpty(data.Filename)) ? data.Id : data.Filename)}";
 
                         string fileFolder = $@"{instance.InstanceOwner.PartyId}\{instanceGuidId}";
 
-                        if ( CliFileWrapper.SaveToFile(fileFolder, fileName, responsData) )
+                        if ( CliFileWrapper.SaveToFile(fileFolder, fileName, responseData) )
                         {
                             _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
                         }
@@ -226,7 +216,7 @@ namespace AltinnCLI.Commands.Storage
 
             if (nextLink != null)
             {
-                InstanceResponseMessage responsMessage = ClientWrapper.GetInstanceMetaData(nextLink);
+                InstanceResponseMessage responsMessage = _clientWrapper.GetInstanceMetaData(nextLink);
                 _logger.LogInformation($"Fetched {responsMessage.Instances.Length} instances. Count={responsMessage.Count}");
 
                 FetchAndSaveData(responsMessage.Instances, responsMessage.Next, updateInstances);
