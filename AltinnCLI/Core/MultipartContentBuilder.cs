@@ -1,24 +1,26 @@
-﻿using Altinn.Platform.Storage.Interface.Models;
-using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+
+using Altinn.Platform.Storage.Interface.Models;
+
+using Newtonsoft.Json;
 
 namespace AltinnCLI.Core
 {
     public class MultipartContentBuilder
     {
-        private readonly MultipartFormDataContent builder;
+        private readonly MultipartFormDataContent _builder;
 
         public MultipartContentBuilder(Instance instanceTemplate)
         {
-            builder = new MultipartFormDataContent();
+            _builder = new MultipartFormDataContent();
             if (instanceTemplate != null)
             {
                 StringContent instanceContent = new StringContent(JsonConvert.SerializeObject(instanceTemplate), Encoding.UTF8, "application/json");
 
-                builder.Add(instanceContent, "instance");
+                _builder.Add(instanceContent, "instance");
             }
         }
 
@@ -27,22 +29,21 @@ namespace AltinnCLI.Core
             StreamContent streamContent = new StreamContent(stream);
             streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
 
-            builder.Add(streamContent, elementType);
+            _builder.Add(streamContent, elementType);
 
             return this;
         }
 
         public MultipartContentBuilder AddDataElement(string elementType, StringContent content)
         {
-            builder.Add(content, elementType);
+            _builder.Add(content, elementType);
 
             return this;
         }
 
         public MultipartFormDataContent Build()
         {
-            return builder;
+            return _builder;
         }
-
     }
 }

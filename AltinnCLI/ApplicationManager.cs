@@ -1,17 +1,12 @@
-﻿using AltinnCLI.Core.Extensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using AltinnCLI.Core;
-using System.IO;
-using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-using AltinnCLI.Core.Json;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AltinnCLI
 {
@@ -21,7 +16,6 @@ namespace AltinnCLI
     /// </summary>
     public class ApplicationManager
     {
-
         public static IConfigurationRoot ApplicationConfiguration;
         public static IServiceProvider ServiceProvider;
         public static string MaskinportenToken = string.Empty;
@@ -32,12 +26,6 @@ namespace AltinnCLI
         {
             _logger = logger;
         }
-
-        //public ApplicationManager(NullLogger<Microsoft.Extensions.Logging.ILogger> logger  = null)
-        //{
-        //    _logger = logger;
-        //}
-
 
         public void SetEnvironment(IConfigurationRoot applicationConfiguration, IServiceProvider serviceProvider)
         {
@@ -55,13 +43,17 @@ namespace AltinnCLI
             {
                 string[] input = args.ToLower().Split(" ");
 
-                ICommand command = ServiceProvider.GetServices<ICommand>().Where(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                ICommand command = ServiceProvider.GetServices<ICommand>().FirstOrDefault(s => string.Equals(s.Name, input[0], StringComparison.OrdinalIgnoreCase));
 
                 if (command != null)
                 {
                     if (string.Equals(command.Name, "Help", StringComparison.OrdinalIgnoreCase))
                     {
                        command.Run(ParseArguments(input));
+                    }
+                    else if (string.Equals(command.Name, "Quit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        command.Run();
                     }
                     else if (IsLoggedIn || (string.Equals(command.Name, "Login", StringComparison.OrdinalIgnoreCase)))
                     {
@@ -82,12 +74,6 @@ namespace AltinnCLI
                 }
                 else
                 {
-                    IHelp helpService = (IHelp)ServiceProvider.GetService<IHelp>();
-                    if (command != null)
-                    {
-                        helpService.GetHelp();
-                    }
-
                     _logger.LogError($"No commands found");
                 }
             }
@@ -95,13 +81,13 @@ namespace AltinnCLI
 
         private void RunCommandWithParameters(string[] input, ICommand command)
         {
-            ISubCommandHandler subCommandHandler = processArgs(input);
+            ISubCommandHandler subCommandHandler = ProcessArgs(input);
 
             if (subCommandHandler != null)
             {
                 if (subCommandHandler.IsValid)
                 {
-                    if (subCommandHandler != null && subCommandHandler.IsValid)
+                    if (subCommandHandler.IsValid)
                     {
                         command.Run(subCommandHandler);
                     }
@@ -122,38 +108,37 @@ namespace AltinnCLI
         }
 
         /// <summary>
-        /// Parses input parameters and finds the correct service and commmand handler for executing the command.
+        /// Parses input parameters and finds the correct service and command handler for executing the command.
         /// </summary>
         /// <param name="input">
         /// User input from command line arguments, split into list of parameters separated by space. 
-        /// Commands are structured as follows: [command] [subcommand] [options]
+        /// Commands are structured as follows: [command] [subCommand] [options]
         /// </param>
         /// <returns>A commandHandler that can execute the command given by user input</returns>
-        private ISubCommandHandler processArgs(string[] input)
+        private ISubCommandHandler ProcessArgs(string[] input)
         {
-            ISubCommandHandler subCommandHandler = ApplicationManager.ServiceProvider.GetServices<ISubCommandHandler>()
-                .FirstOrDefault(s => string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(s.CommandProvider, input[0], StringComparison.OrdinalIgnoreCase));
+            ISubCommandHandler subCommandHandler = ServiceProvider.GetServices<ISubCommandHandler>()
+                .FirstOrDefault(s =>
+                    string.Equals(s.Name, input[1], StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(s.CommandProvider, input[0], StringComparison.OrdinalIgnoreCase));
 
             if (subCommandHandler != null)
             {
-              subCommandHandler.BuildSelectableCommands();
+                subCommandHandler.BuildSelectableCommands();
                 subCommandHandler.DictOptions = ParseArguments(input);
                 OptionBuilder.Instance(_logger).AssignValueToCliOptions(subCommandHandler);
                 return subCommandHandler;
             }
+
+            // No command found, find help command to display help.
+            IHelp helpService = ServiceProvider.GetServices<IHelp>().FirstOrDefault();
+            if (helpService != null)
+            {
+                helpService.GetHelp();
+            }
             else
             {
-                // No command found, find help command to display help.
-                IHelp helpService = ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault();
-                if (helpService != null)
-                {
-                    ApplicationManager.ServiceProvider.GetServices<IHelp>().FirstOrDefault().GetHelp();
-                }
-                else
-                {
-                    _logger.LogError("Help is not found");
-                }
+                _logger.LogError("Help is not found");
             }
 
             return null;

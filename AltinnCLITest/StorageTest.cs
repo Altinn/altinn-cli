@@ -1,20 +1,22 @@
-using AltinnCLI;
-using AltinnCLI.Commands.Storage;
-using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Serilog;
-using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
+
+using AltinnCLI;
+using AltinnCLI.Commands.Storage;
+using AltinnCLI.Commands.Storage.SubCommandHandlers;
+using AltinnCLI.Core;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Moq;
+using Serilog;
+using Serilog.Events;
 
 namespace AltinnCLITest
 {
@@ -40,17 +42,16 @@ namespace AltinnCLITest
             string expectedValue = "TestValue";
 
             string expectedLogMessage = "No valid combination";
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
@@ -59,32 +60,31 @@ namespace AltinnCLITest
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
             cliOptions.Add(expectedOption, expectedValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(GetDataHandler));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // fetch GetDataHandler subCommand
-            // fetch GetDataHandler subCommand
+            // Fetch GetDataHandler subCommand
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign option values to the subcommand
+            // Assign option values to the sub command
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
@@ -104,17 +104,16 @@ namespace AltinnCLITest
             string expectedOrgValue = "5533";
 
             string expectedLogMessage = "No data available";
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
@@ -123,31 +122,31 @@ namespace AltinnCLITest
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
             cliOptions.Add(expectedOrgOption, expectedOrgValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(GetDataHandler));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // fetch GetDataHandler subCommand
+            // Fetch GetDataHandler subCommand
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign option values to the subcommand
+            // Assign option values to the sub command
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
@@ -155,7 +154,6 @@ namespace AltinnCLITest
             textWriter.Dispose();
             builder.CfgCommands = null;
         }
-
 
         [TestMethod]
         [DoNotParallelize]
@@ -169,17 +167,16 @@ namespace AltinnCLITest
 
             string expectedFetchMessage = "Fetched 1 instances.";
             string expectedFileMessage = "No files received for instance:";
-            int expectedLogEntires = 2;
+            int expectedLogEntries = 2;
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
@@ -188,36 +185,35 @@ namespace AltinnCLITest
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
             cliOptions.Add(expectedOrgOption, expectedOrgValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
-            Type tt = typeof(GetDataHandler);
             availableSubCommands.Add(typeof(GetDataHandler));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // set respons from ClientWrapper
-            InstanceResponseMessage respons = TestDataBuilder.CreateInstanceResponse(1);
-            StorageClientFileWrapper.InstanceResponse = respons;
+            // Set response from ClientWrapper
+            InstanceResponseMessage response = TestDataBuilder.CreateInstanceResponse(1);
+            StorageClientFileWrapper.InstanceResponse = response;
 
-            // fetch GetDataHandler subCommand
+            // Fetch GetDataHandler sub command
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign option values to the subcommand
+            // Assign option values to the sub command
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
 
             string fetchMessage = logEntries.FirstOrDefault(x => x.Contains(expectedFetchMessage));
             Assert.IsFalse(string.IsNullOrEmpty(fetchMessage));
@@ -228,7 +224,6 @@ namespace AltinnCLITest
             textWriter.Dispose();
             builder.CfgCommands = null;
         }
-
 
         [TestMethod]
         [DoNotParallelize]
@@ -242,17 +237,16 @@ namespace AltinnCLITest
 
             string expectedFetchMessage = "Fetched 1 instances.";
             string expectedSaveMessage = "File:Kvittering";
-            int expectedLogEntires = 2;
+            int expectedLogEntries = 2;
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
@@ -261,41 +255,41 @@ namespace AltinnCLITest
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
             cliOptions.Add(expectedOrgOption, expectedOrgValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(GetDataHandler));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // set respons from ClientWrapper
-            InstanceResponseMessage respons = TestDataBuilder.CreateInstanceResponse(1);
-            StorageClientFileWrapper.InstanceResponse = respons;
+            // Set response from ClientWrapper
+            InstanceResponseMessage response = TestDataBuilder.CreateInstanceResponse(1);
+            StorageClientFileWrapper.InstanceResponse = response;
             StorageClientFileWrapper.DataContent = new MemoryStream();
 
-            // fetch GetDataHandler subCommand
+            // Fetch GetDataHandler subCommand
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "GetData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "GetData");
             subCommandHandler.SelectableCliOptions = selectableOptions;
             subCommandHandler.DictOptions = cliOptions;
 
             // Mock the file wrapper
             Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
             mockedWrapper.Setup(x => x.SaveToFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>())).Returns(true);
-            subCommandHandler.CliFileWrapper = (IFileWrapper)mockedWrapper.Object;
+            subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
-            // assign option values to the subcommand
+            // Assign option values to the sub command
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
 
             string fetchMessage = logEntries.FirstOrDefault(x => x.Contains(expectedFetchMessage));
             Assert.IsFalse(string.IsNullOrEmpty(fetchMessage));
@@ -315,49 +309,48 @@ namespace AltinnCLITest
             string expectedValue = "50013748";
 
             string expectedLogMessage = "No valid combination";
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
             cliOptions.Add(expectedOption, expectedValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(UploadData));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // fetch GetDataHandler subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // Fetch GetDataHandler subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign option values to the subcommand
+            // Assign option values to the sub command
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
 
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
@@ -380,22 +373,21 @@ namespace AltinnCLITest
             string expectedElementTypeValue = "kvittering";
 
             string expectedFile = "file";
-            string expectedFileValue = $@"c:\Temp\test.xml";
+            string expectedFileValue = @"c:\Temp\test.xml";
 
             string expectedLogMessage = "No valid combination";
-            int expectedLogEntires = 2;
+            int expectedLogEntries = 2;
 
-            string expectedfileNotFoundErrorMessage = "Invalid value for parameter";
+            string expectedFileNotFoundErrorMessage = "Invalid value for parameter";
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
@@ -404,45 +396,45 @@ namespace AltinnCLITest
             cliOptions.Add(expectedElementType, expectedElementTypeValue);
             cliOptions.Add(expectedFile, expectedFileValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(UploadData));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // Fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
             subCommandHandler.DictOptions = cliOptions;
 
-            // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
-            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == false && x.ErrorMessage == expectedfileNotFoundErrorMessage);
+            // Need to mock the FileOption to avoid dependency to disk, so replace the registered option with a mock option 
+            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == false && x.ErrorMessage == expectedFileNotFoundErrorMessage);
             ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
 
-            // assing the input options to the subCommand
+            // Assign the input options to the subCommand
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign and validate the input options to the selectable options
+            // Assign and validate the input options to the selectable options
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
             string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
-            string fileNotFoundMesage = logEntries.FirstOrDefault(x => x.Contains(expectedfileNotFoundErrorMessage));
-            Assert.IsFalse(string.IsNullOrEmpty(fileNotFoundMesage));
+            string fileNotFoundMessage = logEntries.FirstOrDefault(x => x.Contains(expectedFileNotFoundErrorMessage));
+            Assert.IsFalse(string.IsNullOrEmpty(fileNotFoundMessage));
 
             textWriter.Dispose();
             builder.CfgCommands = null;
@@ -462,21 +454,21 @@ namespace AltinnCLITest
             string expectedElementTypeValue = "kvittering";
 
             string expectedFile = "file";
-            string expectedFileValue = $@"c:\Temp\test.xml";
+            string expectedFileValue = @"c:\Temp\test.xml";
 
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
 
-            string expectededUploadFailedMessage = "Failed to upload";
+            string expectedUploadFailedMessage = "Failed to upload";
 
             //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
+            // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
             // Build command options
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
@@ -485,49 +477,49 @@ namespace AltinnCLITest
             cliOptions.Add(expectedElementType, expectedElementTypeValue);
             cliOptions.Add(expectedFile, expectedFileValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(UploadData));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // Fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
             subCommandHandler.DictOptions = cliOptions;
 
-            // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
-            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == true);
+            // Need to mock the FileOption to avoid dependency to disk, so replace the registered option with a mock option 
+            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate());
             ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
 
             // Mock the file wrapper
             Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
             mockedWrapper.Setup(x => x.GetFile(It.IsAny<string>())).Returns(new MemoryStream());
-            subCommandHandler.CliFileWrapper = (IFileWrapper)mockedWrapper.Object;
+            subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
-            // set respons from ClientWrapper
+            // Set response from ClientWrapper
             StorageClientFileWrapper.IsSuccessStatusCode = false;
 
-            // assing the input options to the subCommand
+            // Assign the input options to the subCommand
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign and validate the input options to the selectable options
+            // Assign and validate the input options to the selectable options
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
-            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectededUploadFailedMessage));
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedUploadFailedMessage));
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
             
             textWriter.Dispose();
@@ -548,80 +540,75 @@ namespace AltinnCLITest
             string expectedElementTypeValue = "kvittering";
 
             string expectedFile = "file";
-            string expectedFileValue = $@"c:\Temp\test.xml";
+            string expectedFileValue = @"c:\Temp\test.xml";
 
-            int expectedLogEntires = 1;
+            int expectedLogEntries = 1;
 
-            string expectededFileUploadedMessage = "was successfully uploaded";
+            string expectedFileUploadedMessage = "was successfully uploaded";
 
-            //Build environment, 
-            string envirnonmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
+            string environmentSetting = "{\"UseLiveClient\": \"false\"}";
             NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
 
-            // Configure logger which is set on registred classes/objects
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            BuildEnvironment(envirnonmentSetting);
+            BuildEnvironment(environmentSetting);
 
-            // Build command options
             Dictionary<string, string> cliOptions = new Dictionary<string, string>();
             cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
             cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
             cliOptions.Add(expectedElementType, expectedElementTypeValue);
             cliOptions.Add(expectedFile, expectedFileValue);
 
-            // define which command and subcommand that shall be registred in serviceprovider
+            // Define which command and sub command that shall be registered in service provider
             List<Type> availableCommandTypes = new List<Type>();
             availableCommandTypes.Add(typeof(StorageCommand));
 
             List<Type> availableSubCommands = new List<Type>();
             availableSubCommands.Add(typeof(UploadData));
 
-            // register commands and subcommands
+            // Register commands and sub commands
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
-            // fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
+            // Fetch UploadData subCommand and assign available options by use og OptionBuilder. Options for the command is fetched from
             // the Command resource file defined in the Cli project
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
-            ISubCommandHandler subCommandHandler = sssList.FirstOrDefault(x => x.Name == "UploadData");
+            ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "UploadData");
             OptionBuilder builder = OptionBuilder.Instance(logger);
             subCommandHandler.SelectableCliOptions = builder.BuildAvailableOptions(subCommandHandler);
             subCommandHandler.DictOptions = cliOptions;
 
-            // Need to mock the FileOption to avoid dependency to disk, so replace the registred option with a mockoption 
-            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate() == true);
+            // Need to mock the FileOption to avoid dependency to disk, so replace the registered option with a mock option 
+            FileOption<FileStream> mockFileOption = Mock.Of<FileOption<FileStream>>(x => x.Validate());
             ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
 
             // Mock the file wrapper
             Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
             mockedWrapper.Setup(x => x.GetFile(It.IsAny<string>())).Returns(new MemoryStream());
-            subCommandHandler.CliFileWrapper = (IFileWrapper)mockedWrapper.Object;
+            subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
-            // set respons from ClientWrapper
+            // Set response from ClientWrapper
             StorageClientFileWrapper.IsSuccessStatusCode = true;
 
-            // assing the input options to the subCommand
+            // Assign the input options to the subCommand
             subCommandHandler.DictOptions = cliOptions;
 
-            // assign and validate the input options to the selectable options
+            // Assign and validate the input options to the selectable options
             builder.AssignValueToCliOptions(subCommandHandler);
 
-            // run the command
+            // Run the command
             subCommandHandler.Run();
 
-            // verify that the log contain expected result
+            // Verify that the log contain expected result
             List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntires, logEntries.Count);
-            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectededFileUploadedMessage));
+            Assert.AreEqual(expectedLogEntries, logEntries.Count);
+            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedFileUploadedMessage));
             Assert.IsFalse(string.IsNullOrEmpty(logMessage));
 
             Assert.IsTrue(logMessage.Contains(expectedFileValue));
 
-
             textWriter.Dispose();
             builder.CfgCommands = null;
-
         }
 
         private static void ReplaceSelectableOption(string replaceOptionName, FileOption<FileStream> newOption, List<IOption> selectableOptions)
@@ -637,9 +624,9 @@ namespace AltinnCLITest
             }
         }
 
-        private static void BuildEnvironment(string envirnonmentSetting)
+        private static void BuildEnvironment(string environmentSetting)
         {
-            byte[] data = Encoding.ASCII.GetBytes(envirnonmentSetting);
+            byte[] data = Encoding.ASCII.GetBytes(environmentSetting);
             MemoryStream stream = new MemoryStream(data);
 
             var configBuilder = new ConfigurationBuilder()
@@ -649,9 +636,7 @@ namespace AltinnCLITest
             NullLogger<ApplicationManager> logger = new NullLogger<ApplicationManager>();
             ApplicationManager applicationManager = new ApplicationManager(logger);
             applicationManager.SetEnvironment(configurationRoot, null);
-
         }
-
 
         private static void ConfigureLogging(TextWriter textWriter)
         {
@@ -665,7 +650,7 @@ namespace AltinnCLITest
         {
             List<string> logEntries = new List<string>();
             StringReader re = new StringReader(textWriter.ToString());
-            string input = null;
+            string input;
             while ((input = re.ReadLine()) != null)
             {
                 logEntries.Add(input);

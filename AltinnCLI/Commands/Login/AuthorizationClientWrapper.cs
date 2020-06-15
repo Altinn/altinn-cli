@@ -1,9 +1,12 @@
-﻿using AltinnCLI.Core;
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+using AltinnCLI.Core;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 
 namespace AltinnCLI.Commands.Login
 {
@@ -20,7 +23,7 @@ namespace AltinnCLI.Commands.Login
         private string BaseAddress { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationClientWrapper" /> class.
+        /// Initializes a new instance of the <see cref="AuthorizationClientWrapper" /> class.
         /// </summary>
         public AuthorizationClientWrapper(ILogger logger)
         {
@@ -30,16 +33,17 @@ namespace AltinnCLI.Commands.Login
 
         public async Task<string> ConvertToken(string token, bool test=false)
         {
-            string AuthAddress = ApplicationManager.ApplicationConfiguration.GetSection("AuthBaseAddress").Get<string>();
+            string authAddress = ApplicationManager.ApplicationConfiguration.GetSection("AuthBaseAddress").Get<string>();
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
             string cmd = $@"exchange/maskinporten?test={test}";
             AuthenticationHeaderValue headers = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await httpClientWrapper.GetCommand(AuthAddress, cmd, headers);
+            HttpResponseMessage response = await httpClientWrapper.GetCommand(authAddress, cmd, headers);
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsAsync<string>();
+                string jsonString = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<string>(jsonString);
             }
             else
             {

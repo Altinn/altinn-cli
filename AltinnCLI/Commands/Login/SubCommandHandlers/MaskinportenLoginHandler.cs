@@ -1,24 +1,24 @@
-﻿using AltinnCLI.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+
+using AltinnCLI.Core;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace AltinnCLI.Commands.Login.SubCommandHandlers
 {
     public class MaskinportenLoginHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {       
-        private MaskinportenClientWrapper ClientWrapper = null;
-        private IAutorizationClientWrapper AutorizationClient = null;
+        private readonly MaskinportenClientWrapper _clientWrapper;
+        private readonly IAutorizationClientWrapper _authorizationClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaskinportenLoginHandler" /> class.
@@ -28,16 +28,15 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                ClientWrapper = new MaskinportenClientWrapper(_logger);
-                AutorizationClient = new AuthorizationClientWrapper(_logger);
+                _clientWrapper = new MaskinportenClientWrapper(_logger);
+                _authorizationClient = new AuthorizationClientWrapper(_logger);
             }
             else
             {
-                ClientWrapper = new MaskinportenClientWrapper(_logger);
-                AutorizationClient = new AuthorizationClientFileWrapper();
+                _clientWrapper = new MaskinportenClientWrapper(_logger);
+                _authorizationClient = new AuthorizationClientFileWrapper();
             }
         }
-
 
         /// <summary>
         /// Gets the name of of the command
@@ -49,6 +48,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 return "Maskinporten";
             }
         }
+
         /// <summary>
         /// Gets the name of the CommandProvider that uses this command
         /// </summary>
@@ -88,10 +88,10 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                     usage += $"\t{opt.Name}\t\t {opt.Description} \n";
                 }
 
-
                 return usage;
             }
         }
+
         public string GetHelp()
         {
             return Name;
@@ -106,14 +106,14 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 if (!string.IsNullOrEmpty(jwtAssertion))
                 {
                     FormUrlEncodedContent content = GetUrlEncodedContent(jwtAssertion);
-                    if (ClientWrapper.PostToken(content, out string token))
+                    if (_clientWrapper.PostToken(content, out string token))
                     {
                         if (!string.IsNullOrEmpty(token))
                         {
                             var accessTokenObject = JsonConvert.DeserializeObject<JObject>(token);
 
                             bool test = Convert.ToBoolean(GetOption("test").Value);
-                            token = AutorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString(), test).GetAwaiter().GetResult();
+                            token = _authorizationClient.ConvertToken(accessTokenObject.GetValue("access_token").ToString(), test).GetAwaiter().GetResult();
 
                             ApplicationManager.IsLoggedIn = true;
                             ApplicationManager.MaskinportenToken = token;
@@ -146,10 +146,10 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
         public string GetJwtAssertion()
         {
             var dateTimeOffset = new DateTimeOffset(DateTime.UtcNow);
-            string _certificateThumbPrint = (string)GetOptionValue("thumbprint");
+            string certificateThumbPrint = (string)GetOptionValue("thumbprint");
             Guid clientId = (Guid)GetOptionValue("clientid");
 
-            var cert = GetCertificateFromKeyStore(_certificateThumbPrint, StoreName.My, StoreLocation.CurrentUser);
+            var cert = GetCertificateFromKeyStore(certificateThumbPrint, StoreName.My, StoreLocation.CurrentUser);
 
             var securityKey = new X509SecurityKey(cert);
             var header = new JwtHeader(new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256))
@@ -158,7 +158,6 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             };
             header.Remove("typ");
             header.Remove("kid");
-
 
             var payload = new JwtPayload
             {

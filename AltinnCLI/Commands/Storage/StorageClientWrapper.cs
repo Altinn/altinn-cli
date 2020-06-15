@@ -1,16 +1,18 @@
-﻿using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
+
+using AltinnCLI.Core;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json;
 
 namespace AltinnCLI.Commands.Storage
 {
@@ -46,9 +48,9 @@ namespace AltinnCLI.Commands.Storage
         {
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
 
-            HttpClientWrapper httpClinetWrapper = new HttpClientWrapper(_logger);
+            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
 
-            Task<HttpResponseMessage> response = httpClinetWrapper.GetCommand(BaseAddress, cmd);
+            Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(BaseAddress, cmd);
 
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
 
@@ -59,11 +61,10 @@ namespace AltinnCLI.Commands.Storage
         /// Fetches a document from Storage based on the URL for the document found in instance data
         /// </summary>
         /// <param name="command">Get URL</param>
-        /// <param name="contentType">content type which must match content type in repons if defined</param>
+        /// <param name="contentType">content type which must match content type in response if defined</param>
         /// <returns></returns>
         public Stream GetData(string command, string contentType = null)
         {
-
             HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
             Uri uri = new Uri(command);
 
@@ -147,7 +148,6 @@ namespace AltinnCLI.Commands.Storage
 
         public InstanceResponseMessage GetInstanceMetaData(Uri uri)
         {
-
             HttpClientWrapper client = new HttpClientWrapper(_logger);
             Task<HttpResponseMessage> response = client.GetWithUrl(uri);
 

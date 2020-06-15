@@ -1,52 +1,48 @@
-﻿using AltinnCLI.Core;
+﻿using System;
+using System.IO;
+using System.Reflection;
+
+using AltinnCLI.Core;
 using AltinnCLI.Core.Extensions;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace AltinnCLI
 {
     /// <summary>
-    ///  The CLI startup that prepares the application configuration, serviceprovider for handling cli-commands 
+    /// The CLI startup that prepares the application configuration, service provider for handling cli-commands 
     /// </summary
     class Program
     {
-        private static string prompt = "Altinn CLI > ";
+        private const string Prompt = "Altinn CLI > ";
 
         static void Main()
         {
-
             ConfigureLogging();
             IServiceCollection services = GetAndRegisterServices();
 
-            // Generate a Name
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             IConfigurationRoot configuration = BuildConfiguration();
 
             var app = serviceProvider.GetService<ApplicationManager>();
             app.SetEnvironment(configuration, serviceProvider);
-          
-            string args;            
-
-            while(true)
+            
+            while (true)
             {
-                Console.Write(prompt);
-                args = Console.ReadLine();
+                Console.Write(Prompt);
+                string args = Console.ReadLine();
                 try
                 {
                     app.Execute(args);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($@"Error : {ex.Message}");
                 }
@@ -54,14 +50,13 @@ namespace AltinnCLI
         }
 
         /// <summary>
-        /// Finds all ICommand, ISubCommandHandler and  IHelp implemented klasses in running assembly and according to type
-        /// registers them to be avilable through the Applications CommandProvider. 
+        /// Finds all classes implementing <see cref="ICommand"/>, <see cref="ISubCommandHandler"/> and <see cref="IHelp"/>
+        /// in running assembly, and registers them as services according to type. This makes them available for the Applications CommandProvider. 
         /// </summary>
-        /// <returns>List of registred services</returns>
+        /// <returns>List of registered services</returns>
         private static IServiceCollection GetAndRegisterServices()
         {
             IServiceCollection services = new ServiceCollection();
-
 
             services.AddLogging(configure =>
             {
@@ -69,32 +64,27 @@ namespace AltinnCLI
                 configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
             }).AddTransient<ApplicationManager>();
 
-
-            // register all Commands that can be accessed from commandline, they all implements the ICommand interface
-            // that contains a name property that is used to select the properiate class according to cli command type, args[0]
-            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommand>().ForEach((t) =>
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ICommand>().ForEach(command =>
             {
                 services.AddLogging(configure =>
                 {
                     configure.ClearProviders();
                     configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
-                }).AddTransient(typeof(ICommand), t);
+                }).AddTransient(typeof(ICommand), command);
             });
 
-            // register all Commands that can be accessed from commandline, they all implements the IHelp interface
-           Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach((t) =>
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<IHelp>().ForEach(help =>
             {
-                services.AddTransient(typeof(IHelp), t);
+                services.AddTransient(typeof(IHelp), help);
             });
 
-            // register all services that implements the ISubCommandHandler interface, and in addtion add reference to the application logger
-            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ISubCommandHandler>().ForEach((t) =>
+            Assembly.GetEntryAssembly().GetTypesAssignableFrom<ISubCommandHandler>().ForEach(subCommand =>
             {
                 services.AddLogging(configure =>
                 {
                     configure.ClearProviders();
                     configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
-                }).AddTransient(typeof(ISubCommandHandler),t);
+                }).AddTransient(typeof(ISubCommandHandler), subCommand);
             });
 
             return services;
@@ -105,13 +95,11 @@ namespace AltinnCLI
         /// </summary>
         private static void ConfigureLogging()
         {
-
             Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
-               .WriteTo.File("log.txt", LogEventLevel.Information)
-               .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-               .CreateLogger();
-
+                .MinimumLevel.Debug()
+                .WriteTo.File("log.txt", LogEventLevel.Information)
+                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+                .CreateLogger();
         }
 
         /// <summary>
@@ -121,8 +109,8 @@ namespace AltinnCLI
         public static IConfigurationRoot BuildConfiguration()
         {
             var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json");
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
 
             return builder.Build();
 

@@ -1,22 +1,22 @@
-﻿using Altinn.Platform.Storage;
-using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Linq;
-using Altinn.Platform.Storage.Interface.Models;
 
-namespace AltinnCLI.Commands.Application
+using Altinn.Platform.Storage.Interface.Models;
+using AltinnCLI.Core;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json;
+
+namespace AltinnCLI.Commands.Application.SubCommandHandlers
 {
 
     /// <summary>
     /// Command for creating instances of an app. The command can be used both to create a single instance for 
-    /// a specified instance owner, or for instanciating the app for several users simultaniously. The command
+    /// a specified instance owner, or for instantiating the app for several users simultaneously. The command
     /// also supports prefilling instances.
     /// </summary>
     class CreateInstanceSubCommandHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
@@ -24,7 +24,7 @@ namespace AltinnCLI.Commands.Application
         /// <summary>
         /// Handles communication with the runtime API
         /// </summary>
-        private IApplicationClientWrapper clientWrapper = null;
+        private readonly IApplicationClientWrapper _clientWrapper;
 
         /// <summary>
         /// Creates an instance of <see cref="CreateInstanceSubCommandHandler" /> class
@@ -34,11 +34,11 @@ namespace AltinnCLI.Commands.Application
         {
             if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
             {
-                clientWrapper = new ApplicationClientWrapper(_logger);
+                _clientWrapper = new ApplicationClientWrapper(_logger);
             }
             else
             {
-                clientWrapper = new ApplicationFileClientWrapper(_logger);
+                _clientWrapper = new ApplicationFileClientWrapper(_logger);
             }
         }
 
@@ -138,7 +138,7 @@ namespace AltinnCLI.Commands.Application
 
                             try
                             {
-                                string result = clientWrapper.CreateInstance(app, org, instanceOwnerId, multipartFormData);
+                                string result = _clientWrapper.CreateInstance(app, org, instanceOwnerId, multipartFormData);
 
                                 Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
                                 File.WriteAllText($"{folder}\\{personNumber}.json", JsonConvert.SerializeObject(instanceResult, Formatting.Indented));
@@ -155,7 +155,7 @@ namespace AltinnCLI.Commands.Application
                 {
                     multipartFormData = BuildContentForInstance(folder);
 
-                    string response = clientWrapper.CreateInstance(org, app, instanceOwnerId, multipartFormData);
+                    string response = _clientWrapper.CreateInstance(org, app, instanceOwnerId, multipartFormData);
                     _logger.LogInformation(response);
                 }
                 
@@ -211,24 +211,22 @@ namespace AltinnCLI.Commands.Application
 
         private MultipartFormDataContent buildContentForMultipleInstances(string path)
         {
-            string personNumber;
-
             if (Path.GetExtension(path) == "xml")
             {
                 // The person number is the XML filename
-                personNumber = Path.GetFileNameWithoutExtension(path);
+                string personNumber = Path.GetFileNameWithoutExtension(path);
 
-                Instance instanceTemplate = new Instance()
+                Instance instanceTemplate = new Instance
                 {
-                    InstanceOwner = new InstanceOwner()
+                    InstanceOwner = new InstanceOwner
                     {
                         PersonNumber = personNumber,
                     }
                 };
 
                 MultipartFormDataContent content = new MultipartContentBuilder(instanceTemplate)
-                .AddDataElement("default", new FileStream(path, FileMode.Open), "application/xml")
-                .Build();
+                    .AddDataElement("default", new FileStream(path, FileMode.Open), "application/xml")
+                    .Build();
 
                 return content;
 
@@ -244,7 +242,7 @@ namespace AltinnCLI.Commands.Application
         /// </summary>
         /// <param name="path">Path to the directory that will be read</param>
         /// <returns>A list of strings representing the path to each file in the directory</returns>
-        private String[] ReadFiles(string path)
+        private string[] ReadFiles(string path)
         {
             if (Directory.Exists(path))
             { 
