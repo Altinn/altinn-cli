@@ -49,13 +49,6 @@
               "apiname": "process.ended"
             },
             {
-              "Name": "labels",
-              "type": "string",
-              "valuerangeange": "labels",
-              "description": "labels",
-              "apiname": "appOwner.labels"
-            },
-            {
               "Name": "lastChangedDateTime",
               "type": "DateTime",
               "valuerangeange": "last changed date",
