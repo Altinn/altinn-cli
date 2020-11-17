@@ -79,9 +79,9 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             get
             {
                 string usage = $"\n" +
-                $@"Login clientId=<client guid id> thumbprint=<thumbprint id> \n" +
-                $"\n" +
-                $" Required parameters for the login command \n";
+                @"Login clientId=<client guid id> thumbprint=<thumbprint id> \n" +
+                "\n" +
+                " Required parameters for the login command \n";
 
                 foreach (IOption opt in SelectableCliOptions)
                 {
@@ -118,7 +118,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                             ApplicationManager.IsLoggedIn = true;
                             ApplicationManager.MaskinportenToken = token;
 
-                            _logger.LogInformation("Sucessfully validated against Maskinporten");
+                            _logger.LogInformation("Successfully validated against Maskinporten");
                             _logger.LogInformation($@"Altinn Security Token: {token}");
 
                             return true;
@@ -163,8 +163,8 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
             {
                 { "aud", "https://ver2.maskinporten.no/" },
                 { "resource", "https://tt02.altinn.no/maskinporten-api/" },
-                { "scope", "altinn:serviceowner/instances.read altinn:serviceowner/instances.write" },
-                { "iss",  clientId},
+                { "scope", "altinn:serviceowner/instances.read" },
+                { "iss", clientId },
                 { "exp", dateTimeOffset.ToUnixTimeSeconds() + 10 },
                 { "iat", dateTimeOffset.ToUnixTimeSeconds() },
                 { "jti", Guid.NewGuid().ToString() },
@@ -200,7 +200,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                     return true;
                 }
 
-                ErrorMessage = ($"Command failed, missing command parameters, must specify clientid and thumbprint");
+                ErrorMessage = "Command failed, missing command parameters, must specify clientid and thumbprint";
 
                 return false;
             }
