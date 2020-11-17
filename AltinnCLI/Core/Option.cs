@@ -114,7 +114,7 @@ namespace AltinnCLI.Core
             {
                 IsValid = false;
                 ErrorMessage = $"Invalid Parameter value for paramter: <{Name}>,  {ex.Message}";
-                throw ex;
+                throw;
             }
         }
 

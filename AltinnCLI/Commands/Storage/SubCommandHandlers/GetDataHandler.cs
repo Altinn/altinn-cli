@@ -64,8 +64,8 @@ namespace AltinnCLI.Commands.Storage.SubCommandHandlers
             get
             {
                 string usage = $"\n" +
-                $"Storage GetData org=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
-                $"Storage GetData appid=<appid> processIsComplete=<true/fals> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
+                $"Storage GetData org=<appid> processIsComplete=<true/false> lastChangedDate=<gt:2019-10-23>  -Fetch documents for org that is completed since lastchangeddate \n" +
+                $"Storage GetData appid=<appid> processIsComplete=<true/false> lastChangedDate=<gt:2019-10-23>  -Fetch documents for app that is completed since lastchangeddate \n" +
                 $"Storage GetData ownerid=<id>  -Fetch all documents for owner \n" +
                 $"Storage GetData ownerid=<id> instanceId=<instance-guid> dataId=<data-guid> -Fetch specific data element \n" +
                 $"\n" +
