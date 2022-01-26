@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using AltinnCLI.Commands.Core;
+using AltinnCLI.Configurations;
 using AltinnCLI.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,8 @@ namespace AltinnCLI
         private static IServiceCollection GetAndRegisterServices()
         {
             IServiceCollection services = new ServiceCollection();
+
+            services.Configure<InstantiationConfig>(ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig"));
 
             services.AddLogging(configure =>
             {

@@ -1,7 +1,4 @@
 ﻿using AltinnCLI;
-using AltinnCLI.Commands.Storage;
-using AltinnCLI.Core;
-using AltinnCLI.Core.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AltinnCLI.Commands.Storage.SubCommandHandlers;
+using AltinnCLI.Models;
+using AltinnCLI.Commands.Core;
 
 namespace AltinnCLITest
 {

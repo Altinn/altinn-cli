@@ -1,14 +1,16 @@
 ﻿using Altinn.Platform.Storage.Interface.Models;
+
 using AltinnCLI;
-using AltinnCLI.Commands.Storage;
-using AltinnCLI.Core;
-using AltinnCLI.Core.Json;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Models;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using Serilog.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace AltinnCLITest
 {

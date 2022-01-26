@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
 using AltinnCLI;
+using AltinnCLI.Commands.Core;
 using AltinnCLI.Commands.Storage;
 using AltinnCLI.Commands.Storage.SubCommandHandlers;
-using AltinnCLI.Core;
+using AltinnCLI.Helpers;
+using AltinnCLI.Models;
+using AltinnCLI.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +12,15 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Moq;
+
 using Serilog;
 using Serilog.Events;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace AltinnCLITest
 {
