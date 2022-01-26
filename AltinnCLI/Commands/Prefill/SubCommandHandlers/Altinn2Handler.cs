@@ -3,6 +3,7 @@ using AltinnCLI.Configurations;
 using AltinnCLI.Services;
 using AltinnCLI.Services.Interfaces;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using System;
@@ -16,17 +17,7 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
 
         public Altinn2Handler(ILogger<Altinn2Handler> logger) : base(logger)
         {
-            InstantiationConfig config = new InstantiationConfig
-            {
-                InputFolder = "C:\\prefill\\input",
-                OutputFolder = "C:\\prefill\\output",
-                ErrorFolder = "C:\\prefill\\error",
-                ApplicationIdLookup = new Dictionary<string, string>()
-                {
-                    { "5681", "ttd/apps-test" }
-                }
-            };
-            //(InstantiationConfig)ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig");
+            InstantiationConfig config = ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig").Get<InstantiationConfig>();
             _instantiationService = new InstantiationService(config, logger);
         }
 
