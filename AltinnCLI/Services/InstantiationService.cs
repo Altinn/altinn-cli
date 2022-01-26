@@ -95,7 +95,7 @@ namespace AltinnCLI.Services
                     {
                         { "SendersReference", formTask.SendersReference },
                         { "ReceiversReference", formTask.ReceiversReference },
-                        { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.ToList())}
+                        { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.Select(f => f.Value).ToList())}
                     }
                 };
 
@@ -113,7 +113,12 @@ namespace AltinnCLI.Services
                 IApplicationClientWrapper _clientWrapper = new ApplicationClientWrapper(_logger);
 
                 string response = _clientWrapper.CreateInstance(appId.Split("/")[0], appId.Split("/")[1], string.Empty, multipartFormData);
+
+                return Task.CompletedTask;
             }
+
+            _logger.LogError("AppId not confiugred");
+            // todo: error handling. remove form task from batch over to error
             return Task.CompletedTask;
         }
 
