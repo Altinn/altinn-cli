@@ -264,6 +264,16 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "Prefill",
+      "SubCommands": [
+        {
+          "Name": "Altinn2",
+          "Options": [
+          ]
+        }
+      ]
     }
   ]
 }
