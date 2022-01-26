@@ -1,11 +1,7 @@
-﻿using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using AltinnCLI.Commands.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace AltinnCLI.Commands.Storage
 {

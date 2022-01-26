@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-
-using AltinnCLI.Core;
-
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;

@@ -1,4 +1,4 @@
-﻿using AltinnCLI.Core;
+﻿using AltinnCLI.Commands.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

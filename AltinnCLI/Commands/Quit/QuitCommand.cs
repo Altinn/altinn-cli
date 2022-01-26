@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using AltinnCLI.Core;
+using AltinnCLI.Commands.Core;
 
 namespace AltinnCLI.Commands.Quit
 {

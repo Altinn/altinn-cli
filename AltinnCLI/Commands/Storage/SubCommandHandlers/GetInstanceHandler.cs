@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using AltinnCLI.Core;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 

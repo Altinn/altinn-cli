@@ -2,8 +2,10 @@
 using System.IO;
 
 using Altinn.Platform.Storage.Interface.Models;
-using AltinnCLI.Core;
-
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Models;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 

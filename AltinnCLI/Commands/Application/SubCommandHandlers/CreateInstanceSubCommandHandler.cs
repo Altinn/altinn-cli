@@ -4,8 +4,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 
 using Altinn.Platform.Storage.Interface.Models;
-using AltinnCLI.Core;
-
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Helpers;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -74,7 +76,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
                 return $"AltinnCLI > Application createInstance app org instanceOwnerId dataModel instanceTemplate folder instanceData\n\n" +
                        $"\tapp <-a> \tApplication short code \n" +
                        $"\torg <-o> \tApplication owner identification code \n" +
-                       $"\tinstanceOwnerId <-i> \tIdentification number of the person the app instance will be created for \n" +
+                       $"\townerId <-i> \tIdentification number of the person the app instance will be created for \n" +
                        $"\tdataModel <-dm> \tPath to xml document specifying the data model for the instance. If no value is given the tool will look for 'Default.xml'" +
                        $" in the specified input folder\n" +
                        $"\tinstanceTemplate <-t> \tApplication short code \n" +
@@ -120,8 +122,8 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
                 string folder = (string)GetOptionValue("folder");
                 string app = (string)GetOptionValue("app");
                 string org = (string)GetOptionValue("org");
-                string instanceOwnerId = (string)GetOptionValue("ownerid");
-                string instanceData = (string)GetOptionValue("instanceData");
+                string instanceOwnerId = (string)GetOptionValue("ownerId");
+                string instanceData = (string)GetOptionValue("instancedata");
 
                 MultipartFormDataContent multipartFormData;
 
@@ -169,7 +171,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
             if (Directory.Exists(path))
             {
                 Instance instance = new Instance();
-                string formData = string.Empty;
+                string formDataPath = string.Empty;
 
                 
                 foreach (string filePath in ReadFiles(path))
@@ -177,7 +179,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
                     if (filePath.Contains(".xml"))
                     {
 
-                        formData = filePath;
+                        formDataPath = filePath;
                     }
 
                     if (filePath.Contains(".json"))
@@ -186,9 +188,9 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
                     }
                 }
 
-                if (instance.AppId != null && !string.IsNullOrEmpty(formData))
+                if (instance.AppId != null && !string.IsNullOrEmpty(formDataPath))
                 {
-                    StringContent stringContent = new StringContent(File.ReadAllText(formData));
+                    StringContent stringContent = new StringContent(File.ReadAllText(formDataPath));
                     stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/xml");
                     MultipartFormDataContent content = new MultipartContentBuilder(instance)
                      .AddDataElement("default", stringContent)

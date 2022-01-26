@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-
-using AltinnCLI.Core;
-using AltinnCLI.Core.Extensions;
-
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
