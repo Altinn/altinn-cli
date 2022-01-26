@@ -96,7 +96,7 @@ namespace AltinnCLI.Services
                         { "SendersReference", formTask.SendersReference },
                         { "ReceiversReference", formTask.ReceiversReference },
                         { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.ToList())}
-                    }                   
+                    }
                 };
 
                 if (reporteeIsOrg)
@@ -123,10 +123,17 @@ namespace AltinnCLI.Services
 
             foreach (ServiceOwnerPrefillReporteeFormTaskForm form in formTask.Form)
             {
+
+                if (!_config.DataTypeLookup.ContainsKey(form.DataFormatId))
+                {
+                    _logger.LogError("Data type mapping missing for {DataFormatId}", form.DataFormatId);
+                    break;
+                }
+
                 string formData = form.FormData;
                 StringContent stringContent = new(formData);
                 stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/xml");
-                contentBuilder.AddDataElement("default", stringContent);
+                contentBuilder.AddDataElement(_config.DataTypeLookup.GetValueOrDefault(form.DataFormatId), stringContent);
             }
 
             return contentBuilder.Build();
