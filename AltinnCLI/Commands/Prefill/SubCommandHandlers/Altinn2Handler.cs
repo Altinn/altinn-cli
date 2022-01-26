@@ -1,17 +1,33 @@
 ﻿using AltinnCLI.Commands.Core;
+using AltinnCLI.Configurations;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
+
 using Microsoft.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
 {
     public class Altinn2Handler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
+        private readonly IInstantiation _instantiationService;
+
         public Altinn2Handler(ILogger<Altinn2Handler> logger) : base(logger)
         {
+            InstantiationConfig config = new InstantiationConfig
+            {
+                InputFolder = "C:\\prefill\\input",
+                OutputFolder = "C:\\prefill\\output",
+                ErrorFolder = "C:\\prefill\\error",
+                ApplicationIdLookup = new Dictionary<string, string>()
+                {
+                    { "5681", "ttd/apps-test" }
+                }
+            };
+            //(InstantiationConfig)ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig");
+            _instantiationService = new InstantiationService(config, logger);
         }
 
         /// <summary>
@@ -73,6 +89,7 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
         /// <returns>Returns true if the command completes succesfully</returns>
         public bool Run()
         {
+            _instantiationService.Altinn2BatchInstantiation();
             return true;
         }
     }

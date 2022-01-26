@@ -57,7 +57,6 @@ namespace AltinnCLI
         {
             IServiceCollection services = new ServiceCollection();
 
-            services.Configure<InstantiationConfig>(ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig"));
 
             services.AddLogging(configure =>
             {
@@ -87,6 +86,8 @@ namespace AltinnCLI
                     configure.AddProvider(new SerilogLoggerProvider(Log.Logger));
                 }).AddTransient(typeof(ISubCommandHandler), subCommand);
             });
+
+            //services.Configure<InstantiationConfig>(ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig"));
 
             return services;
         }

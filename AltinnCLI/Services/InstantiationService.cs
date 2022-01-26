@@ -5,7 +5,10 @@ using AltinnCLI.Helpers;
 using AltinnCLI.Models;
 using AltinnCLI.Services.Interfaces;
 
+using Microsoft.Extensions.Logging;
+
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -19,10 +22,12 @@ namespace AltinnCLI.Services
     public class InstantiationService : IInstantiation
     {
         private readonly InstantiationConfig _config;
+        private readonly ILogger _logger;
 
-        public InstantiationService(InstantiationConfig config)
+        public InstantiationService(InstantiationConfig config, ILogger logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         public Task Altinn2BatchInstantiation()
@@ -47,7 +52,7 @@ namespace AltinnCLI.Services
 
                 var reader = XmlReader.Create(inputFile);
 
-                XmlSerializer serializer = new XmlSerializer(typeof(ServiceOwner));
+                XmlSerializer serializer = new(typeof(ServiceOwner));
 
                 ServiceOwner r = serializer.Deserialize(reader) as ServiceOwner;
 
@@ -85,13 +90,13 @@ namespace AltinnCLI.Services
                 Instance i = new Instance
                 {
                     AppId = appId,
-                    InstanceOwner = new(),
-                    DataValues = new()
+                    InstanceOwner = new InstanceOwner(),
+                    DataValues = new Dictionary<string, string>()
                     {
                         { "SendersReference", formTask.SendersReference },
                         { "ReceiversReference", formTask.ReceiversReference },
-                        { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.ToList()) }
-                    }
+                        { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.ToList())}
+                    }                   
                 };
 
                 if (reporteeIsOrg)
@@ -105,20 +110,21 @@ namespace AltinnCLI.Services
 
                 var multipartFormData = BuildContentForInstance(i, formTask);
 
-                // call a client and include the multipart form data.
-                // string response = _clientWrapper.CreateInstance(appId, multipartFormData);
+                IApplicationClientWrapper _clientWrapper = new ApplicationClientWrapper(_logger);
+
+                string response = _clientWrapper.CreateInstance(appId.Split("/")[0], appId.Split("/")[1], string.Empty, multipartFormData);
             }
             return Task.CompletedTask;
         }
 
         private MultipartFormDataContent BuildContentForInstance(Instance instance, ServiceOwnerPrefillReporteeFormTask formTask)
         {
-            MultipartContentBuilder contentBuilder = new MultipartContentBuilder(instance);
+            MultipartContentBuilder contentBuilder = new(instance);
 
             foreach (ServiceOwnerPrefillReporteeFormTaskForm form in formTask.Form)
             {
                 string formData = form.FormData;
-                StringContent stringContent = new StringContent(formData);
+                StringContent stringContent = new(formData);
                 stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/xml");
                 contentBuilder.AddDataElement("default", stringContent);
             }

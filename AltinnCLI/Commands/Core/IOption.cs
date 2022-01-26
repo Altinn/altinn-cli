@@ -1,5 +1,5 @@
-﻿namespace AltinnCLI.Commands.Core;
-
+﻿namespace AltinnCLI.Commands.Core
+{
 /// <summary>
 /// Interface that defines the propertioes and methods that
 /// shall be implemented by an Option class
@@ -45,4 +45,5 @@ public interface IOption : IValidate
     /// <returns></returns>
     object GetValue();
 
+}
 }
