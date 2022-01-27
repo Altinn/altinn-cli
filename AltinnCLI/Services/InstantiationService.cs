@@ -55,6 +55,7 @@ namespace AltinnCLI.Services
                 XmlSerializer serializer = new(typeof(ServiceOwner));
 
                 ServiceOwner r = serializer.Deserialize(reader) as ServiceOwner;
+                string externalShipmentReference = r.Prefill.ExternalShipmentReference;
 
                 foreach (ServiceOwnerPrefillReportee reportee in r.Prefill.Reportee)
                 {
@@ -73,7 +74,7 @@ namespace AltinnCLI.Services
 
                     foreach (ServiceOwnerPrefillReporteeFormTask formTask in reportee.FormTask)
                     {
-                        ProcessFormTask(reportee, reporteeIsOrg, formTask);
+                        ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask);
                     }
                 }
             }
@@ -81,7 +82,7 @@ namespace AltinnCLI.Services
             return Task.CompletedTask;
         }
 
-        private Task ProcessFormTask(ServiceOwnerPrefillReportee reportee, bool reporteeIsOrg, ServiceOwnerPrefillReporteeFormTask formTask)
+        private Task ProcessFormTask(string externalShipmentReference, ServiceOwnerPrefillReportee reportee, bool reporteeIsOrg, ServiceOwnerPrefillReporteeFormTask formTask)
         {
             var appNameAvailable = _config.ApplicationIdLookup.TryGetValue(formTask.ExternalServiceCode, out string appId);
 
@@ -93,6 +94,7 @@ namespace AltinnCLI.Services
                     InstanceOwner = new InstanceOwner(),
                     DataValues = new Dictionary<string, string>()
                     {
+                        { "ExternalShipmentReference", externalShipmentReference },
                         { "SendersReference", formTask.SendersReference },
                         { "ReceiversReference", formTask.ReceiversReference },
                         { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.Select(f => f.Value).ToList())}
