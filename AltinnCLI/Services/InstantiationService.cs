@@ -49,17 +49,18 @@ namespace AltinnCLI.Services
 
             foreach (string inputFile in Directory.GetFiles(_config.InputFolder))
             {
-
                 var reader = XmlReader.Create(inputFile);
 
                 XmlSerializer serializer = new(typeof(ServiceOwner));
 
-                ServiceOwner r = serializer.Deserialize(reader) as ServiceOwner;
-                string externalShipmentReference = r.Prefill.ExternalShipmentReference;
+                ServiceOwner serviceOwner = serializer.Deserialize(reader) as ServiceOwner;
+                string externalShipmentReference = serviceOwner.Prefill.ExternalShipmentReference;
 
-                foreach (ServiceOwnerPrefillReportee reportee in r.Prefill.Reportee)
+                (string failedfailedShipmentsFile, ServiceOwner failedShipments) = SetUpErrorFile(inputFile, serviceOwner);
+
+                foreach (ServiceOwnerPrefillReportee reportee in serviceOwner.Prefill.Reportee)
                 {
-                    string org = r.ServiceOwnerName;
+                    string org = serviceOwner.ServiceOwnerName;
 
                     bool reporteeIsOrg = false;
 
@@ -69,7 +70,10 @@ namespace AltinnCLI.Services
                     }
                     else if (!Validator.IsValidPersonNumber(reportee.Id))
                     {
-                        throw new ArgumentException("Invalid reportee id provided", nameof(reportee.Id));
+                        //throw new ArgumentException("Invalid reportee id provided", nameof(reportee.Id));
+                        failedShipments.Prefill.Reportee ?
+                        MoveReporteeToErrorFile(reportee);
+                        continue;                       
                     }
 
                     foreach (ServiceOwnerPrefillReporteeFormTask formTask in reportee.FormTask)
@@ -146,6 +150,28 @@ namespace AltinnCLI.Services
             }
 
             return contentBuilder.Build();
+        }
+
+        private (string, ServiceOwner) SetUpErrorFile(string inputFile, ServiceOwner serviceOwner)
+        {
+            string failedShipmentsFile = Path.Combine(_config.ErrorFolder, "failed_", new FileInfo(inputFile).Name);
+            ServiceOwner failedShipments = new ServiceOwner
+            {
+                ServiceOwnerName = serviceOwner.ServiceOwnerName,
+                Subscription = serviceOwner.Subscription,
+                Prefill = new ServiceOwnerPrefill
+                {
+                    ExternalShipmentReference = serviceOwner.Prefill.ExternalShipmentReference,
+                    SequenceNo = serviceOwner.Prefill.SequenceNo
+                }
+            };
+
+            return (failedShipmentsFile, failedShipments);
+        }
+
+        private void MoveReporteeToErrorFile(ServiceOwnerPrefillReportee reportree)
+        {
+
         }
     }
 }
