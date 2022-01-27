@@ -77,6 +77,8 @@ namespace AltinnCLI.Services
                         ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask);
                     }
                 }
+
+                File.Move(inputFile, Path.Combine(_config.OutputFolder, new FileInfo(inputFile).Name));
             }
 
             return Task.CompletedTask;

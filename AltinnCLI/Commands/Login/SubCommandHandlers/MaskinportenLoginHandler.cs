@@ -165,7 +165,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
                 { "resource", "https://tt02.altinn.no/maskinporten-api/" },
                 { "scope", "altinn:serviceowner/instances.read altinn:serviceowner/instances.write" },
                 { "iss", clientId },
-                { "exp", dateTimeOffset.ToUnixTimeSeconds() + 10 },
+                { "exp", dateTimeOffset.ToUnixTimeSeconds() + 3600 },
                 { "iat", dateTimeOffset.ToUnixTimeSeconds() },
                 { "jti", Guid.NewGuid().ToString() },
             };
