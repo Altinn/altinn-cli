@@ -51,8 +51,9 @@ namespace AltinnCLI.Services
             foreach (string inputFile in Directory.GetFiles(_config.InputFolder))
             {
                 var reader = XmlReader.Create(inputFile);
-
                 ServiceOwner serviceOwner = _serializer.Deserialize(reader) as ServiceOwner;
+                reader.Close();
+
                 string externalShipmentReference = serviceOwner.Prefill.ExternalShipmentReference;
 
                 (string failedShipmentsFile, ServiceOwner failedShipments) = SetUpErrorFile(inputFile, serviceOwner);
@@ -153,6 +154,7 @@ namespace AltinnCLI.Services
         private (string, ServiceOwner) SetUpErrorFile(string inputFile, ServiceOwner serviceOwner)
         {
             string failedShipmentsFile = Path.Combine(_config.ErrorFolder, $"failed_{new FileInfo(inputFile).Name}");
+
             ServiceOwner failedShipments = new ServiceOwner
             {
                 ServiceOwnerName = serviceOwner.ServiceOwnerName,
@@ -171,9 +173,10 @@ namespace AltinnCLI.Services
         private void MoveReporteeToErrorFile(string failedShipmentsFile, ServiceOwner failedShipments, ServiceOwnerPrefillReportee reportee)
         {
             failedShipments.Prefill.Reportee.Add(reportee);
-            using var writer = XmlWriter.Create(failedShipmentsFile);
+            var writer = XmlWriter.Create(failedShipmentsFile, new XmlWriterSettings { Indent = true});
 
             _serializer.Serialize(writer, failedShipments);
+            writer.Close();
         }
     }
 }
