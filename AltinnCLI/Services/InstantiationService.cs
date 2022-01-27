@@ -23,11 +23,12 @@ namespace AltinnCLI.Services
     {
         private readonly InstantiationConfig _config;
         private readonly ILogger _logger;
-
+        private readonly XmlSerializer _serializer;
         public InstantiationService(InstantiationConfig config, ILogger logger)
         {
             _config = config;
             _logger = logger;
+            _serializer = new(typeof(ServiceOwner));
         }
 
         public Task Altinn2BatchInstantiation()
@@ -51,12 +52,10 @@ namespace AltinnCLI.Services
             {
                 var reader = XmlReader.Create(inputFile);
 
-                XmlSerializer serializer = new(typeof(ServiceOwner));
-
-                ServiceOwner serviceOwner = serializer.Deserialize(reader) as ServiceOwner;
+                ServiceOwner serviceOwner = _serializer.Deserialize(reader) as ServiceOwner;
                 string externalShipmentReference = serviceOwner.Prefill.ExternalShipmentReference;
 
-                (string failedfailedShipmentsFile, ServiceOwner failedShipments) = SetUpErrorFile(inputFile, serviceOwner);
+                (string failedShipmentsFile, ServiceOwner failedShipments) = SetUpErrorFile(inputFile, serviceOwner);
 
                 foreach (ServiceOwnerPrefillReportee reportee in serviceOwner.Prefill.Reportee)
                 {
@@ -71,9 +70,8 @@ namespace AltinnCLI.Services
                     else if (!Validator.IsValidPersonNumber(reportee.Id))
                     {
                         //throw new ArgumentException("Invalid reportee id provided", nameof(reportee.Id));
-                        failedShipments.Prefill.Reportee ?
-                        MoveReporteeToErrorFile(reportee);
-                        continue;                       
+                        MoveReporteeToErrorFile(failedShipmentsFile, failedShipments, reportee);
+                        continue;
                     }
 
                     foreach (ServiceOwnerPrefillReporteeFormTask formTask in reportee.FormTask)
@@ -154,7 +152,7 @@ namespace AltinnCLI.Services
 
         private (string, ServiceOwner) SetUpErrorFile(string inputFile, ServiceOwner serviceOwner)
         {
-            string failedShipmentsFile = Path.Combine(_config.ErrorFolder, "failed_", new FileInfo(inputFile).Name);
+            string failedShipmentsFile = Path.Combine(_config.ErrorFolder, $"failed_{new FileInfo(inputFile).Name}");
             ServiceOwner failedShipments = new ServiceOwner
             {
                 ServiceOwnerName = serviceOwner.ServiceOwnerName,
@@ -162,16 +160,20 @@ namespace AltinnCLI.Services
                 Prefill = new ServiceOwnerPrefill
                 {
                     ExternalShipmentReference = serviceOwner.Prefill.ExternalShipmentReference,
-                    SequenceNo = serviceOwner.Prefill.SequenceNo
+                    SequenceNo = serviceOwner.Prefill.SequenceNo,
+                    Reportee = new()
                 }
             };
 
             return (failedShipmentsFile, failedShipments);
         }
 
-        private void MoveReporteeToErrorFile(ServiceOwnerPrefillReportee reportree)
+        private void MoveReporteeToErrorFile(string failedShipmentsFile, ServiceOwner failedShipments, ServiceOwnerPrefillReportee reportee)
         {
+            failedShipments.Prefill.Reportee.Add(reportee);
+            using var writer = XmlWriter.Create(failedShipmentsFile);
 
+            _serializer.Serialize(writer, failedShipments);
         }
     }
 }

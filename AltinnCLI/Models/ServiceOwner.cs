@@ -1,4 +1,6 @@
-﻿namespace AltinnCLI.Models
+﻿using System.Collections.Generic;
+
+namespace AltinnCLI.Models
 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.8.3928.0")]
@@ -406,7 +408,7 @@
 
         private string externalShipmentReferenceField;
 
-        private ServiceOwnerPrefillReportee[] reporteeField;
+        private List<ServiceOwnerPrefillReportee> reporteeField;
 
         /// <remarks/>
         public string SequenceNo
@@ -436,7 +438,7 @@
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Reportee")]
-        public ServiceOwnerPrefillReportee[] Reportee
+        public List<ServiceOwnerPrefillReportee> Reportee
         {
             get
             {
