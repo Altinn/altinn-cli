@@ -170,7 +170,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
         {
             if (Directory.Exists(path))
             {
-                Instance instance = new Instance();
+                Instance instance = new();
                 string formDataPath = string.Empty;
 
                 
@@ -190,7 +190,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
 
                 if (instance.AppId != null && !string.IsNullOrEmpty(formDataPath))
                 {
-                    StringContent stringContent = new StringContent(File.ReadAllText(formDataPath));
+                    StringContent stringContent = new(File.ReadAllText(formDataPath));
                     stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/xml");
                     MultipartFormDataContent content = new MultipartContentBuilder(instance)
                      .AddDataElement("default", stringContent)
@@ -211,14 +211,14 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
             }
         }
 
-        private MultipartFormDataContent buildContentForMultipleInstances(string path)
+        private static MultipartFormDataContent buildContentForMultipleInstances(string path)
         {
             if (Path.GetExtension(path) == "xml")
             {
                 // The person number is the XML filename
                 string personNumber = Path.GetFileNameWithoutExtension(path);
 
-                Instance instanceTemplate = new Instance
+                Instance instanceTemplate = new()
                 {
                     InstanceOwner = new InstanceOwner
                     {

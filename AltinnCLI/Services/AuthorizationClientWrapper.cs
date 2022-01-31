@@ -32,10 +32,10 @@ namespace AltinnCLI.Services
         public async Task<string> ConvertToken(string token, bool test = false)
         {
             string authAddress = ApplicationManager.ApplicationConfiguration.GetSection("AuthBaseAddress").Get<string>();
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+            HttpClientWrapper httpClientWrapper = new(_logger);
 
             string cmd = $@"exchange/maskinporten?test={test}";
-            AuthenticationHeaderValue headers = new AuthenticationHeaderValue("Bearer", token);
+            AuthenticationHeaderValue headers = new("Bearer", token);
             HttpResponseMessage response = await httpClientWrapper.GetCommand(authAddress, cmd, headers);
 
             if (response.IsSuccessStatusCode)

@@ -29,7 +29,7 @@ namespace AltinnCLI.Extensions
         /// <returns>List of types that is of requested type</returns>
         public static List<Type> GetTypesAssignableFrom(this Assembly assembly, Type compareType)
         {
-            List<Type> ret = new List<Type>();
+            List<Type> ret = new();
             foreach (var type in assembly.DefinedTypes)
             {
                 if (compareType.IsAssignableFrom(type) && compareType != type)

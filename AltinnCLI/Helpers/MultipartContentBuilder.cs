@@ -16,7 +16,7 @@ namespace AltinnCLI.Helpers
             _builder = new MultipartFormDataContent();
             if (instanceTemplate != null)
             {
-                StringContent instanceContent = new StringContent(JsonConvert.SerializeObject(instanceTemplate), Encoding.UTF8, "application/json");
+                StringContent instanceContent = new(JsonConvert.SerializeObject(instanceTemplate), Encoding.UTF8, "application/json");
 
                 _builder.Add(instanceContent, "instance");
             }
@@ -24,7 +24,7 @@ namespace AltinnCLI.Helpers
 
         public MultipartContentBuilder AddDataElement(string elementType, Stream stream, string contentType)
         {
-            StreamContent streamContent = new StreamContent(stream);
+            StreamContent streamContent = new(stream);
             streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
 
             _builder.Add(streamContent, elementType);

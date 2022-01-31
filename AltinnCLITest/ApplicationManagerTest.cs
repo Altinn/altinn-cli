@@ -32,8 +32,8 @@ namespace AltinnCLITest
 
             IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
 
-            List<Type> availableCommandTypes = new List<Type>();
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableCommandTypes = new();
+            List<Type> availableSubCommands = new();
 
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
@@ -66,10 +66,10 @@ namespace AltinnCLITest
 
             IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
 
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
 
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
@@ -106,10 +106,10 @@ namespace AltinnCLITest
 
             IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
 
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(GetDataHandler));
 
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
@@ -134,7 +134,7 @@ namespace AltinnCLITest
         private static IConfigurationRoot BuildEnvironment(string envirnonmentSetting)
         {
             byte[] data = Encoding.ASCII.GetBytes(envirnonmentSetting);
-            MemoryStream stream = new MemoryStream(data);
+            MemoryStream stream = new(data);
 
             var configBuilder = new ConfigurationBuilder()
                 .AddJsonStream(stream);
@@ -153,8 +153,8 @@ namespace AltinnCLITest
 
         private static List<string> GetLogEntries(TextWriter textWriter)
         {
-            List<string> logEntries = new List<string>();
-            StringReader re = new StringReader(textWriter.ToString());
+            List<string> logEntries = new();
+            StringReader re = new(textWriter.ToString());
             string input;
             while ((input = re.ReadLine()) != null)
             {

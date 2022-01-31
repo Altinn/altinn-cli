@@ -134,7 +134,7 @@ namespace AltinnCLI.Commands.Login.SubCommandHandlers
 
         public FormUrlEncodedContent GetUrlEncodedContent(string assertion)
         {
-            FormUrlEncodedContent formContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+            FormUrlEncodedContent formContent = new(new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"),
                 new KeyValuePair<string, string>("assertion", assertion),

@@ -198,7 +198,7 @@ namespace AltinnCLI.Commands.Storage.SubCommandHandlers
                     if (responseData != null)
                     {
                         string instanceGuidId = instance.Id.Split('/')[1];
-                        string fileName = $"{data.DataType.ToString()}_{((string.IsNullOrEmpty(data.Filename)) ? data.Id : data.Filename)}";
+                        string fileName = $"{data.DataType}_{((string.IsNullOrEmpty(data.Filename)) ? data.Id : data.Filename)}";
 
                         string fileFolder = $@"{instance.InstanceOwner.PartyId}\{instanceGuidId}";
 

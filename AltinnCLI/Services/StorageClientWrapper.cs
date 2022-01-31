@@ -47,7 +47,7 @@ namespace AltinnCLI.Services
         {
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
 
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+            HttpClientWrapper httpClientWrapper = new(_logger);
 
             Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(BaseAddress, cmd);
 
@@ -64,8 +64,8 @@ namespace AltinnCLI.Services
         /// <returns></returns>
         public Stream GetData(string command, string contentType = null)
         {
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
-            Uri uri = new Uri(command);
+            HttpClientWrapper httpClientWrapper = new(_logger);
+            Uri uri = new(command);
 
             HttpResponseMessage response = httpClientWrapper.GetWithUrl(uri, contentType).Result;
 
@@ -95,7 +95,7 @@ namespace AltinnCLI.Services
                 }
             }
 
-            HttpClientWrapper client = new HttpClientWrapper(_logger);
+            HttpClientWrapper client = new(_logger);
             HttpResponseMessage response = client.GetCommand(BaseAddress, cmd).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -132,7 +132,7 @@ namespace AltinnCLI.Services
                     cmd += $@"&{param.ApiName}={param.Value}";
                 }
             }
-            HttpClientWrapper client = new HttpClientWrapper(_logger);
+            HttpClientWrapper client = new(_logger);
             HttpResponseMessage response = client.GetCommand(BaseAddress, cmd).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -147,7 +147,7 @@ namespace AltinnCLI.Services
 
         public InstanceResponseMessage GetInstanceMetaData(Uri uri)
         {
-            HttpClientWrapper client = new HttpClientWrapper(_logger);
+            HttpClientWrapper client = new(_logger);
             Task<HttpResponseMessage> response = client.GetWithUrl(uri);
 
             string responsMessage = response.Result.Content.ReadAsStringAsync().Result;
@@ -161,7 +161,7 @@ namespace AltinnCLI.Services
         {
             string cmd = $@"instances/{instanceOwnerId}/{instanceGuid}";
 
-            HttpClientWrapper client = new HttpClientWrapper(_logger);
+            HttpClientWrapper client = new(_logger);
             Task<HttpResponseMessage> response = client.GetCommand(BaseAddress, cmd);
 
             Stream stream = response.Result.Content.ReadAsStreamAsync().Result;
@@ -184,8 +184,8 @@ namespace AltinnCLI.Services
             string cmd = $@"instances/{instanceOwnerId.Value}/{instanceGuid.Value}/data?{dataType.ApiName}={dataType.Value}";
             string contentType = "application/xml";
 
-            HttpClientWrapper client = new HttpClientWrapper(_logger);
-            StreamContent content = new StreamContent(data);
+            HttpClientWrapper client = new(_logger);
+            StreamContent content = new(data);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             content.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data; name=" + Path.GetFileNameWithoutExtension(fileName));
             content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);

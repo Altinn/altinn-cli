@@ -27,14 +27,14 @@ namespace AltinnCLI.Services
         /// <returns>respons data</returns>
         public async Task<HttpResponseMessage> GetCommand(string baseAddress, string command)
         {
-            Uri uri = new Uri(baseAddress + "/" + command);
+            Uri uri = new(baseAddress + "/" + command);
 
             return await GetWithUrl(uri);
         }
 
         public async Task<HttpResponseMessage> GetCommand(string baseAddress, string command, AuthenticationHeaderValue headers = null)
         {
-            Uri uri = new Uri(baseAddress + "/" + command);
+            Uri uri = new(baseAddress + "/" + command);
 
             return await GetWithUrl(uri, null, headers);
         }
@@ -52,32 +52,30 @@ namespace AltinnCLI.Services
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                using HttpClient client = new();
+                HttpRequestMessage message = new();
+                message.Headers.Add("Accept", "application/json");
+                if (string.IsNullOrEmpty(contentType))
                 {
-                    HttpRequestMessage message = new HttpRequestMessage();
-                    message.Headers.Add("Accept", "application/json");
-                    if (string.IsNullOrEmpty(contentType))
-                    {
-                        message.Headers.Add("ContentType", "application/json");
-                    }
-                    else
-                    {
-                        message.Headers.Add("ContentType", contentType);
-                    }
-
-                    if (headers != null)
-                    {
-                        client.DefaultRequestHeaders.Authorization = headers;
-                    }
-                    else
-                    {
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApplicationManager.MaskinportenToken);
-                    }
-
-                    message.RequestUri = uri;
-                    _logger.LogInformation($"Get data with URL:{uri}\n");
-                    response = await client.SendAsync(message).ConfigureAwait(false);
+                    message.Headers.Add("ContentType", "application/json");
                 }
+                else
+                {
+                    message.Headers.Add("ContentType", contentType);
+                }
+
+                if (headers != null)
+                {
+                    client.DefaultRequestHeaders.Authorization = headers;
+                }
+                else
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApplicationManager.MaskinportenToken);
+                }
+
+                message.RequestUri = uri;
+                _logger.LogInformation($"Get data with URL:{uri}\n");
+                response = await client.SendAsync(message).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -101,17 +99,15 @@ namespace AltinnCLI.Services
         /// <returns>respons data</returns>
         public async Task<HttpResponseMessage> PostCommand(string baseAddress, string command, StringContent content)
         {
-            Uri uri = new Uri(baseAddress + "/" + command);
+            Uri uri = new(baseAddress + "/" + command);
 
             HttpResponseMessage response;
 
             try
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
-                    response = await client.PostAsync(uri, content).ConfigureAwait(false);
-                }
+                using HttpClient client = new();
+                client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                response = await client.PostAsync(uri, content).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -135,24 +131,21 @@ namespace AltinnCLI.Services
         /// <returns>respons data</returns>
         public async Task<HttpResponseMessage> PostCommand(string baseAddress, string command, HttpContent content)
         {
-            Uri uri = new Uri(baseAddress + "/" + command);
+            Uri uri = new(baseAddress + "/" + command);
 
             HttpResponseMessage response = null;
             try
             {
-                using (HttpClient client = new HttpClient())
+                using HttpClient client = new();
+
+                client.Timeout = new TimeSpan(0, 0, 30);
+                if (!string.IsNullOrEmpty(ApplicationManager.MaskinportenToken))
                 {
-
-                    client.Timeout = new TimeSpan(0, 0, 30);
-                    if (!string.IsNullOrEmpty(ApplicationManager.MaskinportenToken))
-                    {
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApplicationManager.MaskinportenToken);
-                        // client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
-                    }
-
-                    response = await client.PostAsync(uri, content);
-
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApplicationManager.MaskinportenToken);
+                    // client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
                 }
+
+                response = await client.PostAsync(uri, content);
             }
             catch (Exception ex)
             {
@@ -176,19 +169,17 @@ namespace AltinnCLI.Services
         /// <returns>respons data</returns>
         public async Task<HttpResponseMessage> PutCommand(string baseAddress, string command, HttpContent content)
         {
-            Uri uri = new Uri(baseAddress + "/" + command);
+            Uri uri = new(baseAddress + "/" + command);
 
             HttpResponseMessage response;
 
             try
             {
                 var cookieContainer = new CookieContainer();
-                using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
-                using (HttpClient client = new HttpClient(handler))
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
-                    response = await client.PutAsync(uri, content).ConfigureAwait(false);
-                }
+                using var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+                using HttpClient client = new(handler);
+                client.DefaultRequestHeaders.Add("Authorization", ApplicationManager.MaskinportenToken);
+                response = await client.PutAsync(uri, content).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

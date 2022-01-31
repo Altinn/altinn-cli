@@ -14,7 +14,7 @@ namespace AltinnCLI.Commands.Storage
     /// </summary>
     public class GetInstanceHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
-        private IStorageClientWrapper ClientWrapper = null;
+        private readonly IStorageClientWrapper ClientWrapper = null;
         
         /// <summary>
         /// Creates an instance of the <see cref="GetInstanceHandler" /> class
@@ -116,7 +116,7 @@ namespace AltinnCLI.Commands.Storage
                 }
                 else
                 {
-                    StreamReader result = new StreamReader(response);
+                    StreamReader result = new(response);
                     _logger.LogInformation(result.ReadToEnd());
                 }    
             }

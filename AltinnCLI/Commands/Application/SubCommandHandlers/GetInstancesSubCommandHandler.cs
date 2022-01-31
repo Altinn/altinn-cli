@@ -11,7 +11,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
         /// <summary>
         /// Handles communication with the runtime API
         /// </summary>
-        private IApplicationClientWrapper clientWrapper = null;
+        private readonly IApplicationClientWrapper clientWrapper = null;
 
         /// <summary>
         /// Creates an instance of <see cref="CreateInstanceSubCommandHandler" /> class

@@ -125,7 +125,7 @@ namespace AltinnCLI.Models
 
         private string idField;
 
-        private ServiceOwnerSubscriptionReporteeFormTask[] formTaskField;
+        private List<ServiceOwnerSubscriptionReporteeFormTask> formTaskField;
 
         /// <remarks/>
         public string Id
@@ -142,7 +142,7 @@ namespace AltinnCLI.Models
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("FormTask")]
-        public ServiceOwnerSubscriptionReporteeFormTask[] FormTask
+        public List<ServiceOwnerSubscriptionReporteeFormTask> FormTask
         {
             get
             {
@@ -462,7 +462,7 @@ namespace AltinnCLI.Models
 
         private string idField;
 
-        private ServiceOwnerPrefillReporteeFormTask[] formTaskField;
+        private List<ServiceOwnerPrefillReporteeFormTask> formTaskField;
 
         private ServiceOwnerPrefillReporteeField[] fieldField;
 
@@ -481,7 +481,7 @@ namespace AltinnCLI.Models
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("FormTask")]
-        public ServiceOwnerPrefillReporteeFormTask[] FormTask
+        public List<ServiceOwnerPrefillReporteeFormTask> FormTask
         {
             get
             {

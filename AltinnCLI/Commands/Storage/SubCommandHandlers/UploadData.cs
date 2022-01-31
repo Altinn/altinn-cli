@@ -17,7 +17,7 @@ namespace AltinnCLI.Commands.Storage
     /// </summary>
     public class UploadData : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
-        private IStorageClientWrapper ClientWrapper = null;
+        private readonly IStorageClientWrapper ClientWrapper = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.

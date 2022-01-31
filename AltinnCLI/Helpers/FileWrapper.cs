@@ -31,7 +31,7 @@ namespace AltinnCLI.Helpers
 
             }
 
-            using (FileStream outputFile = new FileStream(Path.Combine(fileFolder, fileName), FileMode.OpenOrCreate, FileAccess.Write))
+            using (FileStream outputFile = new(Path.Combine(fileFolder, fileName), FileMode.OpenOrCreate, FileAccess.Write))
             {
                 stream.CopyTo(outputFile);
             }
@@ -47,8 +47,8 @@ namespace AltinnCLI.Helpers
         /// <returns>memory stream with file content</returns>
         public virtual MemoryStream GetFile(string fullFileName)
         {
-            FileStream fileStream = new FileStream(fullFileName, FileMode.Open);
-            MemoryStream memoryStream = new MemoryStream(new byte[fileStream.Length]);
+            FileStream fileStream = new(fullFileName, FileMode.Open);
+            MemoryStream memoryStream = new(new byte[fileStream.Length]);
             fileStream.CopyTo(memoryStream);
             memoryStream.Position = 0;
             fileStream.Close();

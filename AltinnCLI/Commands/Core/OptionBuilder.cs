@@ -62,7 +62,7 @@ namespace AltinnCLI.Commands.Core
             {
                 // Definition file was not found use, embedded definition file
                 Assembly assembly = Assembly.GetExecutingAssembly();
-                StreamReader textStreamReader = new StreamReader(assembly.GetManifestResourceStream("AltinnCLI.Commands.DefinitionFiles.Commands.json"));
+                StreamReader textStreamReader = new(assembly.GetManifestResourceStream("AltinnCLI.Commands.DefinitionFiles.Commands.json"));
                 commandDefinitions = textStreamReader.ReadToEnd();
             }
 
@@ -79,7 +79,7 @@ namespace AltinnCLI.Commands.Core
         /// <returns>List of sub command parameters</returns>
         public List<IOption> BuildAvailableOptions(ISubCommandHandler commandHandler)
         {
-            List<IOption> subCommandOptions = new List<IOption>();
+            List<IOption> subCommandOptions = new();
 
             // the defintion file shall be only be read at startup
             if (_instance.CfgCommands == null)

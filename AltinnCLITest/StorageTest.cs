@@ -49,7 +49,7 @@ namespace AltinnCLITest
             int expectedLogEntries = 1;
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -59,16 +59,16 @@ namespace AltinnCLITest
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
-            List<IOption> selectableOptions = new List<IOption>();
+            List<IOption> selectableOptions = new();
             selectableOptions.Add(TestDataBuilder.CreateOption(expectedOption, expectedDataType, expectedDescription, expectedApiName));
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOption, expectedValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(GetDataHandler));
 
             // Register commands and sub commands
@@ -111,7 +111,7 @@ namespace AltinnCLITest
             int expectedLogEntries = 1;
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -121,16 +121,16 @@ namespace AltinnCLITest
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
-            List<IOption> selectableOptions = new List<IOption>();
+            List<IOption> selectableOptions = new();
             selectableOptions.Add(TestDataBuilder.CreateOption(expectedOrgOption, expectedOrgDataType, expectedOrgDescription, expectedOrgApiName));
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOrgOption, expectedOrgValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(GetDataHandler));
 
             // Register commands and sub commands
@@ -174,7 +174,7 @@ namespace AltinnCLITest
             int expectedLogEntries = 2;
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -184,16 +184,16 @@ namespace AltinnCLITest
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
-            List<IOption> selectableOptions = new List<IOption>();
+            List<IOption> selectableOptions = new();
             selectableOptions.Add(TestDataBuilder.CreateOption(expectedOrgOption, expectedOrgDataType, expectedOrgDescription, expectedOrgApiName));
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOrgOption, expectedOrgValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(GetDataHandler));
 
             // Register commands and sub commands
@@ -244,7 +244,7 @@ namespace AltinnCLITest
             int expectedLogEntries = 2;
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -254,16 +254,16 @@ namespace AltinnCLITest
 
             // Build command options
             OptionBuilder builder = OptionBuilder.Instance(logger);
-            List<IOption> selectableOptions = new List<IOption>();
+            List<IOption> selectableOptions = new();
             selectableOptions.Add(TestDataBuilder.CreateOption(expectedOrgOption, expectedOrgDataType, expectedOrgDescription, expectedOrgApiName));
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOrgOption, expectedOrgValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(GetDataHandler));
 
             // Register commands and sub commands
@@ -281,7 +281,7 @@ namespace AltinnCLITest
             subCommandHandler.DictOptions = cliOptions;
 
             // Mock the file wrapper
-            Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
+            Mock<IFileWrapper> mockedWrapper = new();
             mockedWrapper.Setup(x => x.SaveToFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>())).Returns(true);
             subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
@@ -316,7 +316,7 @@ namespace AltinnCLITest
             int expectedLogEntries = 1;
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -325,14 +325,14 @@ namespace AltinnCLITest
             BuildEnvironment(environmentSetting);
 
             // Build command options
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOption, expectedValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(UploadData));
 
             // Register commands and sub commands
@@ -385,7 +385,7 @@ namespace AltinnCLITest
             string expectedFileNotFoundErrorMessage = "Invalid value for parameter";
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -394,17 +394,17 @@ namespace AltinnCLITest
             BuildEnvironment(environmentSetting);
 
             // Build command options
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
             cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
             cliOptions.Add(expectedElementType, expectedElementTypeValue);
             cliOptions.Add(expectedFile, expectedFileValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(UploadData));
 
             // Register commands and sub commands
@@ -466,7 +466,7 @@ namespace AltinnCLITest
 
             //Build environment, 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             // Configure logger which is set on registered classes/objects
             TextWriter textWriter = new StringWriter();
@@ -475,17 +475,17 @@ namespace AltinnCLITest
             BuildEnvironment(environmentSetting);
 
             // Build command options
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
             cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
             cliOptions.Add(expectedElementType, expectedElementTypeValue);
             cliOptions.Add(expectedFile, expectedFileValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(UploadData));
 
             // Register commands and sub commands
@@ -504,7 +504,7 @@ namespace AltinnCLITest
             ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
 
             // Mock the file wrapper
-            Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
+            Mock<IFileWrapper> mockedWrapper = new();
             mockedWrapper.Setup(x => x.GetFile(It.IsAny<string>())).Returns(new MemoryStream());
             subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
@@ -551,24 +551,24 @@ namespace AltinnCLITest
             string expectedFileUploadedMessage = "was successfully uploaded";
 
             string environmentSetting = "{\"UseLiveClient\": \"false\"}";
-            NullLogger<OptionBuilder> logger = new NullLogger<OptionBuilder>();
+            NullLogger<OptionBuilder> logger = new();
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
             BuildEnvironment(environmentSetting);
 
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOwnerId, expectedOwnerIdValue);
             cliOptions.Add(expectedInstanceId, expectedInstanceIdValue);
             cliOptions.Add(expectedElementType, expectedElementTypeValue);
             cliOptions.Add(expectedFile, expectedFileValue);
 
             // Define which command and sub command that shall be registered in service provider
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
             availableSubCommands.Add(typeof(UploadData));
 
             // Register commands and sub commands
@@ -587,7 +587,7 @@ namespace AltinnCLITest
             ReplaceSelectableOption("file", mockFileOption, subCommandHandler.SelectableCliOptions);
 
             // Mock the file wrapper
-            Mock<IFileWrapper> mockedWrapper = new Mock<IFileWrapper>();
+            Mock<IFileWrapper> mockedWrapper = new();
             mockedWrapper.Setup(x => x.GetFile(It.IsAny<string>())).Returns(new MemoryStream());
             subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
@@ -631,14 +631,14 @@ namespace AltinnCLITest
         private static void BuildEnvironment(string environmentSetting)
         {
             byte[] data = Encoding.ASCII.GetBytes(environmentSetting);
-            MemoryStream stream = new MemoryStream(data);
+            MemoryStream stream = new(data);
 
             var configBuilder = new ConfigurationBuilder()
                 .AddJsonStream(stream);
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
-            NullLogger<ApplicationManager> logger = new NullLogger<ApplicationManager>();
-            ApplicationManager applicationManager = new ApplicationManager(logger);
+            NullLogger<ApplicationManager> logger = new();
+            ApplicationManager applicationManager = new(logger);
             applicationManager.SetEnvironment(configurationRoot, null);
         }
 
@@ -652,8 +652,8 @@ namespace AltinnCLITest
 
         private static List<string> GetLogEntries(TextWriter textWriter)
         {
-            List<string> logEntries = new List<string>();
-            StringReader re = new StringReader(textWriter.ToString());
+            List<string> logEntries = new();
+            StringReader re = new(textWriter.ToString());
             string input;
             while ((input = re.ReadLine()) != null)
             {

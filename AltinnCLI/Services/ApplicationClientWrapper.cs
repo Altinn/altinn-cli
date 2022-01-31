@@ -43,20 +43,16 @@ namespace AltinnCLI.Services
             string AppBaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
             string cmd = $@"{org}/{app}/instances";
 
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+            HttpClientWrapper httpClientWrapper = new(_logger);
 
             Task<HttpResponseMessage> response = httpClientWrapper.PostCommand(AppBaseAddress, cmd, content);
 
-
-            if (response.Result.IsSuccessStatusCode)
+            if (!response.Result.IsSuccessStatusCode)
             {
-                return response.Result.Content.ReadAsStringAsync().Result;
-            }
-            else
-            {
-                return $@"Could not create application instance. Error code: {response.Result.StatusCode} Error message: {response.Result.ReasonPhrase}";
+                throw new HttpRequestException($"Could not create application instance. Error code: {response.Result.StatusCode} Error message: {response.Result.ReasonPhrase}");
             }
 
+            return response.Result.Content.ReadAsStringAsync().Result;
         }
 
         /// <summary>
@@ -82,7 +78,7 @@ namespace AltinnCLI.Services
             string BaseAddress = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
             string cmd = $@"instances?&appId={org}/{app}";
 
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+            HttpClientWrapper httpClientWrapper = new(_logger);
 
             Task<HttpResponseMessage> response = httpClientWrapper.GetCommand(BaseAddress, cmd);
 

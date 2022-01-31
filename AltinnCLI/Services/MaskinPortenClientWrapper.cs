@@ -29,7 +29,7 @@ namespace AltinnCLI.Services
 
         public bool PostToken(FormUrlEncodedContent bearer, out string token)
         {
-            HttpClientWrapper httpClientWrapper = new HttpClientWrapper(_logger);
+            HttpClientWrapper httpClientWrapper = new(_logger);
             token = string.Empty;
             string cmd = "token";
 

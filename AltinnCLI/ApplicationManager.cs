@@ -150,7 +150,7 @@ namespace AltinnCLI
         /// <returns></returns>
         private Dictionary<string, string> ParseArguments(string[] args)
         {
-            Dictionary<string, string> commandKeysAndValues = new Dictionary<string, string>();
+            Dictionary<string, string> commandKeysAndValues = new();
 
             foreach (string param in args)
             {
