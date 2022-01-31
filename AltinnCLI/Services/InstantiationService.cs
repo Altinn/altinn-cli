@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -70,62 +71,85 @@ namespace AltinnCLI.Services
                     }
                     else if (!Validator.IsValidPersonNumber(reportee.Id))
                     {
-                        //throw new ArgumentException("Invalid reportee id provided", nameof(reportee.Id));
+                        _logger.LogError("Invalid reportee id provided {ReporteeId}. Mocving to error file", reportee.Id);
                         MoveReporteeToErrorFile(failedShipmentsFile, failedShipments, reportee);
                         continue;
                     }
 
                     foreach (ServiceOwnerPrefillReporteeFormTask formTask in reportee.FormTask)
                     {
-                        ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask);
+                        ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask, failedShipmentsFile, failedShipments);
                     }
                 }
 
-                File.Move(inputFile, Path.Combine(_config.OutputFolder, new FileInfo(inputFile).Name));
+                File.Move(inputFile, Path.Combine(_config.OutputFolder, new FileInfo(inputFile).Name), true);
             }
 
             return Task.CompletedTask;
         }
 
-        private Task ProcessFormTask(string externalShipmentReference, ServiceOwnerPrefillReportee reportee, bool reporteeIsOrg, ServiceOwnerPrefillReporteeFormTask formTask)
+        private Task ProcessFormTask(
+            string externalShipmentReference,
+            ServiceOwnerPrefillReportee reportee,
+            bool reporteeIsOrg,
+            ServiceOwnerPrefillReporteeFormTask formTask,
+            string failedShipmentsFile,
+            ServiceOwner failedShipments)
         {
             var appNameAvailable = _config.ApplicationIdLookup.TryGetValue(formTask.ExternalServiceCode, out string appId);
 
-            if (appNameAvailable)
+            if (!appNameAvailable)
             {
-                Instance i = new Instance
-                {
-                    AppId = appId,
-                    InstanceOwner = new InstanceOwner(),
-                    DataValues = new Dictionary<string, string>()
+                _logger.LogError($"AppId not confiugred for external service code {formTask.ExternalServiceCode}. Moving form task to error file.");
+                MoveFormTaskToErrorFile(failedShipmentsFile, failedShipments, reportee, formTask);
+                return Task.CompletedTask;
+            }
+
+            Instance i = new()
+            {
+                AppId = appId,
+                InstanceOwner = new InstanceOwner(),
+                DataValues = new Dictionary<string, string>()
                     {
                         { "ExternalShipmentReference", externalShipmentReference },
                         { "SendersReference", formTask.SendersReference },
                         { "ReceiversReference", formTask.ReceiversReference },
                         { "IdentifyingFields", string.Join(", ", formTask.IdentifyingFields.Select(f => f.Value).ToList())}
                     }
-                };
+            };
 
-                if (reporteeIsOrg)
-                {
-                    i.InstanceOwner.OrganisationNumber = reportee.Id;
-                }
-                else
-                {
-                    i.InstanceOwner.PersonNumber = reportee.Id;
-                }
-
-                var multipartFormData = BuildContentForInstance(i, formTask);
-
-                IApplicationClientWrapper _clientWrapper = new ApplicationClientWrapper(_logger);
-
-                string response = _clientWrapper.CreateInstance(appId.Split("/")[0], appId.Split("/")[1], string.Empty, multipartFormData);
-
-                return Task.CompletedTask;
+            if (reporteeIsOrg)
+            {
+                i.InstanceOwner.OrganisationNumber = reportee.Id;
+            }
+            else
+            {
+                i.InstanceOwner.PersonNumber = reportee.Id;
             }
 
-            _logger.LogError("AppId not confiugred");
-            // todo: error handling. remove form task from batch over to error
+            try
+            {
+                var multipartFormData = BuildContentForInstance(i, formTask);
+                IApplicationClientWrapper _clientWrapper = new ApplicationClientWrapper(_logger);
+                string response = _clientWrapper.CreateInstance(appId.Split("/")[0], appId.Split("/")[1], string.Empty, multipartFormData);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MoveFormTaskToErrorFile(failedShipmentsFile, failedShipments, reportee, formTask);
+                _logger.LogError("Generating data elements for instance failed with exception. Moving form task to error file.", ex);
+
+            }
+            catch (HttpRequestException ex)
+            {
+                MoveFormTaskToErrorFile(failedShipmentsFile, failedShipments, reportee, formTask);
+                _logger.LogError("Instance creation failed with exception. Moving form task to error file.", ex);
+            }
+            catch (Exception ex)
+            {
+                MoveFormTaskToErrorFile(failedShipmentsFile, failedShipments, reportee, formTask);
+                _logger.LogError("An unknown exception occured. Moving form task to error file.", ex);
+            }
+
             return Task.CompletedTask;
         }
 
@@ -135,17 +159,18 @@ namespace AltinnCLI.Services
 
             foreach (ServiceOwnerPrefillReporteeFormTaskForm form in formTask.Form)
             {
+                var validDataFormatId = _config.DataTypeLookup.TryGetValue(form.DataFormatId, out string dataType);
 
-                if (!_config.DataTypeLookup.ContainsKey(form.DataFormatId))
+                if (!validDataFormatId)
                 {
                     _logger.LogError("Data type mapping missing for {DataFormatId}", form.DataFormatId);
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(formTask), "Data type mapping missing for { DataFormatId}. Moving formTask to error file.", form.DataFormatId);
                 }
 
                 string formData = form.FormData;
                 StringContent stringContent = new(formData);
                 stringContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/xml");
-                contentBuilder.AddDataElement(_config.DataTypeLookup.GetValueOrDefault(form.DataFormatId), stringContent);
+                contentBuilder.AddDataElement(dataType, stringContent);
             }
 
             return contentBuilder.Build();
@@ -155,7 +180,7 @@ namespace AltinnCLI.Services
         {
             string failedShipmentsFile = Path.Combine(_config.ErrorFolder, $"failed_{new FileInfo(inputFile).Name}");
 
-            ServiceOwner failedShipments = new ServiceOwner
+            ServiceOwner failedShipments = new()
             {
                 ServiceOwnerName = serviceOwner.ServiceOwnerName,
                 Subscription = serviceOwner.Subscription,
@@ -173,7 +198,44 @@ namespace AltinnCLI.Services
         private void MoveReporteeToErrorFile(string failedShipmentsFile, ServiceOwner failedShipments, ServiceOwnerPrefillReportee reportee)
         {
             failedShipments.Prefill.Reportee.Add(reportee);
-            var writer = XmlWriter.Create(failedShipmentsFile, new XmlWriterSettings { Indent = true});
+
+            if (File.Exists(failedShipmentsFile))
+            {
+                File.Delete(failedShipmentsFile);
+            }
+
+            var writer = XmlWriter.Create(failedShipmentsFile, new XmlWriterSettings { Indent = true });
+
+            _serializer.Serialize(writer, failedShipments);
+            writer.Close();
+        }
+
+        private void MoveFormTaskToErrorFile(
+            string failedShipmentsFile,
+            ServiceOwner failedShipments,
+            ServiceOwnerPrefillReportee reportee,
+            ServiceOwnerPrefillReporteeFormTask formTask)
+        {
+            if (File.Exists(failedShipmentsFile))
+            {
+                File.Delete(failedShipmentsFile);
+            }
+
+            ServiceOwnerPrefillReportee failedReportee = failedShipments.Prefill.Reportee.FirstOrDefault(r => r.Id == reportee.Id);
+            if (failedReportee == null)
+            {
+                failedReportee = new ServiceOwnerPrefillReportee
+                {
+                    Id = reportee.Id,
+                    Field = reportee.Field,
+                    FormTask = new()
+                };
+            }
+
+            failedReportee.FormTask.Add(formTask);
+            failedShipments.Prefill.Reportee.Add(failedReportee);
+
+            var writer = XmlWriter.Create(failedShipmentsFile, new XmlWriterSettings { Indent = true });
 
             _serializer.Serialize(writer, failedShipments);
             writer.Close();
