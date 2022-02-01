@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -199,15 +198,9 @@ namespace AltinnCLI.Services
         {
             failedShipments.Prefill.Reportee.Add(reportee);
 
-            if (File.Exists(failedShipmentsFile))
-            {
-                File.Delete(failedShipmentsFile);
-            }
-
-            var writer = XmlWriter.Create(failedShipmentsFile, new XmlWriterSettings { Indent = true });
-
-            _serializer.Serialize(writer, failedShipments);
-            writer.Close();
+            using StreamWriter sw = new(failedShipmentsFile);
+            _serializer.Serialize(sw, failedShipments);
+            sw.Close();
         }
 
         private void MoveFormTaskToErrorFile(
@@ -216,11 +209,6 @@ namespace AltinnCLI.Services
             ServiceOwnerPrefillReportee reportee,
             ServiceOwnerPrefillReporteeFormTask formTask)
         {
-            if (File.Exists(failedShipmentsFile))
-            {
-                File.Delete(failedShipmentsFile);
-            }
-
             ServiceOwnerPrefillReportee failedReportee = failedShipments.Prefill.Reportee.FirstOrDefault(r => r.Id == reportee.Id);
             if (failedReportee == null)
             {
@@ -235,10 +223,9 @@ namespace AltinnCLI.Services
             failedReportee.FormTask.Add(formTask);
             failedShipments.Prefill.Reportee.Add(failedReportee);
 
-            var writer = XmlWriter.Create(failedShipmentsFile, new XmlWriterSettings { Indent = true });
-
-            _serializer.Serialize(writer, failedShipments);
-            writer.Close();
+            using StreamWriter sw = new(failedShipmentsFile);
+            _serializer.Serialize(sw, failedShipments);
+            sw.Close();
         }
     }
 }
