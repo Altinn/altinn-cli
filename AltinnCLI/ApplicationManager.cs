@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using AltinnCLI.Commands.Core;
 
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,7 @@ namespace AltinnCLI
         public static IServiceProvider ServiceProvider;
         public static string MaskinportenToken = string.Empty;
         public static bool IsLoggedIn = false;
-        private static ILogger _logger;
+        private readonly ILogger _logger;
 
         public ApplicationManager(ILogger<ApplicationManager> logger = null)
         {
@@ -48,7 +49,7 @@ namespace AltinnCLI
                 {
                     if (string.Equals(command.Name, "Help", StringComparison.OrdinalIgnoreCase))
                     {
-                       command.Run(ParseArguments(input));
+                        command.Run(ParseArguments(input));
                     }
                     else if (string.Equals(command.Name, "Quit", StringComparison.OrdinalIgnoreCase))
                     {

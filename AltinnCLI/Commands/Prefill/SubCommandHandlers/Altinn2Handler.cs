@@ -1,13 +1,9 @@
 ﻿using AltinnCLI.Commands.Core;
-using AltinnCLI.Configurations;
-using AltinnCLI.Services;
 using AltinnCLI.Services.Interfaces;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using System;
-using System.Collections.Generic;
 
 namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
 {
@@ -15,10 +11,9 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
     {
         private readonly IInstantiation _instantiationService;
 
-        public Altinn2Handler(ILogger<Altinn2Handler> logger) : base(logger)
+        public Altinn2Handler(IInstantiation service, ILogger<Altinn2Handler> logger) : base(logger)
         {
-            InstantiationConfig config = ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig").Get<InstantiationConfig>();
-            _instantiationService = new InstantiationService(config, logger);
+            _instantiationService = service; 
         }
 
         /// <summary>

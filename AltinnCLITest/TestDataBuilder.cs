@@ -53,9 +53,7 @@ namespace AltinnCLITest
 
         public static IOption CreateOption(string optionName, string dataType, string description, string apiName)
         {
-            Type baseType = null;
-
-            Type t = OptionBuilder.GetSystemType(dataType, out baseType);
+            Type t = OptionBuilder.GetSystemType(dataType, out Type baseType);
 
             var combinedType = baseType.MakeGenericType(t);
             IOption option = (IOption)Activator.CreateInstance(combinedType);

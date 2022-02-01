@@ -11,7 +11,7 @@ namespace AltinnCLI.Services
         /// <summary>
         /// Application logger 
         /// </summary>
-        protected static ILogger _logger;
+       private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationClientWrapper" /> class.

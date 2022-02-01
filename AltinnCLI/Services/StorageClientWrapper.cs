@@ -20,7 +20,7 @@ namespace AltinnCLI.Services
         /// <summary>
         /// Application logger 
         /// </summary>
-        protected static ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StorageClientWrapper" /> class.
@@ -193,11 +193,11 @@ namespace AltinnCLI.Services
 
             if (response.Result.IsSuccessStatusCode)
             {
-                _logger.LogInformation($"The file: {fileName} was successfully uploaded");
+                _logger.LogInformation("The file: {fileName} was successfully uploaded", fileName);
             }
             else
             {
-                _logger.LogError($"Failed to upload the file: {fileName}");
+                _logger.LogError("Failed to upload the file: {fileName}", fileName);
             }
 
             return null;

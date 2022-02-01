@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Net.Http;
 using System.IO;
 using System.Reflection;
+
 using AltinnCLI.Commands.Core;
-using AltinnCLI.Configurations;
 using AltinnCLI.Extensions;
+
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,6 +14,11 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
+using Altinn.ApiClients.Maskinporten.Extensions;
+using Altinn.ApiClients.Maskinporten.Services;
+using AltinnCLI.Configurations;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 
 namespace AltinnCLI
 {
@@ -20,19 +28,20 @@ namespace AltinnCLI
     class Program
     {
         private const string Prompt = "Altinn CLI > ";
-
         static void Main()
         {
             ConfigureLogging();
-            IServiceCollection services = GetAndRegisterServices();
-
-            ServiceProvider serviceProvider = services.BuildServiceProvider();
 
             IConfigurationRoot configuration = BuildConfiguration();
 
+            IServiceCollection services = GetAndRegisterServices(configuration);
+
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+
             var app = serviceProvider.GetService<ApplicationManager>();
             app.SetEnvironment(configuration, serviceProvider);
-            
+
             while (true)
             {
                 Console.Write(Prompt);
@@ -53,10 +62,9 @@ namespace AltinnCLI
         /// in running assembly, and registers them as services according to type. This makes them available for the Applications CommandProvider. 
         /// </summary>
         /// <returns>List of registered services</returns>
-        private static IServiceCollection GetAndRegisterServices()
+        private static IServiceCollection GetAndRegisterServices(IConfigurationRoot configuration)
         {
             IServiceCollection services = new ServiceCollection();
-
 
             services.AddLogging(configure =>
             {
@@ -87,7 +95,15 @@ namespace AltinnCLI
                 }).AddTransient(typeof(ISubCommandHandler), subCommand);
             });
 
-            //services.Configure<InstantiationConfig>(ApplicationManager.ApplicationConfiguration.GetSection("InstantiationConfig"));
+            services.AddSingleton<IMemoryCache, MemoryCache>();
+            services.AddHttpClient();
+
+            services.AddMaskinportenHttpClient<SettingsJwkClientDefinition>(
+                configuration.GetSection("MaskinportenSettings"),
+                "myhttpclient");
+            services.AddSingleton<IInstantiation,InstantiationService>();
+
+             services.Configure<InstantiationConfig>(configuration.GetSection("InstantiationConfig"));
 
             return services;
         }

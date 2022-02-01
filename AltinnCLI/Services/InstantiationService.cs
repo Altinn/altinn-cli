@@ -6,6 +6,7 @@ using AltinnCLI.Models;
 using AltinnCLI.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using System;
 using System.Collections.Generic;
@@ -22,11 +23,12 @@ namespace AltinnCLI.Services
     public class InstantiationService : IInstantiation
     {
         private readonly InstantiationConfig _config;
-        private readonly ILogger _logger;
+        private readonly ILogger<IInstantiation> _logger;
         private readonly XmlSerializer _serializer;
-        public InstantiationService(InstantiationConfig config, ILogger logger)
+
+        public InstantiationService(IOptions<InstantiationConfig> config, ILogger<IInstantiation> logger)
         {
-            _config = config;
+            _config = config.Value;
             _logger = logger;
             _serializer = new(typeof(ServiceOwner));
         }
@@ -40,7 +42,7 @@ namespace AltinnCLI.Services
 
             if (string.IsNullOrEmpty(_config.OutputFolder) || string.IsNullOrEmpty(_config.ErrorFolder))
             {
-                throw new ArgumentException("Outpur and error folder must be provided");
+                throw new ArgumentException("Output and error folder must be provided");
             }
 
             Directory.CreateDirectory(_config.OutputFolder);
