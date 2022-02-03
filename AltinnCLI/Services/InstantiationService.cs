@@ -1,5 +1,6 @@
 ﻿using Altinn.Platform.Storage.Interface.Models;
 
+using AltinnCLI.Clients;
 using AltinnCLI.Configurations;
 using AltinnCLI.Helpers;
 using AltinnCLI.Models;
@@ -14,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -25,15 +25,17 @@ namespace AltinnCLI.Services
         private readonly InstantiationConfig _config;
         private readonly ILogger<IInstantiation> _logger;
         private readonly XmlSerializer _serializer;
+        private readonly InstanceClient _client;
 
-        public InstantiationService(IOptions<InstantiationConfig> config, ILogger<IInstantiation> logger)
+        public InstantiationService(IOptions<InstantiationConfig> config, InstanceClient client, ILogger<IInstantiation> logger)
         {
             _config = config.Value;
             _logger = logger;
             _serializer = new(typeof(ServiceOwner));
+            _client = client;
         }
 
-        public Task Altinn2BatchInstantiation()
+        public bool Altinn2BatchInstantiation()
         {
             if (!Directory.Exists(_config.InputFolder))
             {
@@ -47,8 +49,6 @@ namespace AltinnCLI.Services
 
             Directory.CreateDirectory(_config.OutputFolder);
             Directory.CreateDirectory(_config.ErrorFolder);
-
-            // error handling if values not configures.
 
             foreach (string inputFile in Directory.GetFiles(_config.InputFolder))
             {
@@ -79,17 +79,17 @@ namespace AltinnCLI.Services
 
                     foreach (ServiceOwnerPrefillReporteeFormTask formTask in reportee.FormTask)
                     {
-                        ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask, failedShipmentsFile, failedShipments);
+                       ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask, failedShipmentsFile, failedShipments);
                     }
                 }
 
                 File.Move(inputFile, Path.Combine(_config.OutputFolder, new FileInfo(inputFile).Name), true);
             }
 
-            return Task.CompletedTask;
+            return true;
         }
 
-        private Task ProcessFormTask(
+        private bool ProcessFormTask(
             string externalShipmentReference,
             ServiceOwnerPrefillReportee reportee,
             bool reporteeIsOrg,
@@ -103,7 +103,7 @@ namespace AltinnCLI.Services
             {
                 _logger.LogError($"AppId not confiugred for external service code {formTask.ExternalServiceCode}. Moving form task to error file.");
                 MoveFormTaskToErrorFile(failedShipmentsFile, failedShipments, reportee, formTask);
-                return Task.CompletedTask;
+                return true;
             }
 
             Instance i = new()
@@ -131,14 +131,14 @@ namespace AltinnCLI.Services
             try
             {
                 var multipartFormData = BuildContentForInstance(i, formTask);
-                IApplicationClientWrapper _clientWrapper = new ApplicationClientWrapper(_logger);
-                string response = _clientWrapper.CreateInstance(appId.Split("/")[0], appId.Split("/")[1], string.Empty, multipartFormData);
+
+                string response = _client.PostInstance(appId.Split("/")[0], appId.Split("/")[1], multipartFormData).Result;
+                _logger.LogInformation("Instance successfully created");
             }
             catch (ArgumentOutOfRangeException ex)
             {
                 MoveFormTaskToErrorFile(failedShipmentsFile, failedShipments, reportee, formTask);
                 _logger.LogError("Generating data elements for instance failed with exception. Moving form task to error file.", ex);
-
             }
             catch (HttpRequestException ex)
             {
@@ -151,7 +151,7 @@ namespace AltinnCLI.Services
                 _logger.LogError("An unknown exception occured. Moving form task to error file.", ex);
             }
 
-            return Task.CompletedTask;
+            return true;
         }
 
         private MultipartFormDataContent BuildContentForInstance(Instance instance, ServiceOwnerPrefillReporteeFormTask formTask)

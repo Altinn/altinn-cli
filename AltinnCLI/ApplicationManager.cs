@@ -55,7 +55,7 @@ namespace AltinnCLI
                     {
                         command.Run();
                     }
-                    else if (IsLoggedIn || (string.Equals(command.Name, "Login", StringComparison.OrdinalIgnoreCase)))
+                    else 
                     {
 
                         if (input.Length > 1)
@@ -67,10 +67,12 @@ namespace AltinnCLI
                             command.Run();
                         }
                     }
-                    else
+
+                    //to do: handle authentication for all actions
+                   /* else
                     {
                         _logger.LogInformation($"The command can not be execute, please log in \n");
-                    }
+                    }*/ 
                 }
                 else
                 {

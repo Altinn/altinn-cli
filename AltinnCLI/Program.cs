@@ -19,6 +19,7 @@ using Altinn.ApiClients.Maskinporten.Services;
 using AltinnCLI.Configurations;
 using AltinnCLI.Services;
 using AltinnCLI.Services.Interfaces;
+using AltinnCLI.Clients;
 
 namespace AltinnCLI
 {
@@ -98,12 +99,13 @@ namespace AltinnCLI
             services.AddSingleton<IMemoryCache, MemoryCache>();
             services.AddHttpClient();
 
-            services.AddMaskinportenHttpClient<SettingsJwkClientDefinition>(
-                configuration.GetSection("MaskinportenSettings"),
-                "myhttpclient");
+            
             services.AddSingleton<IInstantiation,InstantiationService>();
 
-             services.Configure<InstantiationConfig>(configuration.GetSection("InstantiationConfig"));
+            services.AddMaskinportenHttpClient<SettingsJwkClientDefinition, InstanceClient>(
+               configuration.GetSection("MaskinportenSettings"));
+
+            services.Configure<InstantiationConfig>(configuration.GetSection("InstantiationConfig"));
 
             return services;
         }

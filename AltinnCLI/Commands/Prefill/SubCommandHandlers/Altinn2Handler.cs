@@ -13,7 +13,7 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
 
         public Altinn2Handler(IInstantiation service, ILogger<Altinn2Handler> logger) : base(logger)
         {
-            _instantiationService = service; 
+            _instantiationService = service;
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
         /// <returns>Returns true if the command completes succesfully</returns>
         public bool Run()
         {
-            _instantiationService.Altinn2BatchInstantiation();
-            return true;
+           return _instantiationService.Altinn2BatchInstantiation();
+            
         }
     }
 }
