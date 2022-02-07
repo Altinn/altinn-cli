@@ -105,6 +105,9 @@ namespace AltinnCLI
             services.AddMaskinportenHttpClient<SettingsJwkClientDefinition, InstanceClient>(
                configuration.GetSection("MaskinportenSettings"));
 
+            services.AddMaskinportenHttpClient<SettingsJwkClientDefinition, DataClient>(
+            configuration.GetSection("MaskinportenSettings"));
+
             services.Configure<InstantiationConfig>(configuration.GetSection("InstantiationConfig"));
 
             return services;

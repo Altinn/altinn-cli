@@ -11,6 +11,8 @@ using System.Text;
 using AltinnCLI.Commands.Storage.SubCommandHandlers;
 using AltinnCLI.Models;
 using AltinnCLI.Commands.Core;
+using AltinnCLI.Clients;
+using System.Net.Http;
 
 namespace AltinnCLITest
 {
@@ -32,7 +34,10 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()), 
+                new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -61,7 +66,10 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+               new DataClient(new HttpClient()),
+              new InstanceClient(new HttpClient()),
+              new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -91,7 +99,10 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -125,8 +136,10 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
-
+            GetDataHandler handler = new(
+               new DataClient(new HttpClient()),
+              new InstanceClient(new HttpClient()),
+              new NullLogger<GetDataHandler>());
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
@@ -149,7 +162,7 @@ namespace AltinnCLITest
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
             command.SubCommands.Add(subCommand);
-        
+
             CfgCommandList commandList = new();
             commandList.Commands = new List<CfgCommand>
             {
@@ -159,13 +172,15 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
-
+             GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()), 
+                new NullLogger<GetDataHandler>());
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
         }
-               
+
         [TestMethod]
         [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_One_Option()
@@ -199,8 +214,10 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
-
+            GetDataHandler handler = new(
+               new DataClient(new HttpClient()),
+              new InstanceClient(new HttpClient()),
+              new NullLogger<GetDataHandler>());
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
@@ -246,7 +263,10 @@ namespace AltinnCLITest
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -276,7 +296,10 @@ namespace AltinnCLITest
             Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOption, expectedValue);
 
-            ISubCommandHandler subCommandHandler = new GetDataHandler(logger)
+            ISubCommandHandler subCommandHandler = new GetDataHandler(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                logger)
             {
                 SelectableCliOptions = selectableOptions,
                 DictOptions = cliOptions
@@ -320,11 +343,16 @@ namespace AltinnCLITest
             Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOption, expectedValue);
 
-            ISubCommandHandler subCommandHandler = new GetDataHandler(logger)
+            ISubCommandHandler subCommandHandler = new GetDataHandler(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                logger)
             {
                 SelectableCliOptions = selectableOptions,
                 DictOptions = cliOptions
             };
+
+
 
             bool isValid = builder.AssignValueToCliOptions(subCommandHandler);
 

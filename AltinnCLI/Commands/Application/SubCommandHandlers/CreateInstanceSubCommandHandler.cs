@@ -1,17 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using Altinn.Platform.Storage.Interface.Models;
 
-using Altinn.Platform.Storage.Interface.Models;
+using AltinnCLI.Clients;
 using AltinnCLI.Commands.Core;
 using AltinnCLI.Helpers;
-using AltinnCLI.Services;
-using AltinnCLI.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
+
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
+
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace AltinnCLI.Commands.Application.SubCommandHandlers
 {
@@ -26,22 +26,15 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
         /// <summary>
         /// Handles communication with the runtime API
         /// </summary>
-        private readonly IApplicationClientWrapper _clientWrapper;
+        private readonly InstanceClient _client;
 
         /// <summary>
         /// Creates an instance of <see cref="CreateInstanceSubCommandHandler" /> class
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information</param>
-        public CreateInstanceSubCommandHandler(ILogger<CreateInstanceSubCommandHandler> logger) : base(logger)
+        public CreateInstanceSubCommandHandler(InstanceClient client, ILogger<CreateInstanceSubCommandHandler> logger) : base(logger)
         {
-            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
-            {
-                _clientWrapper = new ApplicationClientWrapper(_logger);
-            }
-            else
-            {
-                _clientWrapper = new ApplicationFileClientWrapper(_logger);
-            }
+            _client = client;
         }
 
         /// <summary>
@@ -140,7 +133,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
 
                             try
                             {
-                                string result = _clientWrapper.CreateInstance(app, org, instanceOwnerId, multipartFormData);
+                                string result = _client.PostInstance(app, org,  multipartFormData).Result;
 
                                 Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
                                 File.WriteAllText($"{folder}\\{personNumber}.json", JsonConvert.SerializeObject(instanceResult, Formatting.Indented));
@@ -157,7 +150,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
                 {
                     multipartFormData = BuildContentForInstance(folder);
 
-                    string response = _clientWrapper.CreateInstance(org, app, instanceOwnerId, multipartFormData);
+                    string response = _client.PostInstance(org, app, multipartFormData).Result;
                     _logger.LogInformation(response);
                 }
                 

@@ -30,9 +30,6 @@ namespace AltinnCLITest
         [TestCleanup]
         public void CleanUp()
         {
-            StorageClientFileWrapper.InstanceResponse = null;
-            StorageClientFileWrapper.IsSuccessStatusCode = false;
-            StorageClientFileWrapper.DataContent = null;
         }
 
         [TestMethod]
@@ -201,7 +198,6 @@ namespace AltinnCLITest
 
             // Set response from ClientWrapper
             InstanceResponseMessage response = TestDataBuilder.CreateInstanceResponse(1);
-            StorageClientFileWrapper.InstanceResponse = response;
 
             // Fetch GetDataHandler sub command
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
@@ -271,9 +267,7 @@ namespace AltinnCLITest
 
             // Set response from ClientWrapper
             InstanceResponseMessage response = TestDataBuilder.CreateInstanceResponse(1);
-            StorageClientFileWrapper.InstanceResponse = response;
-            StorageClientFileWrapper.DataContent = new MemoryStream();
-
+ 
             // Fetch GetDataHandler subCommand
             var sssList = serviceProvider.GetServices<ISubCommandHandler>().ToList();
             ISubCommandHandler subCommandHandler = sssList.First(x => x.Name == "GetData");
@@ -509,7 +503,6 @@ namespace AltinnCLITest
             subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
             // Set response from ClientWrapper
-            StorageClientFileWrapper.IsSuccessStatusCode = false;
 
             // Assign the input options to the subCommand
             subCommandHandler.DictOptions = cliOptions;
@@ -592,7 +585,6 @@ namespace AltinnCLITest
             subCommandHandler.CliFileWrapper = mockedWrapper.Object;
 
             // Set response from ClientWrapper
-            StorageClientFileWrapper.IsSuccessStatusCode = true;
 
             // Assign the input options to the subCommand
             subCommandHandler.DictOptions = cliOptions;

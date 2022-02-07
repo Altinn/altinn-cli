@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.Text;
 
 namespace AltinnCLI.Helpers
 {
@@ -28,12 +29,38 @@ namespace AltinnCLI.Helpers
             if (!Directory.Exists(fileFolder))
             {
                 Directory.CreateDirectory(fileFolder);
-
             }
 
             using (FileStream outputFile = new(Path.Combine(fileFolder, fileName), FileMode.OpenOrCreate, FileAccess.Write))
             {
                 stream.CopyTo(outputFile);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///  saves a file to disk
+        /// </summary>
+        /// <param name="filePath">the path excluded a base path for where the file shall be saved</param>
+        /// <param name="fileName">filname to be used on the saved file</param>
+        /// <param name="stream">the fiel content</param>
+        public virtual bool SaveToFile(string filePath, string fileName, string content)
+        {
+            string baseFolder = ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>();
+            string fileFolder = $@"{baseFolder}\{filePath}";
+
+            // chekc if file folder exists, if not create it
+            if (!Directory.Exists(fileFolder))
+            {
+                Directory.CreateDirectory(fileFolder);
+
+            }
+
+            using (FileStream outputFile = new(Path.Combine(fileFolder, fileName), FileMode.OpenOrCreate, FileAccess.Write))
+            {
+              new MemoryStream(Encoding.UTF8.GetBytes(content ?? "")).CopyTo(outputFile);   
+   
             }
 
             return true;
