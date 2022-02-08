@@ -8,7 +8,7 @@ using AltinnCLI.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,6 +58,9 @@ namespace AltinnCLI.Services
 
                 string externalShipmentReference = serviceOwner.Prefill.ExternalShipmentReference;
 
+                string sentItemsFileName = $"{externalShipmentReference}.json";
+                SentItems sentItems = GetSentItems(sentItemsFileName);
+
                 (string failedShipmentsFile, ServiceOwner failedShipments) = SetUpErrorFile(inputFile, serviceOwner);
 
                 foreach (ServiceOwnerPrefillReportee reportee in serviceOwner.Prefill.Reportee)
@@ -79,11 +82,15 @@ namespace AltinnCLI.Services
 
                     foreach (ServiceOwnerPrefillReporteeFormTask formTask in reportee.FormTask)
                     {
-                       ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask, failedShipmentsFile, failedShipments);
+                        if (!sentItems.Reference.Contains(formTask.SendersReference))
+                        {
+                            ProcessFormTask(externalShipmentReference, reportee, reporteeIsOrg, formTask, failedShipmentsFile, failedShipments, sentItemsFileName, sentItems);
+                        }
                     }
                 }
 
                 File.Move(inputFile, Path.Combine(_config.OutputFolder, new FileInfo(inputFile).Name), true);
+                File.Delete(Path.Combine(_config.OutputFolder, sentItemsFileName));
             }
 
             return true;
@@ -95,7 +102,9 @@ namespace AltinnCLI.Services
             bool reporteeIsOrg,
             ServiceOwnerPrefillReporteeFormTask formTask,
             string failedShipmentsFile,
-            ServiceOwner failedShipments)
+            ServiceOwner failedShipments,
+            string sentItemsFileName,
+            SentItems sentItems)
         {
             var appNameAvailable = _config.ApplicationIdLookup.TryGetValue(formTask.ExternalServiceCode, out string appId);
 
@@ -133,6 +142,9 @@ namespace AltinnCLI.Services
                 var multipartFormData = BuildContentForInstance(i, formTask);
 
                 string response = _client.PostInstance(appId.Split("/")[0], appId.Split("/")[1], multipartFormData).Result;
+
+                SaveSentItem(sentItemsFileName, sentItems, formTask.SendersReference);
+
                 _logger.LogInformation("Instance successfully created");
             }
             catch (ArgumentOutOfRangeException ex)
@@ -228,6 +240,36 @@ namespace AltinnCLI.Services
             using StreamWriter sw = new(failedShipmentsFile);
             _serializer.Serialize(sw, failedShipments);
             sw.Close();
+        }
+
+        private SentItems GetSentItems(string sentItemsFileName)
+        {
+            if (!File.Exists(Path.Combine(_config.OutputFolder, sentItemsFileName)))
+            {
+                FileStream stream = File.Create(Path.Combine(_config.OutputFolder, sentItemsFileName));
+                stream.Close();
+                return new SentItems
+                {
+                    Reference = new()
+                };
+            }
+
+            string json = File.ReadAllText(Path.Combine(_config.OutputFolder, sentItemsFileName));
+            if (string.IsNullOrEmpty(json))
+            {
+                return new SentItems
+                {
+                    Reference = new()
+                };
+            }
+
+            return JsonConvert.DeserializeObject<SentItems>(json);
+        }
+
+        private void SaveSentItem(string sentItemsFileName, SentItems sentItems, string sendersReference)
+        {
+            sentItems.Reference.Add(sendersReference);
+            File.WriteAllText(Path.Combine(_config.OutputFolder, sentItemsFileName), JsonConvert.SerializeObject(sentItems));
         }
     }
 }
