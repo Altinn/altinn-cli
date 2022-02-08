@@ -266,10 +266,10 @@
       ]
     },
     {
-      "Name": "Prefill",
+      "Name": "Batch",
       "SubCommands": [
         {
-          "Name": "Altinn2",
+          "Name": "CreateInstancesA2",
           "Options": [
           ]
         }

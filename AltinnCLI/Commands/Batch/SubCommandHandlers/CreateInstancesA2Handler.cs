@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 using System;
 
-namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
+namespace AltinnCLI.Commands.Batch.SubCommandHandlers
 {
-    public class Altinn2Handler : SubCommandHandlerBase, ISubCommandHandler, IHelp
+    public class CreateInstancesA2Handler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
         private readonly IInstantiation _instantiationService;
 
-        public Altinn2Handler(IInstantiation service, ILogger<Altinn2Handler> logger) : base(logger)
+        public CreateInstancesA2Handler(IInstantiation service, ILogger<CreateInstancesA2Handler> logger) : base(logger)
         {
             _instantiationService = service;
         }
@@ -23,7 +23,7 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
         {
             get
             {
-                return "Altinn2";
+                return "CreateInstancesA2";
             }
         }
 
@@ -45,7 +45,7 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
         {
             get
             {
-                return $"AltinnCLI > Prefill altinn2 \n\n";
+                return $"AltinnCLI > Batch CreateInstancesA2 \n\n";
             }
         }
 
@@ -56,7 +56,7 @@ namespace AltinnCLI.Commands.Prefill.SubCommandHandlers
         {
             get
             {
-                return "Prefill";
+                return "Batch";
             }
         }
 

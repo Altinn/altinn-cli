@@ -2,15 +2,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace AltinnCLI.Commands.Prefill
+namespace AltinnCLI.Commands.Batch
 {
-    public class PrefillCommand : ICommand, IHelp
+    public class BatchCommand : ICommand, IHelp
     {
-        public string Name => "Prefill";
+        public string Name => "Batch";
 
         public string Description => $"\tProvides different prefill options.";
 
-        public string Usage => $@"Prefill <command>";
+        public string Usage => $@"Batch <command>";
 
         public string GetHelp()
         {
