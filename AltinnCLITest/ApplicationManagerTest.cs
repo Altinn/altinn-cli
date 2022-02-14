@@ -25,12 +25,11 @@ namespace AltinnCLITest
         {
             int expectedLogEntries = 1;
             string expectedLogMessage = "No commands found";
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment();
 
             List<Type> availableCommandTypes = new();
             List<Type> availableSubCommands = new();
@@ -59,12 +58,11 @@ namespace AltinnCLITest
             int expectedLogEntries = 2;
             string expectedLogMessage = "Missing sub command";
             string expectedLogMissingHelp = "Help is not found";
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment();
 
             List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
@@ -93,13 +91,9 @@ namespace AltinnCLITest
             textWriter.Dispose();
         }
 
-        private static IConfigurationRoot BuildEnvironment(string envirnonmentSetting)
+        private static IConfigurationRoot BuildEnvironment()
         {
-            byte[] data = Encoding.ASCII.GetBytes(envirnonmentSetting);
-            MemoryStream stream = new(data);
-
-            var configBuilder = new ConfigurationBuilder()
-                .AddJsonStream(stream);
+            var configBuilder = new ConfigurationBuilder();
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
             return configurationRoot;

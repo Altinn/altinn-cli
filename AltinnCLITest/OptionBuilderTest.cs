@@ -27,7 +27,7 @@ namespace AltinnCLITest
             string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             // Not commands in the Log
             CfgCommandList commandList = new();
@@ -50,10 +50,9 @@ namespace AltinnCLITest
         {
             string expectedCommand = "NotDefinedCommand";
             int expectedNumberOfOptions = 0;
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
 
@@ -86,7 +85,7 @@ namespace AltinnCLITest
             string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
 
@@ -121,7 +120,7 @@ namespace AltinnCLITest
             string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -154,10 +153,9 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -197,7 +195,7 @@ namespace AltinnCLITest
             string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -246,7 +244,7 @@ namespace AltinnCLITest
             string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -288,7 +286,7 @@ namespace AltinnCLITest
             string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<GetDataHandler> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             List<IOption> selectableOptions = new();
@@ -332,10 +330,9 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 1;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<GetDataHandler> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             List<IOption> selectableOptions = new();
@@ -367,13 +364,9 @@ namespace AltinnCLITest
             Assert.IsFalse(string.IsNullOrEmpty(selectableOption.ErrorMessage));
         }
 
-        private static void BuildEnvironment(string environmentSetting)
+        private static void BuildEnvironment()
         {
-            byte[] data = Encoding.ASCII.GetBytes(environmentSetting);
-            MemoryStream stream = new(data);
-
-            var configBuilder = new ConfigurationBuilder()
-                .AddJsonStream(stream);
+            var configBuilder = new ConfigurationBuilder();
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
             ConfigureLogging();
