@@ -25,7 +25,7 @@ namespace AltinnCLI.Clients
 
         public async Task<Stream> GetData(int instanceOwnerId, Guid instanceGuid, Guid dataId)
         {
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("StorageBaseAddress").Get<string>();
             requestUri += $@"/instances/{instanceOwnerId}/{instanceGuid}/data/{dataId}";
             HttpResponseMessage response =await  _client.GetAsync(requestUri);
 
@@ -69,7 +69,7 @@ namespace AltinnCLI.Clients
             IOption instanceGuid = urlParams.FirstOrDefault(x => string.Equals(x.Name, "instanceid", StringComparison.OrdinalIgnoreCase));
             IOption dataType = urlParams.FirstOrDefault(x => string.Equals(x.Name, "elementtype", StringComparison.OrdinalIgnoreCase));
 
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("StorageBaseAddress").Get<string>();
             requestUri += $@"instances/{instanceOwnerId.Value}/{instanceGuid.Value}/data?{dataType.ApiName}={dataType.Value}";
             string contentType = "application/xml";
 

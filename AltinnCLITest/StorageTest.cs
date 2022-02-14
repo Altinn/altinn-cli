@@ -4,7 +4,6 @@ using AltinnCLI.Commands.Storage;
 using AltinnCLI.Commands.Storage.SubCommandHandlers;
 using AltinnCLI.Helpers;
 using AltinnCLI.Models;
-using AltinnCLI.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

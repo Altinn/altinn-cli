@@ -28,7 +28,7 @@ namespace AltinnCLI.Clients
 
         public async Task<string> PostInstance(string org, string app, HttpContent content)
         {
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("AppAPIBaseAddress").Get<string>().Replace("{org}", org);
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("AppBaseAddress").Get<string>().Replace("{org}", org);
             requestUri += $@"/{org}/{app}/instances";
 
             HttpResponseMessage response = await _client.PostAsync(requestUri, content);
@@ -43,7 +43,7 @@ namespace AltinnCLI.Clients
 
         public async Task<InstanceResponseMessage> GetAllAppInstances(string org, string app)
         {
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("StorageBaseAddress").Get<string>();
             requestUri += $@"/instances?appId={org}/{app}";
 
             HttpResponseMessage response = await _client.GetAsync(requestUri);
@@ -59,7 +59,7 @@ namespace AltinnCLI.Clients
 
         public async Task<Stream> GetInstanceStream(int instanceOwnerId, Guid instanceGuid)
         {
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("StorageBaseAddress").Get<string>();
 
             requestUri += $@"/instances/{instanceOwnerId}/{instanceGuid}";
 
@@ -77,7 +77,7 @@ namespace AltinnCLI.Clients
 
         public async Task<Instance> GetInstance(int instanceOwnerId, Guid instanceGuid)
         {
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("StorageBaseAddress").Get<string>();
             requestUri += $"/instances/{instanceOwnerId}/{instanceGuid}";
 
 
@@ -96,7 +96,7 @@ namespace AltinnCLI.Clients
 
         public async Task<InstanceResponseMessage> GetInstances(List<IOption> urlParams)
         {
-            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("APIBaseAddress").Get<string>();
+            string requestUri = ApplicationManager.ApplicationConfiguration.GetSection("StorageBaseAddress").Get<string>();
             requestUri += "/instances?";
 
             foreach (IOption param in urlParams)
