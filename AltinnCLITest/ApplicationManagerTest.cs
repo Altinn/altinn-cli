@@ -93,44 +93,6 @@ namespace AltinnCLITest
             textWriter.Dispose();
         }
 
-
-        [TestMethod]
-        public void ApplicationManager_Execute_No_Respons_Data()
-        {
-            int expectedLogEntries = 1;
-            string expectedLogMessage = "No data available";
-            string environmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
-
-            TextWriter textWriter = new StringWriter();
-            ConfigureLogging(textWriter);
-
-            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
-
-            List<Type> availableCommandTypes = new();
-            availableCommandTypes.Add(typeof(StorageCommand));
-
-            List<Type> availableSubCommands = new();
-            availableSubCommands.Add(typeof(GetDataHandler));
-
-            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
-
-            ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
-            applicationManager.SetEnvironment(appConfig, serviceProvider);
-            ApplicationManager.IsLoggedIn = true;
-
-            string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
-
-            applicationManager.Execute(args);
-
-            List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntries, logEntries.Count);
-            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
-
-            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
-
-            textWriter.Dispose();
-        }
-
         private static IConfigurationRoot BuildEnvironment(string envirnonmentSetting)
         {
             byte[] data = Encoding.ASCII.GetBytes(envirnonmentSetting);
