@@ -24,7 +24,6 @@ namespace AltinnCLITest
         public void OptionBuilder_CreateOption_No_Commands()
         {
             int expectedNumberOfOptions = 0;
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
             BuildEnvironment();
@@ -82,7 +81,6 @@ namespace AltinnCLITest
             string expectedCommand = "Storage";
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
             BuildEnvironment();
@@ -117,7 +115,6 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
             BuildEnvironment();
@@ -192,7 +189,6 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 1;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
             BuildEnvironment();
@@ -241,7 +237,6 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
             BuildEnvironment();
@@ -283,7 +278,6 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 1;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
             NullLogger<GetDataHandler> logger = new();
 
             BuildEnvironment();
