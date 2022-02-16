@@ -1,6 +1,6 @@
 ﻿using Altinn.Platform.Storage.Interface.Models;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace AltinnCLI.Models
 {
@@ -12,31 +12,31 @@ namespace AltinnCLI.Models
         /// <summary>
         /// Gets or sets the total number of instances found
         /// </summary>
-        [JsonProperty("totalHits")]
+        [JsonPropertyName("totalHits")]
         public long TotalHits { get; set; }
 
         /// <summary>
         /// Gets or sets the number of instances in "this" response
         /// </summary>
-        [JsonProperty("count")]
+        [JsonPropertyName("count")]
         public long Count { get; set; }
 
         /// <summary>
         /// URL to fetch next page with instances
         /// </summary>
-        [JsonProperty("next")]
+        [JsonPropertyName("next")]
         public Uri Next { get; set; }
 
         /// <summary>
         /// Gets or sets the Self link
         /// </summary>
-        [JsonProperty("self")]
+        [JsonPropertyName("self")]
         public Uri Self { get; set; }
 
         /// <summary>
         /// Gets or sets the instances
         /// </summary>
-        [JsonProperty("instances")]
+        [JsonPropertyName("instances")]
         public Instance[] Instances { get; set; }
     }
 }

@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AltinnCLI.Models
 {
     public class CfgOption
     {
-        [JsonProperty("Name")]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
 
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string DataType { get; set; }
 
-        [JsonProperty("valuerangeange")]
+        [JsonPropertyName("valuerangeange")]
         public string Valuerangeange { get; set; }
 
-        [JsonProperty("description")]
+        [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [JsonProperty("apiname")]
+        [JsonPropertyName("apiname")]
         public string Apiname { get; set; }
     }
 }

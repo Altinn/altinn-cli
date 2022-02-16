@@ -6,12 +6,11 @@ using AltinnCLI.Helpers;
 
 using Microsoft.Extensions.Logging;
 
-using Newtonsoft.Json;
-
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace AltinnCLI.Commands.Application.SubCommandHandlers
 {
@@ -135,8 +134,9 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
                             {
                                 string result = _client.PostInstance(app, org,  multipartFormData).Result;
 
-                                Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
-                                File.WriteAllText($"{folder}\\{personNumber}.json", JsonConvert.SerializeObject(instanceResult, Formatting.Indented));
+                                Instance instanceResult = JsonSerializer.Deserialize<Instance>(result);
+                                var options = new JsonSerializerOptions { WriteIndented = true };
+                                File.WriteAllText($"{folder}\\{personNumber}.json", JsonSerializer.Serialize(instanceResult, options));
 
                             }
                             catch (Exception e)
@@ -177,7 +177,7 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
 
                     if (filePath.Contains(".json"))
                     {
-                        instance = JsonConvert.DeserializeObject<Instance>(File.ReadAllText(filePath));
+                        instance = JsonSerializer.Deserialize<Instance>(File.ReadAllText(filePath));
                     }
                 }
 

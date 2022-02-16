@@ -1,9 +1,9 @@
 ﻿using Altinn.Platform.Storage.Interface.Models;
-using Newtonsoft.Json;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 
 namespace AltinnCLI.Helpers
 {
@@ -16,7 +16,7 @@ namespace AltinnCLI.Helpers
             _builder = new MultipartFormDataContent();
             if (instanceTemplate != null)
             {
-                StringContent instanceContent = new(JsonConvert.SerializeObject(instanceTemplate), Encoding.UTF8, "application/json");
+                StringContent instanceContent = new(JsonSerializer.Serialize(instanceTemplate), Encoding.UTF8, "application/json");
 
                 _builder.Add(instanceContent, "instance");
             }

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace AltinnCLI.Models
 {
     public class CfgSubCommand
     {
-        [JsonProperty("Name")]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
 
-        [JsonProperty("Options")]
+        [JsonPropertyName("Options")]
         public List<CfgOption> Options { get; set; }
     }
 }

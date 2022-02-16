@@ -2,12 +2,12 @@
 using AltinnCLI.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 
 namespace AltinnCLI.Commands.Core
 {
@@ -68,7 +68,7 @@ namespace AltinnCLI.Commands.Core
 
             if (!string.IsNullOrEmpty(commandDefinitions))
             {
-                _instance.CfgCommands = JsonConvert.DeserializeObject<CfgCommandList>(commandDefinitions);
+                _instance.CfgCommands = JsonSerializer.Deserialize<CfgCommandList>(commandDefinitions);
             }
         }
 
