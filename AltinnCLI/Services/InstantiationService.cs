@@ -8,13 +8,13 @@ using AltinnCLI.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -263,13 +263,13 @@ namespace AltinnCLI.Services
                 };
             }
 
-            return JsonConvert.DeserializeObject<SentItems>(json);
+            return JsonSerializer.Deserialize<SentItems>(json);
         }
 
         private void SaveSentItem(string sentItemsFileName, SentItems sentItems, string sendersReference)
         {
             sentItems.Reference.Add(sendersReference);
-            File.WriteAllText(Path.Combine(_config.OutputFolder, sentItemsFileName), JsonConvert.SerializeObject(sentItems));
+            File.WriteAllText(Path.Combine(_config.OutputFolder, sentItemsFileName), JsonSerializer.Serialize(sentItems));
         }
     }
 }
