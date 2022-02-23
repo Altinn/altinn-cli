@@ -1,6 +1,15 @@
-﻿using AltinnCLI.Core;
-using Microsoft.Extensions.Configuration;
+﻿using Altinn.Platform.Storage.Interface.Models;
+
+using AltinnCLI.Clients;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Helpers;
+using AltinnCLI.Models;
+
 using Microsoft.Extensions.Logging;
+
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace AltinnCLI.Commands.Application.SubCommandHandlers
 {
@@ -9,22 +18,15 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
         /// <summary>
         /// Handles communication with the runtime API
         /// </summary>
-        private IApplicationClientWrapper clientWrapper = null;
+        private readonly InstanceClient _client;
 
         /// <summary>
         /// Creates an instance of <see cref="CreateInstanceSubCommandHandler" /> class
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information</param>
-        public GetInstancesSubCommandHandler(ILogger<GetInstancesSubCommandHandler> logger) : base(logger)
+        public GetInstancesSubCommandHandler(InstanceClient client, ILogger<GetInstancesSubCommandHandler> logger) : base(logger)
         {
-            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
-            {
-                clientWrapper = new ApplicationClientWrapper(_logger);
-            }
-            else
-            {
-                clientWrapper = new ApplicationFileClientWrapper(_logger);
-            }
+            _client = client;
         }
 
 
@@ -82,13 +84,34 @@ namespace AltinnCLI.Commands.Application.SubCommandHandlers
         public bool Run()
         {
             if (IsValid)
-            {               
-                    string app = (string)GetOptionValue("app");
-                    string org = (string)GetOptionValue("org");
-        
-                string response = clientWrapper.GetInstances(app, org);
-                _logger.LogInformation(response);
-                
+            {
+                string app = (string)GetOptionValue("app");
+                string org = (string)GetOptionValue("org");
+                InstanceResponseMessage responsMessage = null;
+
+                responsMessage = _client.GetAllAppInstances(org, app).Result;
+
+                List<Instance> instances = new();
+
+                if (responsMessage != null)
+                {
+                    instances.AddRange(responsMessage.Instances);
+
+                    while (responsMessage.Next != null)
+                    {
+                        responsMessage = _client.GetInstances(responsMessage.Next).Result;
+                        instances.AddRange(responsMessage.Instances);
+                    }
+                }
+
+                string fileName = $"{DateTime.UtcNow}.json";
+
+                string fileFolder = $@"{org}\{app}";
+
+                if (CliFileWrapper.SaveToFile(fileFolder, fileName, JsonSerializer.Serialize(instances, typeof(List<Instance>), Globals.JsonSerializerOptions)))
+                {
+                    _logger.LogInformation($"File:{fileName} saved at {fileFolder}");
+                }
             }
 
             return true;

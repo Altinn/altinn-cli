@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using AltinnCLI.Core;
+using AltinnCLI.Commands.Core;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ namespace AltinnCLI
         public static IServiceProvider ServiceProvider;
         public static string MaskinportenToken = string.Empty;
         public static bool IsLoggedIn = false;
-        private static ILogger _logger;
+        private readonly ILogger _logger;
 
         public ApplicationManager(ILogger<ApplicationManager> logger = null)
         {
@@ -49,13 +49,13 @@ namespace AltinnCLI
                 {
                     if (string.Equals(command.Name, "Help", StringComparison.OrdinalIgnoreCase))
                     {
-                       command.Run(ParseArguments(input));
+                        command.Run(ParseArguments(input));
                     }
                     else if (string.Equals(command.Name, "Quit", StringComparison.OrdinalIgnoreCase))
                     {
                         command.Run();
                     }
-                    else if (IsLoggedIn || (string.Equals(command.Name, "Login", StringComparison.OrdinalIgnoreCase)))
+                    else 
                     {
 
                         if (input.Length > 1)
@@ -67,10 +67,12 @@ namespace AltinnCLI
                             command.Run();
                         }
                     }
-                    else
+
+                    //to do: handle authentication for all actions
+                   /* else
                     {
                         _logger.LogInformation($"The command can not be execute, please log in \n");
-                    }
+                    }*/ 
                 }
                 else
                 {
@@ -151,7 +153,7 @@ namespace AltinnCLI
         /// <returns></returns>
         private Dictionary<string, string> ParseArguments(string[] args)
         {
-            Dictionary<string, string> commandKeysAndValues = new Dictionary<string, string>();
+            Dictionary<string, string> commandKeysAndValues = new();
 
             foreach (string param in args)
             {

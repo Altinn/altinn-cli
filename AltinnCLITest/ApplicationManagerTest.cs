@@ -25,15 +25,14 @@ namespace AltinnCLITest
         {
             int expectedLogEntries = 1;
             string expectedLogMessage = "No commands found";
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment();
 
-            List<Type> availableCommandTypes = new List<Type>();
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableCommandTypes = new();
+            List<Type> availableSubCommands = new();
 
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
@@ -59,17 +58,16 @@ namespace AltinnCLITest
             int expectedLogEntries = 2;
             string expectedLogMessage = "Missing sub command";
             string expectedLogMissingHelp = "Help is not found";
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
 
             TextWriter textWriter = new StringWriter();
             ConfigureLogging(textWriter);
 
-            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
+            IConfigurationRoot appConfig = BuildEnvironment();
 
-            List<Type> availableCommandTypes = new List<Type>();
+            List<Type> availableCommandTypes = new();
             availableCommandTypes.Add(typeof(StorageCommand));
 
-            List<Type> availableSubCommands = new List<Type>();
+            List<Type> availableSubCommands = new();
 
             ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
 
@@ -93,51 +91,9 @@ namespace AltinnCLITest
             textWriter.Dispose();
         }
 
-
-        [TestMethod]
-        public void ApplicationManager_Execute_No_Respons_Data()
+        private static IConfigurationRoot BuildEnvironment()
         {
-            int expectedLogEntries = 1;
-            string expectedLogMessage = "No data available";
-            string environmentSetting = $"{{\"UseLiveClient\": \"false\"}}";
-
-            TextWriter textWriter = new StringWriter();
-            ConfigureLogging(textWriter);
-
-            IConfigurationRoot appConfig = BuildEnvironment(environmentSetting);
-
-            List<Type> availableCommandTypes = new List<Type>();
-            availableCommandTypes.Add(typeof(StorageCommand));
-
-            List<Type> availableSubCommands = new List<Type>();
-            availableSubCommands.Add(typeof(GetDataHandler));
-
-            ServiceProvider serviceProvider = TestDataBuilder.BuildServiceProvider(availableCommandTypes, availableSubCommands, Log.Logger);
-
-            ApplicationManager applicationManager = serviceProvider.GetService<ApplicationManager>();
-            applicationManager.SetEnvironment(appConfig, serviceProvider);
-            ApplicationManager.IsLoggedIn = true;
-
-            string args = $"storage GetData appId=tdd/apptest processIsComplete=true";
-
-            applicationManager.Execute(args);
-
-            List<string> logEntries = GetLogEntries(textWriter);
-            Assert.AreEqual(expectedLogEntries, logEntries.Count);
-            string logMessage = logEntries.FirstOrDefault(x => x.Contains(expectedLogMessage));
-
-            Assert.IsFalse(string.IsNullOrEmpty(logMessage));
-
-            textWriter.Dispose();
-        }
-
-        private static IConfigurationRoot BuildEnvironment(string envirnonmentSetting)
-        {
-            byte[] data = Encoding.ASCII.GetBytes(envirnonmentSetting);
-            MemoryStream stream = new MemoryStream(data);
-
-            var configBuilder = new ConfigurationBuilder()
-                .AddJsonStream(stream);
+            var configBuilder = new ConfigurationBuilder();
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
             return configurationRoot;
@@ -153,8 +109,8 @@ namespace AltinnCLITest
 
         private static List<string> GetLogEntries(TextWriter textWriter)
         {
-            List<string> logEntries = new List<string>();
-            StringReader re = new StringReader(textWriter.ToString());
+            List<string> logEntries = new();
+            StringReader re = new(textWriter.ToString());
             string input;
             while ((input = re.ReadLine()) != null)
             {

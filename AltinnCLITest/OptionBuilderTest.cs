@@ -1,7 +1,4 @@
 ﻿using AltinnCLI;
-using AltinnCLI.Commands.Storage;
-using AltinnCLI.Core;
-using AltinnCLI.Core.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +9,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AltinnCLI.Commands.Storage.SubCommandHandlers;
+using AltinnCLI.Models;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Clients;
+using System.Net.Http;
 
 namespace AltinnCLITest
 {
@@ -23,17 +24,19 @@ namespace AltinnCLITest
         public void OptionBuilder_CreateOption_No_Commands()
         {
             int expectedNumberOfOptions = 0;
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             // Not commands in the Log
-            CfgCommandList commandList = new CfgCommandList();
+            CfgCommandList commandList = new();
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()), 
+                new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -46,21 +49,25 @@ namespace AltinnCLITest
         {
             string expectedCommand = "NotDefinedCommand";
             int expectedNumberOfOptions = 0;
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
 
-            CfgCommandList commandList = new CfgCommandList();
-            commandList.Commands = new List<CfgCommand>();
-            commandList.Commands.Add(command);
+            CfgCommandList commandList = new();
+            commandList.Commands = new List<CfgCommand>
+            {
+                command
+            };
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+               new DataClient(new HttpClient()),
+              new InstanceClient(new HttpClient()),
+              new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -74,21 +81,25 @@ namespace AltinnCLITest
             string expectedCommand = "Storage";
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
 
-            CfgCommandList commandList = new CfgCommandList();
-            commandList.Commands = new List<CfgCommand>();
-            commandList.Commands.Add(command);
+            CfgCommandList commandList = new();
+            commandList.Commands = new List<CfgCommand>
+            {
+                command
+            };
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -104,24 +115,27 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
             command.SubCommands.Add(subCommand);
 
-            CfgCommandList commandList = new CfgCommandList();
-            commandList.Commands = new List<CfgCommand>();
-            commandList.Commands.Add(command);
+            CfgCommandList commandList = new();
+            commandList.Commands = new List<CfgCommand>
+            {
+                command
+            };
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
-
+            GetDataHandler handler = new(
+               new DataClient(new HttpClient()),
+              new InstanceClient(new HttpClient()),
+              new NullLogger<GetDataHandler>());
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
@@ -136,29 +150,32 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
             command.SubCommands.Add(subCommand);
-        
-            CfgCommandList commandList = new CfgCommandList();
-            commandList.Commands = new List<CfgCommand>();
-            commandList.Commands.Add(command);
+
+            CfgCommandList commandList = new();
+            commandList.Commands = new List<CfgCommand>
+            {
+                command
+            };
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
-
+             GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()), 
+                new NullLogger<GetDataHandler>());
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
         }
-               
+
         [TestMethod]
         [DoNotParallelize]
         public void OptionBuilder_CreateOption_Command_Found_One_Option()
@@ -172,10 +189,9 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 1;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -183,15 +199,19 @@ namespace AltinnCLITest
             CfgOption option = TestDataBuilder.CreateCfgOption(expectedOption, expectedDataType, expectedDescription, expectedApiName);
             subCommand.Options.Add(option);
 
-            CfgCommandList commandList = new CfgCommandList();
-            commandList.Commands = new List<CfgCommand>();
-            commandList.Commands.Add(command);
+            CfgCommandList commandList = new();
+            commandList.Commands = new List<CfgCommand>
+            {
+                command
+            };
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
-
+            GetDataHandler handler = new(
+               new DataClient(new HttpClient()),
+              new InstanceClient(new HttpClient()),
+              new NullLogger<GetDataHandler>());
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
             Assert.AreEqual(expectedNumberOfOptions, selectableOptions.Count);
@@ -217,10 +237,9 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 0;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new NullLogger<Microsoft.Extensions.Logging.ILogger>();
+            NullLogger<Microsoft.Extensions.Logging.ILogger> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             CfgCommand command = TestDataBuilder.CreateCfgCommand(expectedCommand);
             CfgSubCommand subCommand = TestDataBuilder.CreateCfgSubCommand(expectedSubCommand);
@@ -228,14 +247,19 @@ namespace AltinnCLITest
             CfgOption option = TestDataBuilder.CreateCfgOption(expectedOption, expectedDataType, expectedDescription, expectedApiName);
             subCommand.Options.Add(option);
 
-            CfgCommandList commandList = new CfgCommandList();
-            commandList.Commands = new List<CfgCommand>();
-            commandList.Commands.Add(command);
+            CfgCommandList commandList = new();
+            commandList.Commands = new List<CfgCommand>
+            {
+                command
+            };
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
             builder.CfgCommands = commandList;
 
-            GetDataHandler handler = new GetDataHandler(new NullLogger<GetDataHandler>());
+            GetDataHandler handler = new(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                new NullLogger<GetDataHandler>());
 
             List<IOption> selectableOptions = builder.BuildAvailableOptions(handler);
 
@@ -254,18 +278,20 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 1;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<GetDataHandler> logger = new NullLogger<GetDataHandler>();
+            NullLogger<GetDataHandler> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
-            List<IOption> selectableOptions = new List<IOption>();
+            List<IOption> selectableOptions = new();
             selectableOptions.Add(TestDataBuilder.CreateOption(expectedOption, expectedDataType, expectedDescription, expectedApiName));
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOption, expectedValue);
 
-            ISubCommandHandler subCommandHandler = new GetDataHandler(logger)
+            ISubCommandHandler subCommandHandler = new GetDataHandler(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                logger)
             {
                 SelectableCliOptions = selectableOptions,
                 DictOptions = cliOptions
@@ -298,22 +324,26 @@ namespace AltinnCLITest
 
             int expectedNumberOfOptions = 1;
 
-            string environmentSetting = $"{{\"UseLiveClient\": \"True\"}}";
-            NullLogger<GetDataHandler> logger = new NullLogger<GetDataHandler>();
+            NullLogger<GetDataHandler> logger = new();
 
-            BuildEnvironment(environmentSetting);
+            BuildEnvironment();
 
             OptionBuilder builder = OptionBuilder.Instance(logger);
-            List<IOption> selectableOptions = new List<IOption>();
+            List<IOption> selectableOptions = new();
             selectableOptions.Add(TestDataBuilder.CreateOption(expectedOption, expectedDataType, expectedDescription, expectedApiName));
-            Dictionary<string, string> cliOptions = new Dictionary<string, string>();
+            Dictionary<string, string> cliOptions = new();
             cliOptions.Add(expectedOption, expectedValue);
 
-            ISubCommandHandler subCommandHandler = new GetDataHandler(logger)
+            ISubCommandHandler subCommandHandler = new GetDataHandler(
+                 new DataClient(new HttpClient()),
+                new InstanceClient(new HttpClient()),
+                logger)
             {
                 SelectableCliOptions = selectableOptions,
                 DictOptions = cliOptions
             };
+
+
 
             bool isValid = builder.AssignValueToCliOptions(subCommandHandler);
 
@@ -328,19 +358,15 @@ namespace AltinnCLITest
             Assert.IsFalse(string.IsNullOrEmpty(selectableOption.ErrorMessage));
         }
 
-        private static void BuildEnvironment(string environmentSetting)
+        private static void BuildEnvironment()
         {
-            byte[] data = Encoding.ASCII.GetBytes(environmentSetting);
-            MemoryStream stream = new MemoryStream(data);
-
-            var configBuilder = new ConfigurationBuilder()
-                .AddJsonStream(stream);
+            var configBuilder = new ConfigurationBuilder();
             IConfigurationRoot configurationRoot = configBuilder.Build();
 
             ConfigureLogging();
 
-            NullLogger<ApplicationManager> logger = new NullLogger<ApplicationManager>();
-            ApplicationManager applicationManager = new ApplicationManager(logger);
+            NullLogger<ApplicationManager> logger = new();
+            ApplicationManager applicationManager = new(logger);
             applicationManager.SetEnvironment(configurationRoot, null);
         }
 

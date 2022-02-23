@@ -1,14 +1,16 @@
 ﻿using Altinn.Platform.Storage.Interface.Models;
+
 using AltinnCLI;
-using AltinnCLI.Commands.Storage;
-using AltinnCLI.Core;
-using AltinnCLI.Core.Json;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Models;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using Serilog.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace AltinnCLITest
 {
@@ -16,7 +18,7 @@ namespace AltinnCLITest
     {
         public static CfgCommand CreateCfgCommand(string commandName)
         {
-            CfgCommand command = new CfgCommand()
+            CfgCommand command = new()
             {
                 Name = commandName,
                 SubCommands = new List<CfgSubCommand>()
@@ -27,7 +29,7 @@ namespace AltinnCLITest
 
         public static CfgSubCommand CreateCfgSubCommand(string subCommandName)
         {
-            CfgSubCommand subCommand = new CfgSubCommand()
+            CfgSubCommand subCommand = new()
             {
                 Name = subCommandName,
                 Options = new List<CfgOption>()
@@ -38,7 +40,7 @@ namespace AltinnCLITest
 
         public static CfgOption CreateCfgOption(string name, string dataType, string description, string apiName)
         {
-            CfgOption option = new CfgOption()
+            CfgOption option = new()
             {
                 Name = name,
                 DataType = dataType,
@@ -51,9 +53,7 @@ namespace AltinnCLITest
 
         public static IOption CreateOption(string optionName, string dataType, string description, string apiName)
         {
-            Type baseType = null;
-
-            Type t = OptionBuilder.GetSystemType(dataType, out baseType);
+            Type t = OptionBuilder.GetSystemType(dataType, out Type baseType);
 
             var combinedType = baseType.MakeGenericType(t);
             IOption option = (IOption)Activator.CreateInstance(combinedType);
@@ -100,31 +100,31 @@ namespace AltinnCLITest
 
         internal static InstanceResponseMessage CreateInstanceResponse(int numberOfInstances)
         {
-            InstanceResponseMessage response = new InstanceResponseMessage();
+            InstanceResponseMessage response = new();
             response.Instances = new Instance[numberOfInstances];
 
-            DataElement dataElement = new DataElement()
+            DataElement dataElement = new()
             {
                 DataType = "Kvittering",
                 SelfLinks = new ResourceLinks()
             };
 
-            List<DataElement> dataElementList = new List<DataElement>();
+            List<DataElement> dataElementList = new();
             dataElementList.Add(dataElement);
 
             for (int i = 0; i < numberOfInstances; i++)
             {
-                Instance instance = new Instance()
+                Instance instance = new()
                 {
                     Id = $"100/2e130fad-c156-4424-8579-6537a1bf484f",
                     InstanceOwner = new InstanceOwner()
                     {
-                        PartyId = $"33445{i.ToString()}",
-                        PersonNumber = $"1234567890{i.ToString()}",
-                        OrganisationNumber = $"9844566{i.ToString()}"
+                        PartyId = $"33445{i}",
+                        PersonNumber = $"1234567890{i}",
+                        OrganisationNumber = $"9844566{i}"
                     },
                     AppId = "AppId",
-                    Org = $"9844566{i.ToString()}",
+                    Org = $"9844566{i}",
                     Data = dataElementList,
                 };
 

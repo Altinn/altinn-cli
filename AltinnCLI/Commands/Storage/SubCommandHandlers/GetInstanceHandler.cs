@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using AltinnCLI.Core;
+
+using AltinnCLI.Clients;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -12,18 +16,16 @@ namespace AltinnCLI.Commands.Storage
     /// </summary>
     public class GetInstanceHandler : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
-        private IStorageClientWrapper ClientWrapper = null;
-        
+        private readonly InstanceClient _client;
+
         /// <summary>
         /// Creates an instance of the <see cref="GetInstanceHandler" /> class
         /// </summary>
         /// <param name="logger"></param>
-        public GetInstanceHandler(ILogger<GetInstanceHandler> logger) : base(logger)
+        public GetInstanceHandler(InstanceClient client, ILogger<GetInstanceHandler> logger) : base(logger)
         {
-            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
-            {
-                ClientWrapper = new StorageClientWrapper(_logger);
-            }
+
+            _client = client;
 
         }
 
@@ -90,23 +92,17 @@ namespace AltinnCLI.Commands.Storage
         {
             if (IsValid)
             {
-                Stream response = ClientWrapper.GetInstances(int.Parse(DictOptions.GetValueOrDefault("ownerid")),
-                                         Guid.Parse(DictOptions.GetValueOrDefault("instanceid")));
+                Stream response = _client.GetInstanceStream(int.Parse(DictOptions.GetValueOrDefault("ownerid")),
+                                         Guid.Parse(DictOptions.GetValueOrDefault("instanceid"))).Result;
 
 
-                if (HasParameter("saveToFile"))
+                if (HasParameter("savetofile"))
                 {
                     string fileName = DictOptions.GetValueOrDefault("instanceid").ToString() + ".json";
                     if (response != null)
                     {
-                        string fileFolder = (ApplicationManager.ApplicationConfiguration.GetSection("StorageOutputFolder").Get<string>());
-
-                        // chekc if file folder exists, if not create it
-                        if (!Directory.Exists(fileFolder))
-                        {
-                            Directory.CreateDirectory(fileFolder);
-
-                        }                      
+                        string fileFolder = DictOptions.GetValueOrDefault("ownerid");
+      
 
                         CliFileWrapper.SaveToFile(fileFolder, fileName, response);
                         
@@ -114,7 +110,7 @@ namespace AltinnCLI.Commands.Storage
                 }
                 else
                 {
-                    StreamReader result = new StreamReader(response);
+                    StreamReader result = new(response);
                     _logger.LogInformation(result.ReadToEnd());
                 }    
             }

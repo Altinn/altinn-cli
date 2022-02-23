@@ -264,6 +264,16 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "Batch",
+      "SubCommands": [
+        {
+          "Name": "CreateInstancesA2",
+          "Options": [
+          ]
+        }
+      ]
     }
   ]
 }

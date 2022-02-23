@@ -1,4 +1,8 @@
-﻿using AltinnCLI.Core;
+﻿using AltinnCLI.Clients;
+using AltinnCLI.Commands.Core;
+using AltinnCLI.Models;
+using AltinnCLI.Services;
+using AltinnCLI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,23 +18,15 @@ namespace AltinnCLI.Commands.Storage
     /// </summary>
     public class UploadData : SubCommandHandlerBase, ISubCommandHandler, IHelp
     {
-        private IStorageClientWrapper ClientWrapper = null;
+        private readonly DataClient _client;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetDocumentHandler" /> class.
         /// </summary>
         /// <param name="logger">Reference to the common logger that the application shall used to log log info and error information
-        public UploadData(ILogger<UploadData> logger) : base(logger)
+        public UploadData(DataClient client, ILogger<UploadData> logger) : base(logger)
         {
-
-            if (ApplicationManager.ApplicationConfiguration.GetSection("UseLiveClient").Get<bool>())
-            {
-                ClientWrapper = new StorageClientWrapper(_logger);
-            }
-            else
-            {
-                ClientWrapper = new StorageClientFileWrapper(_logger);
-            }
+            _client = client;
         }
 
         /// <summary>
@@ -108,7 +104,7 @@ namespace AltinnCLI.Commands.Storage
 
                 MemoryStream memoryStream = CliFileWrapper.GetFile(fileNameOption.Value);
 
-                InstanceResponseMessage responsMessage = ClientWrapper.UploadDataElement(SelectableCliOptions, memoryStream, fileNameOption.Value);
+                InstanceResponseMessage responsMessage = _client.UploadDataElement(SelectableCliOptions, memoryStream, fileNameOption.Value).Result;
             }
 
             return true;
