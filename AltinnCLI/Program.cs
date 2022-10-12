@@ -25,7 +25,7 @@ namespace AltinnCLI
 {
     /// <summary>
     /// The CLI startup that prepares the application configuration, service provider for handling cli-commands 
-    /// </summary
+    /// </summary>
     class Program
     {
         private const string Prompt = "Altinn CLI > ";
