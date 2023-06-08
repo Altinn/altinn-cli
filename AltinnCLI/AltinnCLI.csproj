@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Altinn.ApiClients.Maskinporten" Version="9.0.0" />
-    <PackageReference Include="Altinn.Platform.Storage.Interface" Version="3.17.0" />
+    <PackageReference Include="Altinn.Platform.Storage.Interface" Version="3.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
